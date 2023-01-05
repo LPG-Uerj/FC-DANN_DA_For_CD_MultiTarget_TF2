@@ -4,7 +4,7 @@ import json
 import argparse
 import numpy as np
 from datetime import datetime
-from SharedParameters import TRAINING_TYPE_DOMAIN_ADAPTATION,TRAINING_TYPE_CLASSIFICATION
+from SharedParameters import TRAINING_TYPE_DOMAIN_ADAPTATION,TRAINING_TYPE_CLASSIFICATION,ROLE_SOURCE,ROLE_TARGET
 
 #from tensordash.tensordash import Tensordash, Customdash
 
@@ -52,10 +52,6 @@ parser.add_argument('--balanced_tr', dest='balanced_tr', type=eval, choices=[Tru
 
 # TODO LUCAS:ParÃƒÂ¢metro buffer para quando for converter de imagem vetorial para pixel
 parser.add_argument('--buffer', dest='buffer', type=eval, choices=[True, False], default=True, help='Decide wether a buffer around deforestated regions will be performed')
-parser.add_argument('--source_buffer_dimension_out', dest='source_buffer_dimension_out', type=int, default=4, help='Dimension of the buffer outside of the area')
-parser.add_argument('--source_buffer_dimension_in', dest='source_buffer_dimension_in', type=int, default=2, help='Dimension of the buffer inside of the area')
-parser.add_argument('--target_buffer_dimension_out', dest='target_buffer_dimension_out', type=int, default=2, help='Dimension of the buffer outside of the area')
-parser.add_argument('--target_buffer_dimension_in', dest='target_buffer_dimension_in', type=int, default=0, help='Dimension of the buffer inside of the area')
 
 parser.add_argument('--porcent_of_last_reference_in_actual_reference', dest='porcent_of_last_reference_in_actual_reference', type=int, default=100, help='Porcent of number of pixels of last reference in the actual reference')
 parser.add_argument('--porcent_of_positive_pixels_in_actual_reference_s', dest='porcent_of_positive_pixels_in_actual_reference_s', type=int, default=2, help='Porcent of number of pixels of last reference in the actual reference in source domain')
@@ -82,8 +78,6 @@ parser.add_argument('--images_section', dest='images_section', type=str, default
 parser.add_argument('--reference_section', dest='reference_section', type=str, default='Organized/References/', help='Folder for the reference')
 parser.add_argument('--data_type', dest='data_type', type=str, default='.npy', help= 'Type of the input images and references')
 
-parser.add_argument('--source_data_t1_year', dest='source_data_t1_year', type=str, default='2016', help='Year of the time 1 image')
-parser.add_argument('--source_data_t2_year', dest='source_data_t2_year', type=str, default='2017', help='Year of the time 2 image')
 parser.add_argument('--target_data_t1_year', dest='target_data_t1_year', type=str, default='2017', help='Year of the time 3 image')
 parser.add_argument('--target_data_t2_year', dest='target_data_t2_year', type=str, default='2018', help='Year of the time 4 image')
 parser.add_argument('--source_data_t1_name', dest='source_data_t1_name', type=str, default=None, help='image 1 name')
@@ -105,8 +99,7 @@ args = parser.parse_args()
 
 # TODO Lucas: P
 def main():
-    print(args)
-    #histories = Customdash(ModelName = 'SLVC06_train_process', email = 'pedrosoto423@gmail.com', password = 'Bad87*be@tles63')
+    print(args)    
 
     if not os.path.exists(args.checkpoint_results_main_path + 'checkpoints/'):
         os.makedirs(args.checkpoint_results_main_path + 'checkpoints/')
@@ -116,44 +109,32 @@ def main():
     dataset_t = []
 
     if args.source_dataset == 'Amazon_RO':
-        args.dataset = 'Amazonia_Legal/'
-        args.buffer_dimension_in = args.source_buffer_dimension_in
-        args.buffer_dimension_out = args.source_buffer_dimension_out        
-        args.reference_t2_name = args.source_reference_t2_name
+        args.role = ROLE_SOURCE      
+        args.reference_t2_name = args.source_reference_t2_name  
         dataset_s = AMAZON_RO(args)
 
     if args.source_dataset == 'Amazon_PA':
-        args.dataset = 'Amazonia_Legal/'
-        args.buffer_dimension_in = args.source_buffer_dimension_in
-        args.buffer_dimension_out = args.source_buffer_dimension_out        
+        args.role = ROLE_SOURCE
         args.reference_t2_name = args.source_reference_t2_name
         dataset_s = AMAZON_PA(args)
 
-    if args.source_dataset == 'Cerrado_MA':
-        args.dataset = 'Cerrado_Biome/'
-        args.buffer_dimension_in = args.source_buffer_dimension_in
-        args.buffer_dimension_out = args.source_buffer_dimension_out        
+    if args.source_dataset == 'Cerrado_MA':     
+        args.role = ROLE_SOURCE   
         args.reference_t2_name = args.source_reference_t2_name
         dataset_s = CERRADO_MA(args)
 
-    if 'Amazon_RO' in args.target_dataset:
-        args.dataset = 'Amazonia_Legal/'
-        args.buffer_dimension_in = args.target_buffer_dimension_in
-        args.buffer_dimension_out = args.target_buffer_dimension_out        
+    if AMAZON_RO.DATASET in args.target_dataset:              
+        args.role = ROLE_TARGET     
         args.reference_t2_name = args.target_reference_t2_name
         dataset_t.append(AMAZON_RO(args))
 
-    if 'Amazon_PA' in args.target_dataset:
-        args.dataset = 'Amazonia_Legal/'
-        args.buffer_dimension_in = args.target_buffer_dimension_in
-        args.buffer_dimension_out = args.target_buffer_dimension_out        
+    if AMAZON_PA.DATASET in args.target_dataset: 
+        args.role = ROLE_TARGET               
         args.reference_t2_name = args.target_reference_t2_name
         dataset_t.append(AMAZON_PA(args))
 
-    if 'Cerrado_MA' in args.target_dataset:
-        args.dataset = 'Cerrado_Biome/'
-        args.buffer_dimension_in = args.target_buffer_dimension_in
-        args.buffer_dimension_out = args.target_buffer_dimension_out        
+    if CERRADO_MA.DATASET in args.target_dataset:
+        args.role = ROLE_TARGET
         args.reference_t2_name = args.target_reference_t2_name
         dataset_t.append(CERRADO_MA(args))
 
@@ -191,9 +172,6 @@ def main():
             
             t.Tiles_Configuration(args, i)
             t.Coordinates_Creator(args, i)
-
-        #dataset.append(dataset_s)
-        #dataset.append(dataset_t)
 
         print('[*]Initializing the model...')
         model = Models(args, dataset_s, dataset_t)

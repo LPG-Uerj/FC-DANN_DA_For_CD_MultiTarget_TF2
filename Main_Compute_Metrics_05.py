@@ -25,8 +25,6 @@ parser.add_argument('--defined_before', dest='defined_before', type=eval, choice
 parser.add_argument('--overlap', dest='overlap', type=float, default= 0.75, help= 'stride cadence')
 parser.add_argument('--image_channels', dest='image_channels', type=int, default=7, help='number of image channels')
 parser.add_argument('--buffer', dest='buffer', type=eval, choices=[True, False], default=True, help='Decide wether a buffer around deforestated regions will be performed')
-parser.add_argument('--buffer_dimension_out', dest='buffer_dimension_out', type=int, default=4, help='Dimension of the buffer outside of the area')
-parser.add_argument('--buffer_dimension_in', dest='buffer_dimension_in', type=int, default=2, help='Dimension of the buffer inside of the area')
 parser.add_argument('--eliminate_regions', dest='eliminate_regions', type=eval, choices=[True, False], default=True, help='Decide if small regions will be taken into account')
 parser.add_argument('--area_avoided', dest='area_avoided', type=int, default=69, help='area threshold that will be avoided')
 parser.add_argument('--compute_ndvi', dest='compute_ndvi', type=eval, choices=[True, False], default=True, help='Cumpute and stack the ndvi index to the rest of bands')
@@ -56,17 +54,15 @@ args = parser.parse_args()
 def Main():
 
     Thresholds = np.array([0.5])
-    if args.dataset == 'Amazon_RO':
-        args.dataset = 'Amazonia_Legal/'
+    
+    if args.dataset == AMAZON_RO.DATASET:        
         dataset = AMAZON_RO(args)
-
-    if args.dataset == 'Amazon_PA':
-        args.dataset = 'Amazonia_Legal/'
+    elif args.dataset ==  AMAZON_PA.DATASET:        
         dataset = AMAZON_PA(args)
-
-    if args.dataset == 'Cerrado_MA':
-        args.dataset = 'Cerrado_Biome/'
+    elif args.dataset == CERRADO_MA.DATASET:        
         dataset = CERRADO_MA(args)
+    else:
+        raise Exception("Invalid dataset argument: " + args.dataset)
 
     args.area_avoided = int(dataset.AREA_AVOIDED)
     args.horizontal_blocks = int(dataset.HORIZONTAL_BLOCKS)

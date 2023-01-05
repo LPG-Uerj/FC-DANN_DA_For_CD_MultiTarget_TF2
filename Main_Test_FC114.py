@@ -16,6 +16,7 @@ from Models_FC114 import *
 from Amazonia_Legal_RO import AMAZON_RO
 from Amazonia_Legal_PA import AMAZON_PA
 from Cerrado_Biome_MA import CERRADO_MA
+import SharedParameters
 
 parser = argparse.ArgumentParser(description='')
 #Defining the meta-paramerts
@@ -63,7 +64,7 @@ args = parser.parse_args()
 
 def main():
 
-    if args.phase == 'test':
+    if args.phase == SharedParameters.PHASE_TEST:
         print(args)
         if not os.path.exists(args.checkpoint_results_main_path + 'results/'):
             os.makedirs(args.checkpoint_results_main_path + 'results/')
@@ -73,16 +74,11 @@ def main():
 
         dataset = []
 
-        if args.dataset == 'Amazon_RO':
-            args.dataset = 'Amazonia_Legal/'
+        if args.dataset == AMAZON_RO.DATASET:            
             dataset.append(AMAZON_RO(args))
-
-        if args.dataset == 'Amazon_PA':
-            args.dataset = 'Amazonia_Legal/'
+        if args.dataset == AMAZON_PA.DATASET:            
             dataset.append(AMAZON_PA(args))
-
-        if args.dataset == 'Cerrado_MA':
-            args.dataset = 'Cerrado_Biome/'
+        if args.dataset == CERRADO_MA.DATASET:
             dataset.append(CERRADO_MA(args))
 
         if len(dataset) == 0:

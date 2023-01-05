@@ -35,6 +35,8 @@ Schedule = []
 Checkpoint_Results_MAIN_PATH = "./results/"
 
 source_dataset = AMAZON_RO.DATASET
+source_reference_t2_name = AMAZON_RO.REFERENCE_T2
+target_reference_t2_name = source_reference_t2_name
 training_type = SharedParameters.TRAINING_TYPE_CLASSIFICATION
 checkpoint_dir = "checkpoint_tr_"+source_dataset+"_"
 results_dir = "results_tr_"+source_dataset+"_"
@@ -43,8 +45,8 @@ runs = "5"
 #Deforastation / No Deforastation
 num_classes = "2"
 
-#Source, Target Ma, Target RO
-num_targets = "2" 
+#Source RO, Target RO
+num_targets = "1" 
 
 #TARGET: RO
 target_dataset = AMAZON_RO.DATASET
@@ -78,11 +80,7 @@ for dr_localization in DR_LOCALIZATION:
                                 "--overlap_t 0.9 "
                                 "--compute_ndvi False "
                                 "--balanced_tr True "
-                                "--buffer True "
-                                "--source_buffer_dimension_out 2 "
-                                "--source_buffer_dimension_in 0 "
-                                "--target_buffer_dimension_out 2 "
-                                "--target_buffer_dimension_in 0 "
+                                "--buffer True "                                
                                 "--porcent_of_last_reference_in_actual_reference 100 "
                                 "--porcent_of_positive_pixels_in_actual_reference_s 2 "
                                 "--porcent_of_positive_pixels_in_actual_reference_t 2 "
@@ -96,14 +94,6 @@ for dr_localization in DR_LOCALIZATION:
                                 "--checkpoint_dir " + checkpoint_dir + method + "_" + da + "_" + target_dataset + " "
                                 "--source_dataset " + source_dataset + " "
                                 "--target_dataset " + target_dataset + " "
-                                "--images_section " + SharedParameters.IMAGES_SECTION + " "
-                                "--reference_section " + SharedParameters.REFERENCE_SECTION + " "
-                                "--data_type " + SharedParameters.DATA_TYPE + " "
-                                "--source_data_t1_year " + SharedParameters.T1_YEAR + " "
-                                "--source_data_t2_year " + SharedParameters.T2_YEAR + " "
-                                "--target_data_t1_year " + SharedParameters.T1_YEAR + " "
-                                "--target_data_t2_year " + SharedParameters.T2_YEAR + " "
-                                "--dataset_main_path " + SharedParameters.Dataset_MAIN_PATH + " "
                                 "--checkpoint_results_main_path " + Checkpoint_Results_MAIN_PATH + " ")
 
             for target_ds in DATASETS:
@@ -127,10 +117,7 @@ for dr_localization in DR_LOCALIZATION:
                                 "--da_type " + da + " "
                                 "--checkpoint_dir " + checkpoint_dir + method + "_" + da + "_" + target_dataset + " "
                                 "--results_dir " + results_dir + method + "_" + da + "_" + target_dataset + "_multi_" + target_ds + " "
-                                "--dataset " + target_ds + " "
-                                "--images_section " + SharedParameters.IMAGES_SECTION + " "
-                                "--reference_section " + SharedParameters.REFERENCE_SECTION + " "                                
-                                "--dataset_main_path " + SharedParameters.Dataset_MAIN_PATH + " "
+                                "--dataset " + target_ds + " "                                                           
                                 "--checkpoint_results_main_path " + Checkpoint_Results_MAIN_PATH + " ")                
 
                 if args.metrics:
@@ -142,9 +129,7 @@ for dr_localization in DR_LOCALIZATION:
                                 "--fixed_tiles True "
                                 "--overlap 0.75 "
                                 "--image_channels 7 "
-                                "--buffer True "
-                                "--buffer_dimension_out 2 "
-                                "--buffer_dimension_in 0 "
+                                "--buffer True "                                
                                 "--eliminate_regions True "                                
                                 "--compute_ndvi False "
                                 "--phase compute_metrics "
@@ -152,13 +137,7 @@ for dr_localization in DR_LOCALIZATION:
                                 "--save_result_text True "
                                 "--checkpoint_dir " + checkpoint_dir + method + "_" + da + "_" + target_dataset + " "
                                 "--results_dir " + results_dir + method + "_" + da + "_" + target_dataset + "_multi_" + target_ds + " "
-                                "--dataset " + target_ds + " " 
-                                "--images_section " + SharedParameters.IMAGES_SECTION + " "
-                                "--reference_section " + SharedParameters.REFERENCE_SECTION + " "
-                                "--data_type " + SharedParameters.DATA_TYPE + " "
-                                "--data_t1_year " + SharedParameters.T1_YEAR + " "
-                                "--data_t2_year " + SharedParameters.T2_YEAR + " "                                
-                                "--dataset_main_path " + SharedParameters.Dataset_MAIN_PATH + " "
+                                "--dataset " + target_ds + " "                                
                                 "--checkpoint_results_main_path " + Checkpoint_Results_MAIN_PATH + " ")
 
                     Schedule.append("python " + Metrics_th_MAIN_COMMAND + " "
@@ -169,9 +148,7 @@ for dr_localization in DR_LOCALIZATION:
                                 "--fixed_tiles True "
                                 "--overlap 0.75 "
                                 "--image_channels 7 "
-                                "--buffer True "
-                                "--buffer_dimension_out 2 "
-                                "--buffer_dimension_in 0 "
+                                "--buffer True "                                
                                 "--eliminate_regions True "                                
                                 "--Npoints 100 "
                                 "--compute_ndvi False "
@@ -180,13 +157,7 @@ for dr_localization in DR_LOCALIZATION:
                                 "--save_result_text False "
                                 "--checkpoint_dir " + checkpoint_dir + method + "_" + da + "_" + target_dataset + " "
                                 "--results_dir " + results_dir + method + "_" + da + "_" + target_dataset + "_multi_" + target_ds + " "
-                                "--dataset " + target_ds + " "
-                                "--images_section " + SharedParameters.IMAGES_SECTION + " "
-                                "--reference_section " + SharedParameters.REFERENCE_SECTION + " "
-                                "--data_type " + SharedParameters.DATA_TYPE + " "
-                                "--data_t1_year " + SharedParameters.T1_YEAR + " "
-                                "--data_t2_year " + SharedParameters.T2_YEAR + " "
-                                "--dataset_main_path " + SharedParameters.Dataset_MAIN_PATH + " "
+                                "--dataset " + target_ds + " "                                
                                 "--checkpoint_results_main_path " + Checkpoint_Results_MAIN_PATH + " ")
 
 

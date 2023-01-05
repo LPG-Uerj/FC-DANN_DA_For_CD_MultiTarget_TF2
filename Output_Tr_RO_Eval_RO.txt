@@ -1,0 +1,466 @@
+Namespace(DR_Localization=55, balanced_tr=True, batch_size=32, beta1=0.9, buffer=True, checkpoint_dir='checkpoint_tr_Amazon_RO_DeepLab_None_Amazon_RO', checkpoint_results_main_path='./results/', classifier_type='DeepLab', compute_ndvi=False, da_type='None', data_augmentation=True, data_type='.npy', dataset_main_path='/code/Datasets/', defined_before=False, domain_regressor_type='FC', epochs=100, fixed_tiles=True, image_channels=7, images_section='Organized/Images/', lr=0.0001, num_classes=2, num_targets=1, overlap_s=0.9, overlap_t=0.9, patches_dimension=64, patience=10, phase='train', porcent_of_last_reference_in_actual_reference=100, porcent_of_positive_pixels_in_actual_reference_s=2, porcent_of_positive_pixels_in_actual_reference_t=2, reference_section='Organized/References/', runs=5, save_intermediate_model=True, skip_connections=False, source_data_t1_name=None, source_data_t2_name=None, source_dataset='Amazon_RO', source_horizontal_blocks=10, source_reference_t1_name=None, source_reference_t2_name=None, source_vertical_blocks=10, target_data_t1_name=None, target_data_t1_year='2017', target_data_t2_name=None, target_data_t2_year='2018', target_dataset='Amazon_RO', target_horizontal_blocks=10, target_reference_t1_name=None, target_reference_t2_name=None, target_vertical_blocks=10, training_type='classification')
+Phase train
+Reference t2: REFERENCE_2017_EPSG32620_R232_67_RO
+/home/luizmoura/workspace/dataset/Amazonia_Legal/Organized/Images/18_07_2016_image_R232_67_RO.npy
+[*]Reading images...
+4203.0
+65535.0
+[*]Computing buffer regions...
+[*]Normalizing the images...
+-7.127954
+48.105057
+-7.155134
+67.27362
+Phase train
+Reference t2: REFERENCE_2017_EPSG32620_R232_67_RO
+/home/luizmoura/workspace/dataset/Amazonia_Legal/Organized/Images/18_07_2016_image_R232_67_RO.npy
+[*]Reading images...
+4203.0
+65535.0
+[*]Computing buffer regions...
+[*]Normalizing the images...
+-7.127954
+48.105057
+-7.155134
+67.27362
+(2, 2550, 5120, 7)
+(2, 2550, 5120, 7)
+0
+04_01_2023_22_53_25
+[*]Defining the central patches coordinates...
+(2, 2550, 5120, 7)
+[*]Defining the central patches coordinates...
+(2, 2550, 5120, 7)
+[*]Initializing the model...
+-------------------------------------
+Initializing DeepLab V3+ Architecture
+-------------------------------------
+Building backbone architecture...
+Model: "deeplabv3plus"
+__________________________________________________________________________________________________
+ Layer (type)                   Output Shape         Param #     Connected to                     
+==================================================================================================
+ input_1 (InputLayer)           [(None, 64, 64, 14)  0           []                               
+                                ]                                                                 
+                                                                                                  
+ conv2d (Conv2D)                (None, 32, 32, 32)   4064        ['input_1[0][0]']                
+                                                                                                  
+ batch_normalization (BatchNorm  (None, 32, 32, 32)  128         ['conv2d[0][0]']                 
+ alization)                                                                                       
+                                                                                                  
+ activation (Activation)        (None, 32, 32, 32)   0           ['batch_normalization[0][0]']    
+                                                                                                  
+ conv2d_1 (Conv2D)              (None, 32, 32, 64)   18496       ['activation[0][0]']             
+                                                                                                  
+ batch_normalization_1 (BatchNo  (None, 32, 32, 64)  256         ['conv2d_1[0][0]']               
+ rmalization)                                                                                     
+                                                                                                  
+ activation_1 (Activation)      (None, 32, 32, 64)   0           ['batch_normalization_1[0][0]']  
+                                                                                                  
+ separable_conv2d (SeparableCon  (None, 32, 32, 128)  8896       ['activation_1[0][0]']           
+ v2D)                                                                                             
+                                                                                                  
+ batch_normalization_2 (BatchNo  (None, 32, 32, 128)  512        ['separable_conv2d[0][0]']       
+ rmalization)                                                                                     
+                                                                                                  
+ activation_2 (Activation)      (None, 32, 32, 128)  0           ['batch_normalization_2[0][0]']  
+                                                                                                  
+ separable_conv2d_1 (SeparableC  (None, 32, 32, 128)  17664      ['activation_2[0][0]']           
+ onv2D)                                                                                           
+                                                                                                  
+ conv2d_2 (Conv2D)              (None, 16, 16, 128)  8320        ['activation_1[0][0]']           
+                                                                                                  
+ batch_normalization_3 (BatchNo  (None, 32, 32, 128)  512        ['separable_conv2d_1[0][0]']     
+ rmalization)                                                                                     
+                                                                                                  
+ batch_normalization_4 (BatchNo  (None, 16, 16, 128)  512        ['conv2d_2[0][0]']               
+ rmalization)                                                                                     
+                                                                                                  
+ max_pooling2d (MaxPooling2D)   (None, 16, 16, 128)  0           ['batch_normalization_3[0][0]']  
+                                                                                                  
+ add (Add)                      (None, 16, 16, 128)  0           ['batch_normalization_4[0][0]',  
+                                                                  'max_pooling2d[0][0]']          
+                                                                                                  
+ activation_3 (Activation)      (None, 16, 16, 128)  0           ['add[0][0]']                    
+                                                                                                  
+ separable_conv2d_2 (SeparableC  (None, 16, 16, 256)  34176      ['activation_3[0][0]']           
+ onv2D)                                                                                           
+                                                                                                  
+ batch_normalization_5 (BatchNo  (None, 16, 16, 256)  1024       ['separable_conv2d_2[0][0]']     
+ rmalization)                                                                                     
+                                                                                                  
+ activation_4 (Activation)      (None, 16, 16, 256)  0           ['batch_normalization_5[0][0]']  
+                                                                                                  
+ separable_conv2d_3 (SeparableC  (None, 16, 16, 256)  68096      ['activation_4[0][0]']           
+ onv2D)                                                                                           
+                                                                                                  
+ conv2d_3 (Conv2D)              (None, 8, 8, 256)    33024       ['batch_normalization_4[0][0]']  
+                                                                                                  
+ batch_normalization_6 (BatchNo  (None, 16, 16, 256)  1024       ['separable_conv2d_3[0][0]']     
+ rmalization)                                                                                     
+                                                                                                  
+ batch_normalization_7 (BatchNo  (None, 8, 8, 256)   1024        ['conv2d_3[0][0]']               
+ rmalization)                                                                                     
+                                                                                                  
+ max_pooling2d_1 (MaxPooling2D)  (None, 8, 8, 256)   0           ['batch_normalization_6[0][0]']  
+                                                                                                  
+ add_1 (Add)                    (None, 8, 8, 256)    0           ['batch_normalization_7[0][0]',  
+                                                                  'max_pooling2d_1[0][0]']        
+                                                                                                  
+ activation_5 (Activation)      (None, 8, 8, 256)    0           ['add_1[0][0]']                  
+                                                                                                  
+ separable_conv2d_4 (SeparableC  (None, 8, 8, 728)   189400      ['activation_5[0][0]']           
+ onv2D)                                                                                           
+                                                                                                  
+ batch_normalization_8 (BatchNo  (None, 8, 8, 728)   2912        ['separable_conv2d_4[0][0]']     
+ rmalization)                                                                                     
+                                                                                                  
+ activation_6 (Activation)      (None, 8, 8, 728)    0           ['batch_normalization_8[0][0]']  
+                                                                                                  
+ conv2d_4 (Conv2D)              (None, 8, 8, 728)    187096      ['batch_normalization_7[0][0]']  
+                                                                                                  
+ separable_conv2d_5 (SeparableC  (None, 8, 8, 728)   537264      ['activation_6[0][0]']           
+ onv2D)                                                                                           
+                                                                                                  
+ batch_normalization_10 (BatchN  (None, 8, 8, 728)   2912        ['conv2d_4[0][0]']               
+ ormalization)                                                                                    
+                                                                                                  
+ batch_normalization_9 (BatchNo  (None, 8, 8, 728)   2912        ['separable_conv2d_5[0][0]']     
+ rmalization)                                                                                     
+                                                                                                  
+ add_2 (Add)                    (None, 8, 8, 728)    0           ['batch_normalization_10[0][0]', 
+                                                                  'batch_normalization_9[0][0]']  
+                                                                                                  
+ activation_7 (Activation)      (None, 8, 8, 728)    0           ['add_2[0][0]']                  
+                                                                                                  
+ separable_conv2d_6 (SeparableC  (None, 8, 8, 728)   537264      ['activation_7[0][0]']           
+ onv2D)                                                                                           
+                                                                                                  
+ batch_normalization_11 (BatchN  (None, 8, 8, 728)   2912        ['separable_conv2d_6[0][0]']     
+ ormalization)                                                                                    
+                                                                                                  
+ activation_8 (Activation)      (None, 8, 8, 728)    0           ['batch_normalization_11[0][0]'] 
+                                                                                                  
+ separable_conv2d_7 (SeparableC  (None, 8, 8, 728)   537264      ['activation_8[0][0]']           
+ onv2D)                                                                                           
+                                                                                                  
+ batch_normalization_12 (BatchN  (None, 8, 8, 728)   2912        ['separable_conv2d_7[0][0]']     
+ ormalization)                                                                                    
+                                                                                                  
+ activation_9 (Activation)      (None, 8, 8, 728)    0           ['batch_normalization_12[0][0]'] 
+                                                                                                  
+ separable_conv2d_8 (SeparableC  (None, 8, 8, 728)   537264      ['activation_9[0][0]']           
+ onv2D)                                                                                           
+                                                                                                  
+ batch_normalization_13 (BatchN  (None, 8, 8, 728)   2912        ['separable_conv2d_8[0][0]']     
+ ormalization)                                                                                    
+                                                                                                  
+ activation_10 (Activation)     (None, 8, 8, 728)    0           ['batch_normalization_13[0][0]'] 
+                                                                                                  
+ add_3 (Add)                    (None, 8, 8, 728)    0           ['activation_7[0][0]',           
+                                                                  'activation_10[0][0]']          
+                                                                                                  
+ separable_conv2d_9 (SeparableC  (None, 8, 8, 728)   537264      ['add_3[0][0]']                  
+ onv2D)                                                                                           
+                                                                                                  
+ batch_normalization_14 (BatchN  (None, 8, 8, 728)   2912        ['separable_conv2d_9[0][0]']     
+ ormalization)                                                                                    
+                                                                                                  
+ activation_11 (Activation)     (None, 8, 8, 728)    0           ['batch_normalization_14[0][0]'] 
+                                                                                                  
+ separable_conv2d_10 (Separable  (None, 8, 8, 728)   537264      ['activation_11[0][0]']          
+ Conv2D)                                                                                          
+                                                                                                  
+ batch_normalization_15 (BatchN  (None, 8, 8, 728)   2912        ['separable_conv2d_10[0][0]']    
+ ormalization)                                                                                    
+                                                                                                  
+ activation_12 (Activation)     (None, 8, 8, 728)    0           ['batch_normalization_15[0][0]'] 
+                                                                                                  
+ separable_conv2d_11 (Separable  (None, 8, 8, 728)   537264      ['activation_12[0][0]']          
+ Conv2D)                                                                                          
+                                                                                                  
+ batch_normalization_16 (BatchN  (None, 8, 8, 728)   2912        ['separable_conv2d_11[0][0]']    
+ ormalization)                                                                                    
+                                                                                                  
+ activation_13 (Activation)     (None, 8, 8, 728)    0           ['batch_normalization_16[0][0]'] 
+                                                                                                  
+ add_4 (Add)                    (None, 8, 8, 728)    0           ['add_3[0][0]',                  
+                                                                  'activation_13[0][0]']          
+                                                                                                  
+ separable_conv2d_12 (Separable  (None, 8, 8, 728)   537264      ['add_4[0][0]']                  
+ Conv2D)                                                                                          
+                                                                                                  
+ batch_normalization_17 (BatchN  (None, 8, 8, 728)   2912        ['separable_conv2d_12[0][0]']    
+ ormalization)                                                                                    
+                                                                                                  
+ activation_14 (Activation)     (None, 8, 8, 728)    0           ['batch_normalization_17[0][0]'] 
+                                                                                                  
+ separable_conv2d_13 (Separable  (None, 8, 8, 728)   537264      ['activation_14[0][0]']          
+ Conv2D)                                                                                          
+                                                                                                  
+ batch_normalization_18 (BatchN  (None, 8, 8, 728)   2912        ['separable_conv2d_13[0][0]']    
+ ormalization)                                                                                    
+                                                                                                  
+ activation_15 (Activation)     (None, 8, 8, 728)    0           ['batch_normalization_18[0][0]'] 
+                                                                                                  
+ separable_conv2d_14 (Separable  (None, 8, 8, 728)   537264      ['activation_15[0][0]']          
+ Conv2D)                                                                                          
+                                                                                                  
+ batch_normalization_19 (BatchN  (None, 8, 8, 728)   2912        ['separable_conv2d_14[0][0]']    
+ ormalization)                                                                                    
+                                                                                                  
+ activation_16 (Activation)     (None, 8, 8, 728)    0           ['batch_normalization_19[0][0]'] 
+                                                                                                  
+ add_5 (Add)                    (None, 8, 8, 728)    0           ['add_4[0][0]',                  
+                                                                  'activation_16[0][0]']          
+                                                                                                  
+ separable_conv2d_15 (Separable  (None, 8, 8, 728)   537264      ['add_5[0][0]']                  
+ Conv2D)                                                                                          
+                                                                                                  
+ batch_normalization_20 (BatchN  (None, 8, 8, 728)   2912        ['separable_conv2d_15[0][0]']    
+ ormalization)                                                                                    
+                                                                                                  
+ activation_17 (Activation)     (None, 8, 8, 728)    0           ['batch_normalization_20[0][0]'] 
+                                                                                                  
+ separable_conv2d_16 (Separable  (None, 8, 8, 728)   537264      ['activation_17[0][0]']          
+ Conv2D)                                                                                          
+                                                                                                  
+ batch_normalization_21 (BatchN  (None, 8, 8, 728)   2912        ['separable_conv2d_16[0][0]']    
+ ormalization)                                                                                    
+                                                                                                  
+ activation_18 (Activation)     (None, 8, 8, 728)    0           ['batch_normalization_21[0][0]'] 
+                                                                                                  
+ separable_conv2d_17 (Separable  (None, 8, 8, 728)   537264      ['activation_18[0][0]']          
+ Conv2D)                                                                                          
+                                                                                                  
+ batch_normalization_22 (BatchN  (None, 8, 8, 728)   2912        ['separable_conv2d_17[0][0]']    
+ ormalization)                                                                                    
+                                                                                                  
+ activation_19 (Activation)     (None, 8, 8, 728)    0           ['batch_normalization_22[0][0]'] 
+                                                                                                  
+ add_6 (Add)                    (None, 8, 8, 728)    0           ['add_5[0][0]',                  
+                                                                  'activation_19[0][0]']          
+                                                                                                  
+ separable_conv2d_18 (Separable  (None, 8, 8, 728)   537264      ['add_6[0][0]']                  
+ Conv2D)                                                                                          
+                                                                                                  
+ batch_normalization_23 (BatchN  (None, 8, 8, 728)   2912        ['separable_conv2d_18[0][0]']    
+ ormalization)                                                                                    
+                                                                                                  
+ activation_20 (Activation)     (None, 8, 8, 728)    0           ['batch_normalization_23[0][0]'] 
+                                                                                                  
+ separable_conv2d_19 (Separable  (None, 8, 8, 728)   537264      ['activation_20[0][0]']          
+ Conv2D)                                                                                          
+                                                                                                  
+ batch_normalization_24 (BatchN  (None, 8, 8, 728)   2912        ['separable_conv2d_19[0][0]']    
+ ormalization)                                                                                    
+                                                                                                  
+ activation_21 (Activation)     (None, 8, 8, 728)    0           ['batch_normalization_24[0][0]'] 
+                                                                                                  
+ separable_conv2d_20 (Separable  (None, 8, 8, 728)   537264      ['activation_21[0][0]']          
+ Conv2D)                                                                                          
+                                                                                                  
+ batch_normalization_25 (BatchN  (None, 8, 8, 728)   2912        ['separable_conv2d_20[0][0]']    
+ ormalization)                                                                                    
+                                                                                                  
+ activation_22 (Activation)     (None, 8, 8, 728)    0           ['batch_normalization_25[0][0]'] 
+                                                                                                  
+ add_7 (Add)                    (None, 8, 8, 728)    0           ['add_6[0][0]',                  
+                                                                  'activation_22[0][0]']          
+                                                                                                  
+ separable_conv2d_21 (Separable  (None, 8, 8, 728)   537264      ['add_7[0][0]']                  
+ Conv2D)                                                                                          
+                                                                                                  
+ batch_normalization_26 (BatchN  (None, 8, 8, 728)   2912        ['separable_conv2d_21[0][0]']    
+ ormalization)                                                                                    
+                                                                                                  
+ activation_23 (Activation)     (None, 8, 8, 728)    0           ['batch_normalization_26[0][0]'] 
+                                                                                                  
+ separable_conv2d_22 (Separable  (None, 8, 8, 728)   537264      ['activation_23[0][0]']          
+ Conv2D)                                                                                          
+                                                                                                  
+ batch_normalization_27 (BatchN  (None, 8, 8, 728)   2912        ['separable_conv2d_22[0][0]']    
+ ormalization)                                                                                    
+                                                                                                  
+ activation_24 (Activation)     (None, 8, 8, 728)    0           ['batch_normalization_27[0][0]'] 
+                                                                                                  
+ separable_conv2d_23 (Separable  (None, 8, 8, 728)   537264      ['activation_24[0][0]']          
+ Conv2D)                                                                                          
+                                                                                                  
+ batch_normalization_28 (BatchN  (None, 8, 8, 728)   2912        ['separable_conv2d_23[0][0]']    
+ ormalization)                                                                                    
+                                                                                                  
+ activation_25 (Activation)     (None, 8, 8, 728)    0           ['batch_normalization_28[0][0]'] 
+                                                                                                  
+ add_8 (Add)                    (None, 8, 8, 728)    0           ['add_7[0][0]',                  
+                                                                  'activation_25[0][0]']          
+                                                                                                  
+ separable_conv2d_24 (Separable  (None, 8, 8, 728)   537264      ['add_8[0][0]']                  
+ Conv2D)                                                                                          
+                                                                                                  
+ batch_normalization_29 (BatchN  (None, 8, 8, 728)   2912        ['separable_conv2d_24[0][0]']    
+ ormalization)                                                                                    
+                                                                                                  
+ activation_26 (Activation)     (None, 8, 8, 728)    0           ['batch_normalization_29[0][0]'] 
+                                                                                                  
+ separable_conv2d_25 (Separable  (None, 8, 8, 728)   537264      ['activation_26[0][0]']          
+ Conv2D)                                                                                          
+                                                                                                  
+ batch_normalization_30 (BatchN  (None, 8, 8, 728)   2912        ['separable_conv2d_25[0][0]']    
+ ormalization)                                                                                    
+                                                                                                  
+ activation_27 (Activation)     (None, 8, 8, 728)    0           ['batch_normalization_30[0][0]'] 
+                                                                                                  
+ separable_conv2d_26 (Separable  (None, 8, 8, 728)   537264      ['activation_27[0][0]']          
+ Conv2D)                                                                                          
+                                                                                                  
+ batch_normalization_31 (BatchN  (None, 8, 8, 728)   2912        ['separable_conv2d_26[0][0]']    
+ ormalization)                                                                                    
+                                                                                                  
+ activation_28 (Activation)     (None, 8, 8, 728)    0           ['batch_normalization_31[0][0]'] 
+                                                                                                  
+ add_9 (Add)                    (None, 8, 8, 728)    0           ['add_8[0][0]',                  
+                                                                  'activation_28[0][0]']          
+                                                                                                  
+ separable_conv2d_27 (Separable  (None, 8, 8, 728)   537264      ['add_9[0][0]']                  
+ Conv2D)                                                                                          
+                                                                                                  
+ batch_normalization_32 (BatchN  (None, 8, 8, 728)   2912        ['separable_conv2d_27[0][0]']    
+ ormalization)                                                                                    
+                                                                                                  
+ activation_29 (Activation)     (None, 8, 8, 728)    0           ['batch_normalization_32[0][0]'] 
+                                                                                                  
+ separable_conv2d_28 (Separable  (None, 8, 8, 728)   537264      ['activation_29[0][0]']          
+ Conv2D)                                                                                          
+                                                                                                  
+ batch_normalization_33 (BatchN  (None, 8, 8, 728)   2912        ['separable_conv2d_28[0][0]']    
+ ormalization)                                                                                    
+                                                                                                  
+ activation_30 (Activation)     (None, 8, 8, 728)    0           ['batch_normalization_33[0][0]'] 
+                                                                                                  
+ separable_conv2d_29 (Separable  (None, 8, 8, 728)   537264      ['activation_30[0][0]']          
+ Conv2D)                                                                                          
+                                                                                                  
+ batch_normalization_34 (BatchN  (None, 8, 8, 728)   2912        ['separable_conv2d_29[0][0]']    
+ ormalization)                                                                                    
+                                                                                                  
+ activation_31 (Activation)     (None, 8, 8, 728)    0           ['batch_normalization_34[0][0]'] 
+                                                                                                  
+ add_10 (Add)                   (None, 8, 8, 728)    0           ['add_9[0][0]',                  
+                                                                  'activation_31[0][0]']          
+                                                                                                  
+ activation_32 (Activation)     (None, 8, 8, 728)    0           ['add_10[0][0]']                 
+                                                                                                  
+ separable_conv2d_30 (Separable  (None, 8, 8, 728)   537264      ['activation_32[0][0]']          
+ Conv2D)                                                                                          
+                                                                                                  
+ batch_normalization_36 (BatchN  (None, 8, 8, 728)   2912        ['separable_conv2d_30[0][0]']    
+ ormalization)                                                                                    
+                                                                                                  
+ activation_33 (Activation)     (None, 8, 8, 728)    0           ['batch_normalization_36[0][0]'] 
+                                                                                                  
+ conv2d_5 (Conv2D)              (None, 8, 8, 1024)   746496      ['activation_32[0][0]']          
+                                                                                                  
+ separable_conv2d_31 (Separable  (None, 8, 8, 1024)  753048      ['activation_33[0][0]']          
+ Conv2D)                                                                                          
+                                                                                                  
+ batch_normalization_35 (BatchN  (None, 8, 8, 1024)  4096        ['conv2d_5[0][0]']               
+ ormalization)                                                                                    
+                                                                                                  
+ batch_normalization_37 (BatchN  (None, 8, 8, 1024)  4096        ['separable_conv2d_31[0][0]']    
+ ormalization)                                                                                    
+                                                                                                  
+ add_11 (Add)                   (None, 8, 8, 1024)   0           ['batch_normalization_35[0][0]', 
+                                                                  'batch_normalization_37[0][0]'] 
+                                                                                                  
+ separable_conv2d_32 (Separable  (None, 8, 8, 1536)  1583616     ['add_11[0][0]']                 
+ Conv2D)                                                                                          
+                                                                                                  
+ batch_normalization_38 (BatchN  (None, 8, 8, 1536)  6144        ['separable_conv2d_32[0][0]']    
+ ormalization)                                                                                    
+                                                                                                  
+ activation_34 (Activation)     (None, 8, 8, 1536)   0           ['batch_normalization_38[0][0]'] 
+                                                                                                  
+ separable_conv2d_33 (Separable  (None, 8, 8, 2048)  3161600     ['activation_34[0][0]']          
+ Conv2D)                                                                                          
+                                                                                                  
+ batch_normalization_39 (BatchN  (None, 8, 8, 2048)  8192        ['separable_conv2d_33[0][0]']    
+ ormalization)                                                                                    
+                                                                                                  
+ global_average_pooling2d (Glob  (None, 1, 1, 2048)  0           ['batch_normalization_39[0][0]'] 
+ alAveragePooling2D)                                                                              
+                                                                                                  
+ conv2d_11 (Conv2D)             (None, 1, 1, 256)    524544      ['global_average_pooling2d[0][0]'
+                                                                 ]                                
+                                                                                                  
+ conv2d_7 (Conv2D)              (None, 8, 8, 256)    524288      ['batch_normalization_39[0][0]'] 
+                                                                                                  
+ conv2d_8 (Conv2D)              (None, 8, 8, 256)    4718592     ['batch_normalization_39[0][0]'] 
+                                                                                                  
+ conv2d_9 (Conv2D)              (None, 8, 8, 256)    4718592     ['batch_normalization_39[0][0]'] 
+                                                                                                  
+ conv2d_10 (Conv2D)             (None, 8, 8, 256)    4718592     ['batch_normalization_39[0][0]'] 
+                                                                                                  
+ reshape_tensor (ReshapeTensor)  (None, 8, 8, 256)   0           ['conv2d_11[0][0]']              
+                                                                                                  
+ concatenate (Concatenate)      (None, 8, 8, 1280)   0           ['conv2d_7[0][0]',               
+                                                                  'conv2d_8[0][0]',               
+                                                                  'conv2d_9[0][0]',               
+                                                                  'conv2d_10[0][0]',              
+                                                                  'reshape_tensor[0][0]']         
+                                                                                                  
+ conv2d_12 (Conv2D)             (None, 8, 8, 256)    327936      ['concatenate[0][0]']            
+                                                                                                  
+ reshape_tensor_1 (ReshapeTenso  (None, 8, 8, 256)   0           ['conv2d_12[0][0]']              
+ r)                                                                                               
+                                                                                                  
+ conv2d_6 (Conv2D)              (None, 8, 8, 48)     34992       ['batch_normalization_9[0][0]']  
+                                                                                                  
+ concatenate_1 (Concatenate)    (None, 8, 8, 304)    0           ['reshape_tensor_1[0][0]',       
+                                                                  'conv2d_6[0][0]']               
+                                                                                                  
+ conv2d_13 (Conv2D)             (None, 8, 8, 256)    78080       ['concatenate_1[0][0]']          
+                                                                                                  
+ conv2d_14 (Conv2D)             (None, 8, 8, 256)    65792       ['conv2d_13[0][0]']              
+                                                                                                  
+ conv2d_15 (Conv2D)             (None, 8, 8, 2)      514         ['conv2d_14[0][0]']              
+                                                                                                  
+ reshape_tensor_2 (ReshapeTenso  (None, 64, 64, 2)   0           ['conv2d_15[0][0]']              
+ r)                                                                                               
+                                                                                                  
+ softmax (Softmax)              (None, 64, 64, 2)    0           ['reshape_tensor_2[0][0]']       
+                                                                                                  
+==================================================================================================
+Total params: 36,603,834
+Trainable params: 36,549,306
+Non-trainable params: 54,528
+__________________________________________________________________________________________________
+Sets dimensions before data augmentation
+Source dimensions: 
+(12796, 4)
+(2823, 4)
+Sets dimensions before balancing
+Source dimensions: 
+(38388, 5)
+(8469, 5)
+(2608, 5182, 1)
+(2608, 5182, 1)
+----------------------------------------------------------
+Percentage of epochs: 0.0
+Learning rate decay: 0.0001
+  0%|          | 0/1199 [00:00<?, ?it/s]  0%|          | 1/1199 [00:04<1:25:30,  4.28s/it]  0%|          | 3/1199 [00:04<23:16,  1.17s/it]    0%|          | 5/1199 [00:04<12:04,  1.65it/s]  1%|          | 7/1199 [00:04<07:37,  2.61it/s]  1%|          | 9/1199 [00:04<05:19,  3.72it/s]  1%|          | 11/1199 [00:05<03:59,  4.97it/s]  1%|          | 13/1199 [00:05<03:11,  6.21it/s]  1%|▏         | 15/1199 [00:05<02:40,  7.38it/s]  1%|▏         | 17/1199 [00:05<02:18,  8.55it/s]  2%|▏         | 19/1199 [00:05<02:05,  9.39it/s]  2%|▏         | 21/1199 [00:05<01:56, 10.12it/s]  2%|▏         | 23/1199 [00:06<01:48, 10.79it/s]  2%|▏         | 25/1199 [00:06<01:45, 11.15it/s]  2%|▏         | 27/1199 [00:06<01:42, 11.43it/s]  2%|▏         | 29/1199 [00:06<01:40, 11.67it/s]  3%|▎         | 31/1199 [00:06<01:37, 11.92it/s]  3%|▎         | 33/1199 [00:06<01:35, 12.15it/s]  3%|▎         | 35/1199 [00:06<01:35, 12.22it/s]  3%|▎         | 37/1199 [00:07<01:34, 12.27it/s]  3%|▎         | 39/1199 [00:07<01:34, 12.22it/s]  3%|▎         | 41/1199 [00:07<01:34, 12.27it/s]  4%|▎         | 43/1199 [00:07<01:33, 12.38it/s]  4%|▍         | 45/1199 [00:07<01:32, 12.45it/s]  4%|▍         | 47/1199 [00:07<01:31, 12.65it/s]  4%|▍         | 49/1199 [00:08<01:29, 12.91it/s]  4%|▍         | 51/1199 [00:08<01:30, 12.71it/s]  4%|▍         | 53/1199 [00:08<01:30, 12.68it/s]  5%|▍         | 55/1199 [00:08<01:30, 12.61it/s]  5%|▍         | 57/1199 [00:08<01:29, 12.77it/s]  5%|▍         | 59/1199 [00:08<01:30, 12.60it/s]  5%|▌         | 61/1199 [00:09<01:30, 12.53it/s]  5%|▌         | 63/1199 [00:09<01:31, 12.47it/s]  5%|▌         | 65/1199 [00:09<01:30, 12.53it/s]  6%|▌         | 67/1199 [00:09<01:30, 12.57it/s]  6%|▌         | 69/1199 [00:09<01:31, 12.37it/s]  6%|▌         | 71/1199 [00:09<01:31, 12.31it/s]  6%|▌         | 73/1199 [00:10<01:31, 12.31it/s]  6%|▋         | 75/1199 [00:10<01:31, 12.35it/s]  6%|▋         | 77/1199 [00:10<01:29, 12.49it/s]  7%|▋         | 79/1199 [00:10<01:29, 12.47it/s]  7%|▋         | 81/1199 [00:10<01:29, 12.48it/s]  7%|▋         | 83/1199 [00:10<01:30, 12.36it/s]  7%|▋         | 85/1199 [00:10<01:30, 12.36it/s]  7%|▋         | 87/1199 [00:11<01:30, 12.32it/s]  7%|▋         | 89/1199 [00:11<01:28, 12.52it/s]  8%|▊         | 91/1199 [00:11<01:26, 12.81it/s]  8%|▊         | 93/1199 [00:11<01:25, 12.91it/s]  8%|▊         | 95/1199 [00:11<01:26, 12.83it/s]  8%|▊         | 97/1199 [00:11<01:24, 12.96it/s]  8%|▊         | 99/1199 [00:12<01:25, 12.83it/s]  8%|▊         | 101/1199 [00:12<01:23, 13.08it/s]  9%|▊         | 103/1199 [00:12<01:25, 12.78it/s]  9%|▉         | 105/1199 [00:12<01:25, 12.74it/s]  9%|▉         | 107/1199 [00:12<01:24, 12.90it/s]  9%|▉         | 109/1199 [00:12<01:26, 12.57it/s]  9%|▉         | 111/1199 [00:13<01:26, 12.53it/s]  9%|▉         | 113/1199 [00:13<01:27, 12.43it/s] 10%|▉         | 115/1199 [00:13<01:27, 12.46it/s] 10%|▉         | 117/1199 [00:13<01:26, 12.53it/s] 10%|▉         | 119/1199 [00:13<01:26, 12.50it/s] 10%|█         | 121/1199 [00:13<01:26, 12.42it/s] 10%|█         | 123/1199 [00:13<01:26, 12.47it/s] 10%|█         | 125/1199 [00:14<01:26, 12.47it/s] 11%|█         | 127/1199 [00:14<01:28, 12.16it/s] 11%|█         | 129/1199 [00:14<01:27, 12.20it/s] 11%|█         | 131/1199 [00:14<01:27, 12.15it/s] 11%|█         | 133/1199 [00:14<01:28, 12.00it/s] 11%|█▏        | 135/1199 [00:14<01:26, 12.29it/s] 11%|█▏        | 137/1199 [00:15<01:25, 12.36it/s] 12%|█▏        | 139/1199 [00:15<01:25, 12.35it/s] 12%|█▏        | 141/1199 [00:15<01:25, 12.42it/s] 12%|█▏        | 143/1199 [00:15<01:24, 12.51it/s] 12%|█▏        | 145/1199 [00:15<01:24, 12.40it/s] 12%|█▏        | 147/1199 [00:15<01:24, 12.38it/s] 12%|█▏        | 149/1199 [00:16<01:26, 12.18it/s] 13%|█▎        | 151/1199 [00:16<01:25, 12.33it/s] 13%|█▎        | 153/1199 [00:16<01:24, 12.44it/s] 13%|█▎        | 155/1199 [00:16<01:22, 12.65it/s] 13%|█▎        | 157/1199 [00:16<01:24, 12.26it/s] 13%|█▎        | 159/1199 [00:16<01:24, 12.29it/s] 13%|█▎        | 161/1199 [00:17<01:22, 12.61it/s] 14%|█▎        | 163/1199 [00:17<01:22, 12.57it/s] 14%|█▍        | 165/1199 [00:17<01:23, 12.43it/s] 14%|█▍        | 167/1199 [00:17<01:22, 12.53it/s] 14%|█▍        | 169/1199 [00:17<01:22, 12.43it/s] 14%|█▍        | 171/1199 [00:17<01:23, 12.33it/s] 14%|█▍        | 173/1199 [00:18<01:22, 12.44it/s] 15%|█▍        | 175/1199 [00:18<01:22, 12.35it/s] 15%|█▍        | 177/1199 [00:18<01:22, 12.35it/s] 15%|█▍        | 179/1199 [00:18<01:21, 12.46it/s] 15%|█▌        | 181/1199 [00:18<01:21, 12.42it/s] 15%|█▌        | 183/1199 [00:18<01:21, 12.44it/s] 15%|█▌        | 185/1199 [00:19<01:22, 12.25it/s] 16%|█▌        | 187/1199 [00:19<01:22, 12.28it/s] 16%|█▌        | 189/1199 [00:19<01:21, 12.36it/s] 16%|█▌        | 191/1199 [00:19<01:21, 12.37it/s] 16%|█▌        | 193/1199 [00:19<01:21, 12.33it/s] 16%|█▋        | 195/1199 [00:19<01:22, 12.10it/s] 16%|█▋        | 197/1199 [00:19<01:20, 12.44it/s] 17%|█▋        | 199/1199 [00:20<01:19, 12.57it/s] 17%|█▋        | 201/1199 [00:20<01:19, 12.62it/s] 17%|█▋        | 203/1199 [00:20<01:18, 12.69it/s] 17%|█▋        | 205/1199 [00:20<01:19, 12.50it/s] 17%|█▋        | 207/1199 [00:20<01:19, 12.48it/s] 17%|█▋        | 209/1199 [00:20<01:17, 12.76it/s] 18%|█▊        | 211/1199 [00:21<01:17, 12.75it/s] 18%|█▊        | 213/1199 [00:21<01:18, 12.60it/s] 18%|█▊        | 215/1199 [00:21<01:19, 12.38it/s] 18%|█▊        | 217/1199 [00:21<01:18, 12.56it/s] 18%|█▊        | 219/1199 [00:21<01:17, 12.66it/s] 18%|█▊        | 221/1199 [00:21<01:18, 12.45it/s] 19%|█▊        | 223/1199 [00:22<01:17, 12.56it/s] 19%|█▉        | 225/1199 [00:22<01:16, 12.69it/s] 19%|█▉        | 227/1199 [00:22<01:17, 12.54it/s] 19%|█▉        | 229/1199 [00:22<01:18, 12.41it/s] 19%|█▉        | 231/1199 [00:22<01:17, 12.43it/s] 19%|█▉        | 233/1199 [00:22<01:19, 12.15it/s] 20%|█▉        | 235/1199 [00:23<01:19, 12.14it/s] 20%|█▉        | 237/1199 [00:23<01:18, 12.22it/s] 20%|█▉        | 239/1199 [00:23<01:17, 12.32it/s] 20%|██        | 241/1199 [00:23<01:16, 12.49it/s] 20%|██        | 243/1199 [00:23<01:17, 12.40it/s] 20%|██        | 245/1199 [00:23<01:17, 12.30it/s] 21%|██        | 247/1199 [00:23<01:15, 12.57it/s] 21%|██        | 249/1199 [00:24<01:16, 12.42it/s] 21%|██        | 251/1199 [00:24<01:16, 12.46it/s] 21%|██        | 253/1199 [00:24<01:15, 12.49it/s] 21%|██▏       | 255/1199 [00:24<01:16, 12.42it/s] 21%|██▏       | 257/1199 [00:24<01:15, 12.45it/s] 22%|██▏       | 259/1199 [00:24<01:16, 12.28it/s] 22%|██▏       | 261/1199 [00:25<01:16, 12.21it/s] 22%|██▏       | 263/1199 [00:25<01:16, 12.18it/s] 22%|██▏       | 265/1199 [00:25<01:16, 12.18it/s] 22%|██▏       | 267/1199 [00:25<01:16, 12.24it/s] 22%|██▏       | 269/1199 [00:25<01:15, 12.35it/s] 23%|██▎       | 271/1199 [00:25<01:14, 12.47it/s] 23%|██▎       | 273/1199 [00:26<01:12, 12.71it/s] 23%|██▎       | 275/1199 [00:26<01:13, 12.50it/s] 23%|██▎       | 277/1199 [00:26<01:13, 12.47it/s] 23%|██▎       | 279/1199 [00:26<01:14, 12.41it/s] 23%|██▎       | 281/1199 [00:26<01:13, 12.41it/s] 24%|██▎       | 283/1199 [00:26<01:13, 12.39it/s] 24%|██▍       | 285/1199 [00:27<01:13, 12.38it/s] 24%|██▍       | 287/1199 [00:27<01:14, 12.29it/s] 24%|██▍       | 289/1199 [00:27<01:13, 12.42it/s] 24%|██▍       | 291/1199 [00:27<01:12, 12.54it/s] 24%|██▍       | 293/1199 [00:27<01:14, 12.20it/s] 25%|██▍       | 295/1199 [00:27<01:13, 12.28it/s] 25%|██▍       | 297/1199 [00:28<01:14, 12.10it/s] 25%|██▍       | 299/1199 [00:28<01:14, 12.15it/s] 25%|██▌       | 301/1199 [00:28<01:13, 12.21it/s] 25%|██▌       | 303/1199 [00:28<01:12, 12.32it/s] 25%|██▌       | 305/1199 [00:28<01:12, 12.32it/s] 26%|██▌       | 307/1199 [00:28<01:14, 12.00it/s] 26%|██▌       | 309/1199 [00:29<01:13, 12.15it/s] 26%|██▌       | 311/1199 [00:29<01:12, 12.17it/s] 26%|██▌       | 313/1199 [00:29<01:13, 12.08it/s] 26%|██▋       | 315/1199 [00:29<01:13, 12.06it/s] 26%|██▋       | 317/1199 [00:29<01:12, 12.18it/s] 27%|██▋       | 319/1199 [00:29<01:11, 12.27it/s] 27%|██▋       | 321/1199 [00:30<01:11, 12.21it/s] 27%|██▋       | 323/1199 [00:30<01:11, 12.29it/s] 27%|██▋       | 325/1199 [00:30<01:12, 12.13it/s] 27%|██▋       | 327/1199 [00:30<01:11, 12.15it/s] 27%|██▋       | 329/1199 [00:30<01:11, 12.16it/s] 28%|██▊       | 331/1199 [00:30<01:10, 12.24it/s] 28%|██▊       | 333/1199 [00:30<01:10, 12.20it/s] 28%|██▊       | 335/1199 [00:31<01:08, 12.57it/s] 28%|██▊       | 337/1199 [00:31<01:08, 12.62it/s] 28%|██▊       | 339/1199 [00:31<01:08, 12.55it/s] 28%|██▊       | 341/1199 [00:31<01:08, 12.51it/s] 29%|██▊       | 343/1199 [00:31<01:08, 12.50it/s] 29%|██▉       | 345/1199 [00:31<01:08, 12.41it/s] 29%|██▉       | 347/1199 [00:32<01:08, 12.35it/s] 29%|██▉       | 349/1199 [00:32<01:08, 12.40it/s] 29%|██▉       | 351/1199 [00:32<01:07, 12.51it/s] 29%|██▉       | 353/1199 [00:32<01:07, 12.60it/s] 30%|██▉       | 355/1199 [00:32<01:07, 12.44it/s] 30%|██▉       | 357/1199 [00:32<01:08, 12.36it/s] 30%|██▉       | 359/1199 [00:33<01:09, 12.17it/s] 30%|███       | 361/1199 [00:33<01:08, 12.31it/s] 30%|███       | 363/1199 [00:33<01:07, 12.45it/s] 30%|███       | 365/1199 [00:33<01:06, 12.48it/s] 31%|███       | 367/1199 [00:33<01:06, 12.53it/s] 31%|███       | 369/1199 [00:33<01:07, 12.38it/s] 31%|███       | 371/1199 [00:34<01:07, 12.30it/s] 31%|███       | 373/1199 [00:34<01:06, 12.41it/s] 31%|███▏      | 375/1199 [00:34<01:05, 12.55it/s] 31%|███▏      | 377/1199 [00:34<01:04, 12.74it/s] 32%|███▏      | 379/1199 [00:34<01:05, 12.61it/s] 32%|███▏      | 381/1199 [00:34<01:04, 12.60it/s] 32%|███▏      | 383/1199 [00:34<01:05, 12.38it/s] 32%|███▏      | 385/1199 [00:35<01:05, 12.51it/s] 32%|███▏      | 387/1199 [00:35<01:05, 12.41it/s] 32%|███▏      | 389/1199 [00:35<01:05, 12.35it/s] 33%|███▎      | 391/1199 [00:35<01:06, 12.24it/s] 33%|███▎      | 393/1199 [00:35<01:05, 12.35it/s] 33%|███▎      | 395/1199 [00:35<01:05, 12.35it/s] 33%|███▎      | 397/1199 [00:36<01:03, 12.55it/s] 33%|███▎      | 399/1199 [00:36<01:04, 12.41it/s] 33%|███▎      | 401/1199 [00:36<01:06, 11.93it/s] 34%|███▎      | 403/1199 [00:36<01:07, 11.85it/s] 34%|███▍      | 405/1199 [00:36<01:06, 11.96it/s] 34%|███▍      | 407/1199 [00:36<01:05, 12.14it/s] 34%|███▍      | 409/1199 [00:37<01:03, 12.36it/s] 34%|███▍      | 411/1199 [00:37<01:02, 12.58it/s] 34%|███▍      | 413/1199 [00:37<01:02, 12.49it/s] 35%|███▍      | 415/1199 [00:37<01:03, 12.37it/s] 35%|███▍      | 417/1199 [00:37<01:02, 12.61it/s] 35%|███▍      | 419/1199 [00:37<01:01, 12.65it/s] 35%|███▌      | 421/1199 [00:38<01:01, 12.73it/s] 35%|███▌      | 423/1199 [00:38<01:01, 12.69it/s] 35%|███▌      | 425/1199 [00:38<01:00, 12.88it/s] 36%|███▌      | 427/1199 [00:38<01:00, 12.74it/s] 36%|███▌      | 429/1199 [00:38<01:01, 12.62it/s] 36%|███▌      | 431/1199 [00:38<01:00, 12.60it/s] 36%|███▌      | 433/1199 [00:39<01:00, 12.62it/s] 36%|███▋      | 435/1199 [00:39<01:00, 12.56it/s] 36%|███▋      | 437/1199 [00:39<00:59, 12.74it/s] 37%|███▋      | 439/1199 [00:39<01:00, 12.59it/s] 37%|███▋      | 441/1199 [00:39<01:01, 12.32it/s] 37%|███▋      | 443/1199 [00:39<01:01, 12.23it/s] 37%|███▋      | 445/1199 [00:39<01:01, 12.31it/s] 37%|███▋      | 447/1199 [00:40<01:01, 12.31it/s] 37%|███▋      | 449/1199 [00:40<01:00, 12.47it/s] 38%|███▊      | 451/1199 [00:40<01:00, 12.27it/s] 38%|███▊      | 453/1199 [00:40<01:01, 12.18it/s] 38%|███▊      | 455/1199 [00:40<01:00, 12.23it/s] 38%|███▊      | 457/1199 [00:40<01:01, 12.16it/s] 38%|███▊      | 459/1199 [00:41<01:01, 12.10it/s] 38%|███▊      | 461/1199 [00:41<01:00, 12.19it/s] 39%|███▊      | 463/1199 [00:41<00:59, 12.31it/s] 39%|███▉      | 465/1199 [00:41<00:59, 12.32it/s] 39%|███▉      | 467/1199 [00:41<00:59, 12.33it/s] 39%|███▉      | 469/1199 [00:41<00:59, 12.18it/s] 39%|███▉      | 471/1199 [00:42<00:59, 12.30it/s] 39%|███▉      | 473/1199 [00:42<00:58, 12.33it/s] 40%|███▉      | 475/1199 [00:42<00:58, 12.31it/s] 40%|███▉      | 477/1199 [00:42<00:57, 12.49it/s] 40%|███▉      | 479/1199 [00:42<00:58, 12.26it/s] 40%|████      | 481/1199 [00:42<00:58, 12.20it/s] 40%|████      | 483/1199 [00:43<00:58, 12.18it/s] 40%|████      | 485/1199 [00:43<00:58, 12.25it/s] 41%|████      | 487/1199 [00:43<00:58, 12.22it/s] 41%|████      | 489/1199 [00:43<00:58, 12.13it/s] 41%|████      | 491/1199 [00:43<00:57, 12.26it/s] 41%|████      | 493/1199 [00:43<00:57, 12.37it/s] 41%|████▏     | 495/1199 [00:44<00:55, 12.77it/s] 41%|████▏     | 497/1199 [00:44<00:56, 12.43it/s] 42%|████▏     | 499/1199 [00:44<00:56, 12.32it/s] 42%|████▏     | 501/1199 [00:44<00:56, 12.31it/s] 42%|████▏     | 503/1199 [00:44<00:56, 12.28it/s] 42%|████▏     | 505/1199 [00:44<00:56, 12.29it/s] 42%|████▏     | 507/1199 [00:45<00:55, 12.46it/s] 42%|████▏     | 509/1199 [00:45<00:55, 12.48it/s] 43%|████▎     | 511/1199 [00:45<00:55, 12.50it/s] 43%|████▎     | 513/1199 [00:45<00:54, 12.48it/s] 43%|████▎     | 515/1199 [00:45<00:54, 12.48it/s] 43%|████▎     | 517/1199 [00:45<00:54, 12.40it/s] 43%|████▎     | 519/1199 [00:45<00:54, 12.37it/s] 43%|████▎     | 521/1199 [00:46<00:54, 12.40it/s] 44%|████▎     | 523/1199 [00:46<00:53, 12.60it/s] 44%|████▍     | 525/1199 [00:46<00:53, 12.55it/s] 44%|████▍     | 527/1199 [00:46<00:52, 12.69it/s] 44%|████▍     | 529/1199 [00:46<00:53, 12.62it/s] 44%|████▍     | 531/1199 [00:46<00:53, 12.60it/s] 44%|████▍     | 533/1199 [00:47<00:54, 12.32it/s] 45%|████▍     | 535/1199 [00:47<00:53, 12.43it/s] 45%|████▍     | 537/1199 [00:47<00:53, 12.40it/s] 45%|████▍     | 539/1199 [00:47<00:53, 12.35it/s] 45%|████▌     | 541/1199 [00:47<00:54, 12.11it/s] 45%|████▌     | 543/1199 [00:47<00:53, 12.19it/s] 45%|████▌     | 545/1199 [00:48<00:53, 12.18it/s] 46%|████▌     | 547/1199 [00:48<00:52, 12.45it/s] 46%|████▌     | 549/1199 [00:48<00:52, 12.43it/s] 46%|████▌     | 551/1199 [00:48<00:53, 12.20it/s] 46%|████▌     | 553/1199 [00:48<00:52, 12.23it/s] 46%|████▋     | 555/1199 [00:48<00:52, 12.34it/s] 46%|████▋     | 557/1199 [00:49<00:51, 12.38it/s] 47%|████▋     | 559/1199 [00:49<00:51, 12.52it/s] 47%|████▋     | 561/1199 [00:49<00:51, 12.46it/s] 47%|████▋     | 563/1199 [00:49<00:50, 12.48it/s] 47%|████▋     | 565/1199 [00:49<00:50, 12.53it/s] 47%|████▋     | 567/1199 [00:49<00:49, 12.65it/s] 47%|████▋     | 569/1199 [00:50<00:50, 12.48it/s] 48%|████▊     | 571/1199 [00:50<00:50, 12.39it/s] 48%|████▊     | 573/1199 [00:50<00:50, 12.42it/s] 48%|████▊     | 575/1199 [00:50<00:50, 12.39it/s] 48%|████▊     | 577/1199 [00:50<00:50, 12.35it/s] 48%|████▊     | 579/1199 [00:50<00:49, 12.41it/s] 48%|████▊     | 581/1199 [00:50<00:49, 12.42it/s] 49%|████▊     | 583/1199 [00:51<00:48, 12.60it/s] 49%|████▉     | 585/1199 [00:51<00:48, 12.58it/s] 49%|████▉     | 587/1199 [00:51<00:48, 12.53it/s] 49%|████▉     | 589/1199 [00:51<00:47, 12.85it/s] 49%|████▉     | 591/1199 [00:51<00:49, 12.31it/s] 49%|████▉     | 593/1199 [00:51<00:48, 12.46it/s] 50%|████▉     | 595/1199 [00:52<00:48, 12.44it/s] 50%|████▉     | 597/1199 [00:52<00:47, 12.55it/s] 50%|████▉     | 599/1199 [00:52<00:48, 12.49it/s] 50%|█████     | 601/1199 [00:52<00:48, 12.34it/s] 50%|█████     | 603/1199 [00:52<00:48, 12.22it/s] 50%|█████     | 605/1199 [00:52<00:48, 12.27it/s] 51%|█████     | 607/1199 [00:53<00:47, 12.51it/s] 51%|█████     | 609/1199 [00:53<00:46, 12.66it/s] 51%|█████     | 611/1199 [00:53<00:46, 12.63it/s] 51%|█████     | 613/1199 [00:53<00:46, 12.58it/s] 51%|█████▏    | 615/1199 [00:53<00:47, 12.42it/s] 51%|█████▏    | 617/1199 [00:53<00:46, 12.41it/s] 52%|█████▏    | 619/1199 [00:54<00:45, 12.61it/s] 52%|█████▏    | 621/1199 [00:54<00:47, 12.14it/s] 52%|█████▏    | 623/1199 [00:54<00:47, 12.17it/s] 52%|█████▏    | 625/1199 [00:54<00:46, 12.43it/s] 52%|█████▏    | 627/1199 [00:54<00:46, 12.39it/s] 52%|█████▏    | 629/1199 [00:54<00:45, 12.49it/s] 53%|█████▎    | 631/1199 [00:54<00:45, 12.51it/s] 53%|█████▎    | 633/1199 [00:55<00:45, 12.50it/s] 53%|█████▎    | 635/1199 [00:55<00:45, 12.49it/s] 53%|█████▎    | 637/1199 [00:55<00:45, 12.46it/s] 53%|█████▎    | 639/1199 [00:55<00:44, 12.56it/s] 53%|█████▎    | 641/1199 [00:55<00:44, 12.46it/s] 54%|█████▎    | 643/1199 [00:55<00:44, 12.54it/s] 54%|█████▍    | 645/1199 [00:56<00:43, 12.60it/s] 54%|█████▍    | 647/1199 [00:56<00:43, 12.79it/s] 54%|█████▍    | 649/1199 [00:56<00:43, 12.67it/s] 54%|█████▍    | 651/1199 [00:56<00:43, 12.49it/s] 54%|█████▍    | 653/1199 [00:56<00:44, 12.30it/s] 55%|█████▍    | 655/1199 [00:56<00:44, 12.30it/s] 55%|█████▍    | 657/1199 [00:57<00:44, 12.30it/s] 55%|█████▍    | 659/1199 [00:57<00:43, 12.46it/s] 55%|█████▌    | 661/1199 [00:57<00:42, 12.55it/s] 55%|█████▌    | 663/1199 [00:57<00:42, 12.56it/s] 55%|█████▌    | 665/1199 [00:57<00:43, 12.38it/s] 56%|█████▌    | 667/1199 [00:57<00:42, 12.39it/s] 56%|█████▌    | 669/1199 [00:58<00:42, 12.56it/s] 56%|█████▌    | 671/1199 [00:58<00:42, 12.47it/s] 56%|█████▌    | 673/1199 [00:58<00:42, 12.42it/s] 56%|█████▋    | 675/1199 [00:58<00:41, 12.56it/s] 56%|█████▋    | 677/1199 [00:58<00:42, 12.20it/s] 57%|█████▋    | 679/1199 [00:58<00:42, 12.17it/s] 57%|█████▋    | 681/1199 [00:59<00:41, 12.34it/s] 57%|█████▋    | 683/1199 [00:59<00:41, 12.52it/s] 57%|█████▋    | 685/1199 [00:59<00:40, 12.55it/s] 57%|█████▋    | 687/1199 [00:59<00:40, 12.78it/s] 57%|█████▋    | 689/1199 [00:59<00:40, 12.59it/s] 58%|█████▊    | 691/1199 [00:59<00:39, 12.80it/s] 58%|█████▊    | 693/1199 [00:59<00:40, 12.48it/s] 58%|█████▊    | 695/1199 [01:00<00:40, 12.46it/s] 58%|█████▊    | 697/1199 [01:00<00:40, 12.39it/s] 58%|█████▊    | 699/1199 [01:00<00:40, 12.22it/s] 58%|█████▊    | 701/1199 [01:00<00:41, 12.12it/s] 59%|█████▊    | 703/1199 [01:00<00:40, 12.14it/s] 59%|█████▉    | 705/1199 [01:00<00:40, 12.20it/s] 59%|█████▉    | 707/1199 [01:01<00:39, 12.49it/s] 59%|█████▉    | 709/1199 [01:01<00:40, 12.10it/s] 59%|█████▉    | 711/1199 [01:01<00:40, 12.19it/s] 59%|█████▉    | 713/1199 [01:01<00:40, 12.14it/s] 60%|█████▉    | 715/1199 [01:01<00:39, 12.12it/s] 60%|█████▉    | 717/1199 [01:01<00:39, 12.13it/s] 60%|█████▉    | 719/1199 [01:02<00:39, 12.17it/s] 60%|██████    | 721/1199 [01:02<00:39, 11.95it/s] 60%|██████    | 723/1199 [01:02<00:39, 12.14it/s] 60%|██████    | 725/1199 [01:02<00:38, 12.28it/s] 61%|██████    | 727/1199 [01:02<00:38, 12.13it/s] 61%|██████    | 729/1199 [01:02<00:38, 12.12it/s] 61%|██████    | 731/1199 [01:03<00:38, 12.20it/s] 61%|██████    | 733/1199 [01:03<00:38, 12.15it/s] 61%|██████▏   | 735/1199 [01:03<00:37, 12.30it/s] 61%|██████▏   | 737/1199 [01:03<00:37, 12.39it/s] 62%|██████▏   | 739/1199 [01:03<00:37, 12.27it/s] 62%|██████▏   | 741/1199 [01:03<00:37, 12.32it/s] 62%|██████▏   | 743/1199 [01:04<00:36, 12.42it/s] 62%|██████▏   | 745/1199 [01:04<00:36, 12.52it/s] 62%|██████▏   | 747/1199 [01:04<00:36, 12.49it/s] 62%|██████▏   | 749/1199 [01:04<00:35, 12.52it/s] 63%|██████▎   | 751/1199 [01:04<00:36, 12.42it/s] 63%|██████▎   | 753/1199 [01:04<00:35, 12.62it/s] 63%|██████▎   | 755/1199 [01:05<00:36, 12.30it/s] 63%|██████▎   | 757/1199 [01:05<00:35, 12.34it/s] 63%|██████▎   | 759/1199 [01:05<00:34, 12.63it/s] 63%|██████▎   | 761/1199 [01:05<00:35, 12.40it/s] 64%|██████▎   | 763/1199 [01:05<00:35, 12.39it/s] 64%|██████▍   | 765/1199 [01:05<00:34, 12.41it/s] 64%|██████▍   | 767/1199 [01:05<00:34, 12.60it/s] 64%|██████▍   | 769/1199 [01:06<00:34, 12.60it/s] 64%|██████▍   | 771/1199 [01:06<00:34, 12.54it/s] 64%|██████▍   | 773/1199 [01:06<00:33, 12.61it/s] 65%|██████▍   | 775/1199 [01:06<00:33, 12.73it/s] 65%|██████▍   | 777/1199 [01:06<00:33, 12.48it/s] 65%|██████▍   | 779/1199 [01:06<00:33, 12.40it/s] 65%|██████▌   | 781/1199 [01:07<00:33, 12.29it/s] 65%|██████▌   | 783/1199 [01:07<00:33, 12.25it/s] 65%|██████▌   | 785/1199 [01:07<00:33, 12.33it/s] 66%|██████▌   | 787/1199 [01:07<00:33, 12.23it/s] 66%|██████▌   | 789/1199 [01:07<00:33, 12.27it/s] 66%|██████▌   | 791/1199 [01:07<00:33, 12.25it/s] 66%|██████▌   | 793/1199 [01:08<00:33, 12.20it/s] 66%|██████▋   | 795/1199 [01:08<00:32, 12.30it/s] 66%|██████▋   | 797/1199 [01:08<00:32, 12.29it/s] 67%|██████▋   | 799/1199 [01:08<00:32, 12.42it/s] 67%|██████▋   | 801/1199 [01:08<00:31, 12.72it/s] 67%|██████▋   | 803/1199 [01:08<00:30, 12.82it/s] 67%|██████▋   | 805/1199 [01:09<00:30, 12.82it/s] 67%|██████▋   | 807/1199 [01:09<00:31, 12.47it/s] 67%|██████▋   | 809/1199 [01:09<00:31, 12.55it/s] 68%|██████▊   | 811/1199 [01:09<00:31, 12.49it/s] 68%|██████▊   | 813/1199 [01:09<00:31, 12.34it/s] 68%|██████▊   | 815/1199 [01:09<00:31, 12.24it/s] 68%|██████▊   | 817/1199 [01:10<00:31, 12.10it/s] 68%|██████▊   | 819/1199 [01:10<00:31, 12.08it/s] 68%|██████▊   | 821/1199 [01:10<00:30, 12.27it/s] 69%|██████▊   | 823/1199 [01:10<00:30, 12.25it/s] 69%|██████▉   | 825/1199 [01:10<00:30, 12.26it/s] 69%|██████▉   | 827/1199 [01:10<00:30, 12.17it/s] 69%|██████▉   | 829/1199 [01:10<00:30, 12.20it/s] 69%|██████▉   | 831/1199 [01:11<00:30, 12.02it/s] 69%|██████▉   | 833/1199 [01:11<00:30, 12.14it/s] 70%|██████▉   | 835/1199 [01:11<00:29, 12.23it/s] 70%|██████▉   | 837/1199 [01:11<00:29, 12.27it/s] 70%|██████▉   | 839/1199 [01:11<00:29, 12.26it/s] 70%|███████   | 841/1199 [01:11<00:29, 12.07it/s] 70%|███████   | 843/1199 [01:12<00:29, 12.06it/s] 70%|███████   | 845/1199 [01:12<00:29, 12.08it/s] 71%|███████   | 847/1199 [01:12<00:28, 12.21it/s] 71%|███████   | 849/1199 [01:12<00:28, 12.21it/s] 71%|███████   | 851/1199 [01:12<00:28, 12.25it/s] 71%|███████   | 853/1199 [01:12<00:28, 12.22it/s] 71%|███████▏  | 855/1199 [01:13<00:28, 12.20it/s] 71%|███████▏  | 857/1199 [01:13<00:27, 12.58it/s] 72%|███████▏  | 859/1199 [01:13<00:27, 12.34it/s] 72%|███████▏  | 861/1199 [01:13<00:27, 12.26it/s] 72%|███████▏  | 863/1199 [01:13<00:27, 12.24it/s] 72%|███████▏  | 865/1199 [01:13<00:27, 12.29it/s] 72%|███████▏  | 867/1199 [01:14<00:26, 12.35it/s] 72%|███████▏  | 869/1199 [01:14<00:26, 12.33it/s] 73%|███████▎  | 871/1199 [01:14<00:26, 12.27it/s] 73%|███████▎  | 873/1199 [01:14<00:26, 12.24it/s] 73%|███████▎  | 875/1199 [01:14<00:26, 12.13it/s] 73%|███████▎  | 877/1199 [01:14<00:26, 12.14it/s] 73%|███████▎  | 879/1199 [01:15<00:26, 12.19it/s] 73%|███████▎  | 881/1199 [01:15<00:25, 12.35it/s] 74%|███████▎  | 883/1199 [01:15<00:25, 12.43it/s] 74%|███████▍  | 885/1199 [01:15<00:25, 12.45it/s] 74%|███████▍  | 887/1199 [01:15<00:25, 12.23it/s] 74%|███████▍  | 889/1199 [01:15<00:25, 12.19it/s] 74%|███████▍  | 891/1199 [01:16<00:24, 12.37it/s] 74%|███████▍  | 893/1199 [01:16<00:24, 12.26it/s] 75%|███████▍  | 895/1199 [01:16<00:24, 12.43it/s] 75%|███████▍  | 897/1199 [01:16<00:24, 12.29it/s] 75%|███████▍  | 899/1199 [01:16<00:24, 12.41it/s] 75%|███████▌  | 901/1199 [01:16<00:24, 12.33it/s] 75%|███████▌  | 903/1199 [01:17<00:24, 12.26it/s] 75%|███████▌  | 905/1199 [01:17<00:23, 12.29it/s] 76%|███████▌  | 907/1199 [01:17<00:23, 12.19it/s] 76%|███████▌  | 909/1199 [01:17<00:23, 12.36it/s] 76%|███████▌  | 911/1199 [01:17<00:23, 12.38it/s] 76%|███████▌  | 913/1199 [01:17<00:22, 12.54it/s] 76%|███████▋  | 915/1199 [01:17<00:22, 12.49it/s] 76%|███████▋  | 917/1199 [01:18<00:22, 12.43it/s] 77%|███████▋  | 919/1199 [01:18<00:22, 12.39it/s] 77%|███████▋  | 921/1199 [01:18<00:22, 12.36it/s] 77%|███████▋  | 923/1199 [01:18<00:22, 12.39it/s] 77%|███████▋  | 925/1199 [01:18<00:22, 12.32it/s] 77%|███████▋  | 927/1199 [01:18<00:22, 12.23it/s] 77%|███████▋  | 929/1199 [01:19<00:21, 12.29it/s] 78%|███████▊  | 931/1199 [01:19<00:21, 12.42it/s] 78%|███████▊  | 933/1199 [01:19<00:21, 12.30it/s] 78%|███████▊  | 935/1199 [01:19<00:21, 12.44it/s] 78%|███████▊  | 937/1199 [01:19<00:21, 12.35it/s] 78%|███████▊  | 939/1199 [01:19<00:21, 12.35it/s] 78%|███████▊  | 941/1199 [01:20<00:21, 12.06it/s] 79%|███████▊  | 943/1199 [01:20<00:21, 11.94it/s] 79%|███████▉  | 945/1199 [01:20<00:20, 12.24it/s] 79%|███████▉  | 947/1199 [01:20<00:20, 12.43it/s] 79%|███████▉  | 949/1199 [01:20<00:20, 12.28it/s] 79%|███████▉  | 951/1199 [01:20<00:20, 12.35it/s] 79%|███████▉  | 953/1199 [01:21<00:19, 12.44it/s] 80%|███████▉  | 955/1199 [01:21<00:19, 12.51it/s] 80%|███████▉  | 957/1199 [01:21<00:19, 12.37it/s] 80%|███████▉  | 959/1199 [01:21<00:19, 12.56it/s] 80%|████████  | 961/1199 [01:21<00:19, 12.51it/s] 80%|████████  | 963/1199 [01:21<00:18, 12.53it/s] 80%|████████  | 965/1199 [01:22<00:18, 12.33it/s] 81%|████████  | 967/1199 [01:22<00:18, 12.46it/s] 81%|████████  | 969/1199 [01:22<00:18, 12.42it/s] 81%|████████  | 971/1199 [01:22<00:18, 12.47it/s] 81%|████████  | 973/1199 [01:22<00:18, 12.27it/s] 81%|████████▏ | 975/1199 [01:22<00:18, 12.41it/s] 81%|████████▏ | 977/1199 [01:23<00:17, 12.49it/s] 82%|████████▏ | 979/1199 [01:23<00:17, 12.36it/s] 82%|████████▏ | 981/1199 [01:23<00:17, 12.50it/s] 82%|████████▏ | 983/1199 [01:23<00:17, 12.66it/s] 82%|████████▏ | 985/1199 [01:23<00:16, 12.61it/s] 82%|████████▏ | 987/1199 [01:23<00:17, 12.31it/s] 82%|████████▏ | 989/1199 [01:23<00:17, 12.35it/s] 83%|████████▎ | 991/1199 [01:24<00:16, 12.34it/s] 83%|████████▎ | 993/1199 [01:24<00:16, 12.52it/s] 83%|████████▎ | 995/1199 [01:24<00:16, 12.52it/s] 83%|████████▎ | 997/1199 [01:24<00:16, 12.62it/s] 83%|████████▎ | 999/1199 [01:24<00:15, 12.61it/s] 83%|████████▎ | 1001/1199 [01:24<00:15, 12.58it/s] 84%|████████▎ | 1003/1199 [01:25<00:15, 12.54it/s] 84%|████████▍ | 1005/1199 [01:25<00:15, 12.37it/s] 84%|████████▍ | 1007/1199 [01:25<00:15, 12.38it/s] 84%|████████▍ | 1009/1199 [01:25<00:15, 12.42it/s] 84%|████████▍ | 1011/1199 [01:25<00:15, 12.31it/s] 84%|████████▍ | 1013/1199 [01:25<00:14, 12.42it/s] 85%|████████▍ | 1015/1199 [01:26<00:15, 12.26it/s] 85%|████████▍ | 1017/1199 [01:26<00:14, 12.26it/s] 85%|████████▍ | 1019/1199 [01:26<00:14, 12.29it/s] 85%|████████▌ | 1021/1199 [01:26<00:14, 12.33it/s] 85%|████████▌ | 1023/1199 [01:26<00:14, 12.38it/s] 85%|████████▌ | 1025/1199 [01:26<00:13, 12.45it/s] 86%|████████▌ | 1027/1199 [01:27<00:13, 12.43it/s] 86%|████████▌ | 1029/1199 [01:27<00:13, 12.38it/s] 86%|████████▌ | 1031/1199 [01:27<00:13, 12.36it/s] 86%|████████▌ | 1033/1199 [01:27<00:13, 12.21it/s] 86%|████████▋ | 1035/1199 [01:27<00:13, 12.23it/s] 86%|████████▋ | 1037/1199 [01:27<00:13, 12.39it/s] 87%|████████▋ | 1039/1199 [01:27<00:12, 12.56it/s] 87%|████████▋ | 1041/1199 [01:28<00:12, 12.49it/s] 87%|████████▋ | 1043/1199 [01:28<00:12, 12.51it/s] 87%|████████▋ | 1045/1199 [01:28<00:12, 12.48it/s] 87%|████████▋ | 1047/1199 [01:28<00:12, 12.45it/s] 87%|████████▋ | 1049/1199 [01:28<00:12, 12.46it/s] 88%|████████▊ | 1051/1199 [01:28<00:11, 12.38it/s] 88%|████████▊ | 1053/1199 [01:29<00:11, 12.43it/s] 88%|████████▊ | 1055/1199 [01:29<00:11, 12.29it/s] 88%|████████▊ | 1057/1199 [01:29<00:11, 12.44it/s] 88%|████████▊ | 1059/1199 [01:29<00:11, 12.45it/s] 88%|████████▊ | 1061/1199 [01:29<00:11, 12.48it/s] 89%|████████▊ | 1063/1199 [01:29<00:10, 12.47it/s] 89%|████████▉ | 1065/1199 [01:30<00:10, 12.36it/s] 89%|████████▉ | 1067/1199 [01:30<00:10, 12.57it/s] 89%|████████▉ | 1069/1199 [01:30<00:10, 12.53it/s] 89%|████████▉ | 1071/1199 [01:30<00:10, 12.67it/s] 89%|████████▉ | 1073/1199 [01:30<00:09, 12.60it/s] 90%|████████▉ | 1075/1199 [01:30<00:09, 12.57it/s] 90%|████████▉ | 1077/1199 [01:31<00:09, 12.58it/s] 90%|████████▉ | 1079/1199 [01:31<00:09, 12.54it/s] 90%|█████████ | 1081/1199 [01:31<00:09, 12.51it/s] 90%|█████████ | 1083/1199 [01:31<00:09, 12.76it/s] 90%|█████████ | 1085/1199 [01:31<00:08, 12.88it/s] 91%|█████████ | 1087/1199 [01:31<00:08, 12.62it/s] 91%|█████████ | 1089/1199 [01:31<00:08, 12.52it/s] 91%|█████████ | 1091/1199 [01:32<00:08, 12.53it/s] 91%|█████████ | 1093/1199 [01:32<00:08, 12.71it/s] 91%|█████████▏| 1095/1199 [01:32<00:08, 12.51it/s] 91%|█████████▏| 1097/1199 [01:32<00:08, 12.49it/s] 92%|█████████▏| 1099/1199 [01:32<00:07, 12.82it/s] 92%|█████████▏| 1101/1199 [01:32<00:07, 12.65it/s] 92%|█████████▏| 1103/1199 [01:33<00:07, 12.60it/s] 92%|█████████▏| 1105/1199 [01:33<00:07, 12.23it/s] 92%|█████████▏| 1107/1199 [01:33<00:07, 12.17it/s] 92%|█████████▏| 1109/1199 [01:33<00:07, 12.07it/s] 93%|█████████▎| 1111/1199 [01:33<00:07, 12.05it/s] 93%|█████████▎| 1113/1199 [01:33<00:07, 12.09it/s] 93%|█████████▎| 1115/1199 [01:34<00:06, 12.23it/s] 93%|█████████▎| 1117/1199 [01:34<00:06, 12.24it/s] 93%|█████████▎| 1119/1199 [01:34<00:06, 12.41it/s] 93%|█████████▎| 1121/1199 [01:34<00:06, 12.33it/s] 94%|█████████▎| 1123/1199 [01:34<00:06, 12.29it/s] 94%|█████████▍| 1125/1199 [01:34<00:05, 12.36it/s] 94%|█████████▍| 1127/1199 [01:35<00:05, 12.38it/s] 94%|█████████▍| 1129/1199 [01:35<00:05, 12.25it/s] 94%|█████████▍| 1131/1199 [01:35<00:05, 12.26it/s] 94%|█████████▍| 1133/1199 [01:35<00:05, 12.48it/s] 95%|█████████▍| 1135/1199 [01:35<00:05, 12.44it/s] 95%|█████████▍| 1137/1199 [01:35<00:04, 12.46it/s] 95%|█████████▍| 1139/1199 [01:36<00:04, 12.27it/s] 95%|█████████▌| 1141/1199 [01:36<00:04, 12.24it/s] 95%|█████████▌| 1143/1199 [01:36<00:04, 12.10it/s] 95%|█████████▌| 1145/1199 [01:36<00:04, 12.28it/s] 96%|█████████▌| 1147/1199 [01:36<00:04, 12.36it/s] 96%|█████████▌| 1149/1199 [01:36<00:04, 12.30it/s] 96%|█████████▌| 1151/1199 [01:37<00:03, 12.50it/s] 96%|█████████▌| 1153/1199 [01:37<00:03, 12.47it/s] 96%|█████████▋| 1155/1199 [01:37<00:03, 12.34it/s] 96%|█████████▋| 1157/1199 [01:37<00:03, 12.27it/s] 97%|█████████▋| 1159/1199 [01:37<00:03, 12.29it/s] 97%|█████████▋| 1161/1199 [01:37<00:03, 12.14it/s] 97%|█████████▋| 1163/1199 [01:37<00:02, 12.33it/s] 97%|█████████▋| 1165/1199 [01:38<00:02, 12.35it/s] 97%|█████████▋| 1167/1199 [01:38<00:02, 12.34it/s] 97%|█████████▋| 1169/1199 [01:38<00:02, 12.32it/s] 98%|█████████▊| 1171/1199 [01:38<00:02, 12.34it/s] 98%|█████████▊| 1173/1199 [01:38<00:02, 12.41it/s] 98%|█████████▊| 1175/1199 [01:38<00:01, 12.34it/s] 98%|█████████▊| 1177/1199 [01:39<00:01, 12.27it/s] 98%|█████████▊| 1179/1199 [01:39<00:01, 12.29it/s] 98%|█████████▊| 1181/1199 [01:39<00:01, 12.39it/s] 99%|█████████▊| 1183/1199 [01:39<00:01, 12.28it/s] 99%|█████████▉| 1185/1199 [01:39<00:01, 12.24it/s] 99%|█████████▉| 1187/1199 [01:39<00:00, 12.27it/s] 99%|█████████▉| 1189/1199 [01:40<00:00, 12.33it/s] 99%|█████████▉| 1191/1199 [01:40<00:00, 12.26it/s] 99%|█████████▉| 1193/1199 [01:40<00:00, 12.53it/s]100%|█████████▉| 1195/1199 [01:40<00:00, 12.31it/s]100%|█████████▉| 1197/1199 [01:40<00:00, 12.07it/s]100%|██████████| 1199/1199 [01:40<00:00, 12.22it/s]100%|██████████| 1199/1199 [01:40<00:00, 11.88it/s]
+WeightedCrossEntropyC call - ClassWeights: (32, 64, 64, 2) - Mask: (32, 64, 64)
+WeightedCrossEntropyC call - ClassWeights: (32, 64, 64, 2) - Mask: (32, 64, 64)
+1199
+0 [Training loss: 0.161710, acc.: 89.63%, precission: 65.56%, recall: 91.34%, f1: 75.94%]
+[*]Computing the validation loss...
+  0%|          | 0/264 [00:00<?, ?it/s]  0%|          | 1/264 [00:01<04:41,  1.07s/it]  1%|          | 3/264 [00:01<01:27,  2.97it/s]  2%|▏         | 5/264 [00:01<00:53,  4.87it/s]  3%|▎         | 7/264 [00:01<00:38,  6.60it/s]  3%|▎         | 9/264 [00:01<00:31,  7.97it/s]  4%|▍         | 11/264 [00:01<00:27,  9.12it/s]  5%|▍         | 13/264 [00:02<00:25,  9.93it/s]  6%|▌         | 15/264 [00:02<00:23, 10.55it/s]  6%|▋         | 17/264 [00:02<00:22, 10.97it/s]  7%|▋         | 19/264 [00:02<00:21, 11.17it/s]  8%|▊         | 21/264 [00:02<00:21, 11.31it/s]  9%|▊         | 23/264 [00:02<00:21, 11.46it/s]  9%|▉         | 25/264 [00:03<00:20, 11.60it/s] 10%|█         | 27/264 [00:03<00:20, 11.81it/s] 11%|█         | 29/264 [00:03<00:19, 11.97it/s] 12%|█▏        | 31/264 [00:03<00:19, 12.09it/s] 12%|█▎        | 33/264 [00:03<00:19, 12.13it/s] 13%|█▎        | 35/264 [00:03<00:19, 12.04it/s] 14%|█▍        | 37/264 [00:04<00:18, 12.03it/s] 15%|█▍        | 39/264 [00:04<00:18, 12.02it/s] 16%|█▌        | 41/264 [00:04<00:18, 11.99it/s] 16%|█▋        | 43/264 [00:04<00:18, 11.94it/s] 17%|█▋        | 45/264 [00:04<00:17, 12.26it/s] 18%|█▊        | 47/264 [00:04<00:17, 12.31it/s] 19%|█▊        | 49/264 [00:05<00:17, 12.09it/s] 19%|█▉        | 51/264 [00:05<00:17, 11.99it/s] 20%|██        | 53/264 [00:05<00:17, 11.95it/s] 21%|██        | 55/264 [00:05<00:17, 12.00it/s] 22%|██▏       | 57/264 [00:05<00:17, 11.92it/s] 22%|██▏       | 59/264 [00:05<00:16, 12.08it/s] 23%|██▎       | 61/264 [00:06<00:16, 12.05it/s] 24%|██▍       | 63/264 [00:06<00:16, 11.82it/s] 25%|██▍       | 65/264 [00:06<00:16, 11.81it/s] 25%|██▌       | 67/264 [00:06<00:16, 11.82it/s] 26%|██▌       | 69/264 [00:06<00:16, 11.93it/s] 27%|██▋       | 71/264 [00:06<00:15, 12.28it/s] 28%|██▊       | 73/264 [00:07<00:15, 12.13it/s] 28%|██▊       | 75/264 [00:07<00:15, 12.01it/s] 29%|██▉       | 77/264 [00:07<00:15, 11.95it/s] 30%|██▉       | 79/264 [00:07<00:15, 11.93it/s] 31%|███       | 81/264 [00:07<00:15, 12.01it/s] 31%|███▏      | 83/264 [00:07<00:15, 11.90it/s] 32%|███▏      | 85/264 [00:08<00:14, 12.08it/s] 33%|███▎      | 87/264 [00:08<00:14, 11.97it/s] 34%|███▎      | 89/264 [00:08<00:14, 12.02it/s] 34%|███▍      | 91/264 [00:08<00:14, 12.04it/s] 35%|███▌      | 93/264 [00:08<00:14, 11.98it/s] 36%|███▌      | 95/264 [00:08<00:14, 12.07it/s] 37%|███▋      | 97/264 [00:09<00:13, 11.96it/s] 38%|███▊      | 99/264 [00:09<00:13, 11.93it/s] 38%|███▊      | 101/264 [00:09<00:13, 11.99it/s] 39%|███▉      | 103/264 [00:09<00:13, 12.01it/s] 40%|███▉      | 105/264 [00:09<00:13, 11.93it/s] 41%|████      | 107/264 [00:09<00:13, 12.04it/s] 41%|████▏     | 109/264 [00:10<00:12, 12.09it/s] 42%|████▏     | 111/264 [00:10<00:12, 12.10it/s] 43%|████▎     | 113/264 [00:10<00:12, 12.09it/s] 44%|████▎     | 115/264 [00:10<00:12, 12.09it/s] 44%|████▍     | 117/264 [00:10<00:12, 12.14it/s] 45%|████▌     | 119/264 [00:10<00:11, 12.21it/s] 46%|████▌     | 121/264 [00:11<00:11, 12.18it/s] 47%|████▋     | 123/264 [00:11<00:11, 12.10it/s] 47%|████▋     | 125/264 [00:11<00:11, 12.33it/s] 48%|████▊     | 127/264 [00:11<00:11, 12.22it/s] 49%|████▉     | 129/264 [00:11<00:11, 11.99it/s] 50%|████▉     | 131/264 [00:11<00:11, 12.04it/s] 50%|█████     | 133/264 [00:12<00:10, 12.05it/s] 51%|█████     | 135/264 [00:12<00:10, 12.05it/s] 52%|█████▏    | 137/264 [00:12<00:10, 12.04it/s] 53%|█████▎    | 139/264 [00:12<00:10, 11.97it/s] 53%|█████▎    | 141/264 [00:12<00:10, 11.99it/s] 54%|█████▍    | 143/264 [00:12<00:10, 11.89it/s] 55%|█████▍    | 145/264 [00:13<00:10, 11.80it/s] 56%|█████▌    | 147/264 [00:13<00:09, 11.91it/s] 56%|█████▋    | 149/264 [00:13<00:09, 11.95it/s] 57%|█████▋    | 151/264 [00:13<00:09, 12.12it/s] 58%|█████▊    | 153/264 [00:13<00:09, 11.93it/s] 59%|█████▊    | 155/264 [00:13<00:09, 11.87it/s] 59%|█████▉    | 157/264 [00:14<00:08, 11.91it/s] 60%|██████    | 159/264 [00:14<00:08, 11.90it/s] 61%|██████    | 161/264 [00:14<00:08, 12.04it/s] 62%|██████▏   | 163/264 [00:14<00:08, 12.14it/s] 62%|██████▎   | 165/264 [00:14<00:08, 12.09it/s] 63%|██████▎   | 167/264 [00:14<00:08, 12.00it/s] 64%|██████▍   | 169/264 [00:15<00:07, 11.94it/s] 65%|██████▍   | 171/264 [00:15<00:07, 11.80it/s] 66%|██████▌   | 173/264 [00:15<00:07, 12.05it/s] 66%|██████▋   | 175/264 [00:15<00:07, 12.01it/s] 67%|██████▋   | 177/264 [00:15<00:07, 12.09it/s] 68%|██████▊   | 179/264 [00:15<00:07, 12.05it/s] 69%|██████▊   | 181/264 [00:16<00:06, 11.94it/s] 69%|██████▉   | 183/264 [00:16<00:06, 11.92it/s] 70%|███████   | 185/264 [00:16<00:06, 12.27it/s] 71%|███████   | 187/264 [00:16<00:06, 12.11it/s] 72%|███████▏  | 189/264 [00:16<00:06, 12.02it/s] 72%|███████▏  | 191/264 [00:16<00:06, 12.12it/s] 73%|███████▎  | 193/264 [00:17<00:05, 12.00it/s] 74%|███████▍  | 195/264 [00:17<00:05, 12.13it/s] 75%|███████▍  | 197/264 [00:17<00:05, 12.36it/s] 75%|███████▌  | 199/264 [00:17<00:05, 12.47it/s] 76%|███████▌  | 201/264 [00:17<00:05, 12.33it/s] 77%|███████▋  | 203/264 [00:17<00:05, 12.13it/s] 78%|███████▊  | 205/264 [00:17<00:04, 12.12it/s] 78%|███████▊  | 207/264 [00:18<00:04, 12.34it/s] 79%|███████▉  | 209/264 [00:18<00:04, 12.36it/s] 80%|███████▉  | 211/264 [00:18<00:04, 12.36it/s] 81%|████████  | 213/264 [00:18<00:04, 12.23it/s] 81%|████████▏ | 215/264 [00:18<00:03, 12.26it/s] 82%|████████▏ | 217/264 [00:18<00:03, 12.13it/s] 83%|████████▎ | 219/264 [00:19<00:03, 12.17it/s] 84%|████████▎ | 221/264 [00:19<00:03, 12.20it/s] 84%|████████▍ | 223/264 [00:19<00:03, 12.14it/s] 85%|████████▌ | 225/264 [00:19<00:03, 12.32it/s] 86%|████████▌ | 227/264 [00:19<00:03, 12.32it/s] 87%|████████▋ | 229/264 [00:19<00:02, 12.20it/s] 88%|████████▊ | 231/264 [00:20<00:02, 12.10it/s] 88%|████████▊ | 233/264 [00:20<00:02, 12.06it/s] 89%|████████▉ | 235/264 [00:20<00:02, 12.04it/s] 90%|████████▉ | 237/264 [00:20<00:02, 12.00it/s] 91%|█████████ | 239/264 [00:20<00:02, 11.95it/s] 91%|█████████▏| 241/264 [00:20<00:01, 12.00it/s] 92%|█████████▏| 243/264 [00:21<00:01, 11.97it/s] 93%|█████████▎| 245/264 [00:21<00:01, 11.95it/s] 94%|█████████▎| 247/264 [00:21<00:01, 11.93it/s] 94%|█████████▍| 249/264 [00:21<00:01, 12.05it/s] 95%|█████████▌| 251/264 [00:21<00:01, 11.96it/s] 96%|█████████▌| 253/264 [00:21<00:00, 11.93it/s] 97%|█████████▋| 255/264 [00:22<00:00, 12.00it/s] 97%|█████████▋| 257/264 [00:22<00:00, 11.97it/s] 98%|█████████▊| 259/264 [00:22<00:00, 11.92it/s] 99%|█████████▉| 261/264 [00:22<00:00, 11.94it/s]100%|█████████▉| 263/264 [00:22<00:00, 12.01it/s]100%|██████████| 264/264 [00:22<00:00, 11.55it/s]
+WeightedCrossEntropyC call - ClassWeights: (32, 64, 64, 2) - Mask: (32, 64, 64)
+0 [Validation loss: 0.111858, acc.: 93.47%,  precission: 73.87%, recall: 93.25%, f1: 82.04%]
+[!] Best Validation F1 score: 82.04%
+[!]Saving best model at epoch: 0
+Checkpoint saved successfuly!
+----------------------------------------------------------
+Percentage of epochs: 0.01
+Learning rate decay: 9.310124446222229e-05
+  0%|          | 0/1199 [00:00<?, ?it/s]  0%|          | 1/1199 [00:00<11:11,  1.78it/s]  0%|          | 3/1199 [00:00<04:04,  4.89it/s]  0%|          | 5/1199 [00:00<02:45,  7.23it/s]  1%|          | 7/1199 [00:01<02:16,  8.76it/s]  1%|          | 9/1199 [00:01<02:01,  9.79it/s]  1%|          | 11/1199 [00:01<01:52, 10.57it/s]  1%|          | 13/1199 [00:01<01:46, 11.14it/s]  1%|▏         | 15/1199 [00:01<01:41, 11.62it/s]  1%|▏         | 17/1199 [00:01<01:40, 11.82it/s]  2%|▏         | 19/1199 [00:01<01:36, 12.22it/s]  2%|▏         | 21/1199 [00:02<01:34, 12.45it/s]  2%|▏         | 23/1199 [00:02<01:32, 12.68it/s]  2%|▏         | 25/1199 [00:02<01:32, 12.70it/s]  2%|▏         | 27/1199 [00:02<01:32, 12.72it/s]  2%|▏         | 29/1199 [00:02<01:29, 13.05it/s]  3%|▎         | 31/1199 [00:02<01:30, 12.92it/s]  3%|▎         | 33/1199 [00:03<01:30, 12.91it/s]  3%|▎         | 35/1199 [00:03<01:30, 12.84it/s]  3%|▎         | 37/1199 [00:03<01:30, 12.84it/s]  3%|▎         | 39/1199 [00:03<01:30, 12.79it/s]  3%|▎         | 41/1199 [00:03<01:29, 12.99it/s]  4%|▎         | 43/1199 [00:03<01:28, 13.03it/s]  4%|▍         | 45/1199 [00:03<01:29, 12.94it/s]  4%|▍         | 47/1199 [00:04<01:28, 12.97it/s]  4%|▍         | 49/1199 [00:04<01:28, 12.98it/s]  4%|▍         | 51/1199 [00:04<01:29, 12.84it/s]  4%|▍         | 53/1199 [00:04<01:29, 12.87it/s]  5%|▍         | 55/1199 [00:04<01:29, 12.71it/s]  5%|▍         | 57/1199 [00:04<01:29, 12.81it/s]  5%|▍         | 59/1199 [00:05<01:28, 12.83it/s]  5%|▌         | 61/1199 [00:05<01:28, 12.80it/s]  5%|▌         | 63/1199 [00:05<01:29, 12.74it/s]  5%|▌         | 65/1199 [00:05<01:29, 12.62it/s]  6%|▌         | 67/1199 [00:05<01:30, 12.54it/s]  6%|▌         | 69/1199 [00:05<01:30, 12.44it/s]  6%|▌         | 71/1199 [00:06<01:30, 12.48it/s]  6%|▌         | 73/1199 [00:06<01:31, 12.24it/s]  6%|▋         | 75/1199 [00:06<01:30, 12.42it/s]  6%|▋         | 77/1199 [00:06<01:30, 12.42it/s]  7%|▋         | 79/1199 [00:06<01:29, 12.53it/s]  7%|▋         | 81/1199 [00:06<01:29, 12.45it/s]  7%|▋         | 83/1199 [00:07<01:28, 12.61it/s]  7%|▋         | 85/1199 [00:07<01:27, 12.71it/s]  7%|▋         | 87/1199 [00:07<01:26, 12.80it/s]  7%|▋         | 89/1199 [00:07<01:28, 12.57it/s]  8%|▊         | 91/1199 [00:07<01:26, 12.80it/s]  8%|▊         | 93/1199 [00:07<01:26, 12.76it/s]  8%|▊         | 95/1199 [00:07<01:26, 12.76it/s]  8%|▊         | 97/1199 [00:08<01:25, 12.90it/s]  8%|▊         | 99/1199 [00:08<01:24, 13.02it/s]  8%|▊         | 101/1199 [00:08<01:24, 12.96it/s]  9%|▊         | 103/1199 [00:08<01:25, 12.86it/s]  9%|▉         | 105/1199 [00:08<01:24, 12.96it/s]  9%|▉         | 107/1199 [00:08<01:24, 12.91it/s]  9%|▉         | 109/1199 [00:09<01:25, 12.70it/s]  9%|▉         | 111/1199 [00:09<01:25, 12.72it/s]  9%|▉         | 113/1199 [00:09<01:25, 12.68it/s] 10%|▉         | 115/1199 [00:09<01:24, 12.76it/s] 10%|▉         | 117/1199 [00:09<01:24, 12.77it/s] 10%|▉         | 119/1199 [00:09<01:24, 12.74it/s] 10%|█         | 121/1199 [00:09<01:25, 12.65it/s] 10%|█         | 123/1199 [00:10<01:26, 12.43it/s] 10%|█         | 125/1199 [00:10<01:25, 12.55it/s] 11%|█         | 127/1199 [00:10<01:24, 12.73it/s] 11%|█         | 129/1199 [00:10<01:25, 12.54it/s] 11%|█         | 131/1199 [00:10<01:23, 12.73it/s] 11%|█         | 133/1199 [00:10<01:23, 12.70it/s] 11%|█▏        | 135/1199 [00:11<01:22, 12.85it/s] 11%|█▏        | 137/1199 [00:11<01:22, 12.85it/s] 12%|█▏        | 139/1199 [00:11<01:21, 13.00it/s] 12%|█▏        | 141/1199 [00:11<01:21, 13.04it/s] 12%|█▏        | 143/1199 [00:11<01:21, 12.96it/s] 12%|█▏        | 145/1199 [00:11<01:22, 12.85it/s] 12%|█▏        | 147/1199 [00:12<01:21, 12.93it/s] 12%|█▏        | 149/1199 [00:12<01:20, 13.03it/s] 13%|█▎        | 151/1199 [00:12<01:20, 13.01it/s] 13%|█▎        | 153/1199 [00:12<01:19, 13.09it/s] 13%|█▎        | 155/1199 [00:12<01:20, 12.98it/s] 13%|█▎        | 157/1199 [00:12<01:20, 12.89it/s] 13%|█▎        | 159/1199 [00:12<01:21, 12.70it/s] 13%|█▎        | 161/1199 [00:13<01:20, 12.89it/s] 14%|█▎        | 163/1199 [00:13<01:19, 13.01it/s] 14%|█▍        | 165/1199 [00:13<01:19, 12.95it/s] 14%|█▍        | 167/1199 [00:13<01:20, 12.87it/s] 14%|█▍        | 169/1199 [00:13<01:20, 12.84it/s] 14%|█▍        | 171/1199 [00:13<01:20, 12.75it/s] 14%|█▍        | 173/1199 [00:14<01:19, 12.94it/s] 15%|█▍        | 175/1199 [00:14<01:19, 12.84it/s] 15%|█▍        | 177/1199 [00:14<01:20, 12.75it/s] 15%|█▍        | 179/1199 [00:14<01:19, 12.77it/s] 15%|█▌        | 181/1199 [00:14<01:20, 12.61it/s] 15%|█▌        | 183/1199 [00:14<01:21, 12.50it/s] 15%|█▌        | 185/1199 [00:14<01:21, 12.39it/s] 16%|█▌        | 187/1199 [00:15<01:21, 12.36it/s] 16%|█▌        | 189/1199 [00:15<01:22, 12.21it/s] 16%|█▌        | 191/1199 [00:15<01:21, 12.35it/s] 16%|█▌        | 193/1199 [00:15<01:21, 12.39it/s] 16%|█▋        | 195/1199 [00:15<01:19, 12.57it/s] 16%|█▋        | 197/1199 [00:15<01:20, 12.45it/s] 17%|█▋        | 199/1199 [00:16<01:21, 12.29it/s] 17%|█▋        | 201/1199 [00:16<01:20, 12.43it/s] 17%|█▋        | 203/1199 [00:16<01:20, 12.43it/s] 17%|█▋        | 205/1199 [00:16<01:19, 12.49it/s] 17%|█▋        | 207/1199 [00:16<01:19, 12.46it/s] 17%|█▋        | 209/1199 [00:16<01:19, 12.51it/s] 18%|█▊        | 211/1199 [00:17<01:18, 12.54it/s] 18%|█▊        | 213/1199 [00:17<01:18, 12.55it/s] 18%|█▊        | 215/1199 [00:17<01:19, 12.41it/s] 18%|█▊        | 217/1199 [00:17<01:19, 12.40it/s] 18%|█▊        | 219/1199 [00:17<01:19, 12.37it/s] 18%|█▊        | 221/1199 [00:17<01:19, 12.35it/s] 19%|█▊        | 223/1199 [00:18<01:18, 12.48it/s] 19%|█▉        | 225/1199 [00:18<01:18, 12.42it/s] 19%|█▉        | 227/1199 [00:18<01:18, 12.46it/s] 19%|█▉        | 229/1199 [00:18<01:16, 12.61it/s] 19%|█▉        | 231/1199 [00:18<01:17, 12.57it/s] 19%|█▉        | 233/1199 [00:18<01:17, 12.53it/s] 20%|█▉        | 235/1199 [00:18<01:16, 12.52it/s] 20%|█▉        | 237/1199 [00:19<01:16, 12.54it/s] 20%|█▉        | 239/1199 [00:19<01:16, 12.52it/s] 20%|██        | 241/1199 [00:19<01:16, 12.51it/s] 20%|██        | 243/1199 [00:19<01:16, 12.47it/s] 20%|██        | 245/1199 [00:19<01:16, 12.41it/s] 21%|██        | 247/1199 [00:19<01:16, 12.42it/s] 21%|██        | 249/1199 [00:20<01:16, 12.44it/s] 21%|██        | 251/1199 [00:20<01:15, 12.48it/s] 21%|██        | 253/1199 [00:20<01:15, 12.56it/s] 21%|██▏       | 255/1199 [00:20<01:15, 12.57it/s] 21%|██▏       | 257/1199 [00:20<01:14, 12.69it/s] 22%|██▏       | 259/1199 [00:20<01:15, 12.52it/s] 22%|██▏       | 261/1199 [00:21<01:15, 12.48it/s] 22%|██▏       | 263/1199 [00:21<01:15, 12.40it/s] 22%|██▏       | 265/1199 [00:21<01:15, 12.40it/s] 22%|██▏       | 267/1199 [00:21<01:14, 12.43it/s] 22%|██▏       | 269/1199 [00:21<01:15, 12.27it/s] 23%|██▎       | 271/1199 [00:21<01:16, 12.19it/s] 23%|██▎       | 273/1199 [00:22<01:15, 12.27it/s] 23%|██▎       | 275/1199 [00:22<01:14, 12.33it/s] 23%|██▎       | 277/1199 [00:22<01:14, 12.35it/s] 23%|██▎       | 279/1199 [00:22<01:14, 12.42it/s] 23%|██▎       | 281/1199 [00:22<01:14, 12.30it/s] 24%|██▎       | 283/1199 [00:22<01:14, 12.33it/s] 24%|██▍       | 285/1199 [00:23<01:13, 12.44it/s] 24%|██▍       | 287/1199 [00:23<01:12, 12.55it/s] 24%|██▍       | 289/1199 [00:23<01:12, 12.56it/s] 24%|██▍       | 291/1199 [00:23<01:13, 12.41it/s] 24%|██▍       | 293/1199 [00:23<01:12, 12.48it/s] 25%|██▍       | 295/1199 [00:23<01:11, 12.59it/s] 25%|██▍       | 297/1199 [00:23<01:12, 12.53it/s] 25%|██▍       | 299/1199 [00:24<01:11, 12.55it/s] 25%|██▌       | 301/1199 [00:24<01:11, 12.54it/s] 25%|██▌       | 303/1199 [00:24<01:11, 12.51it/s] 25%|██▌       | 305/1199 [00:24<01:11, 12.48it/s] 26%|██▌       | 307/1199 [00:24<01:11, 12.47it/s] 26%|██▌       | 309/1199 [00:24<01:11, 12.46it/s] 26%|██▌       | 311/1199 [00:25<01:11, 12.41it/s] 26%|██▌       | 313/1199 [00:25<01:10, 12.48it/s] 26%|██▋       | 315/1199 [00:25<01:10, 12.55it/s]

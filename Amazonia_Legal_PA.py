@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import skimage.morphology
 from skimage.morphology import square, disk
 from sklearn.preprocessing import StandardScaler, MinMaxScaler
+import SharedParameters
 
 from Tools import *
 
@@ -29,9 +30,9 @@ class AMAZON_PA():
         self.mask = []
         self.coordinates = []
 
-        Image_t1_path = args.dataset_main_path + self.DATASET_REGION + args.images_section + self.DATA_T1 + args.data_type
-        Image_t2_path = args.dataset_main_path + self.DATASET_REGION + args.images_section + self.DATA_T2 + args.data_type
-        Reference_t1_path = args.dataset_main_path + self.DATASET_REGION + args.reference_section + self.REFERENCE_T1 + args.data_type
+        Image_t1_path = SharedParameters.Dataset_MAIN_PATH + self.DATASET_REGION + SharedParameters.IMAGES_SECTION + self.DATA_T1 + SharedParameters.DATA_TYPE
+        Image_t2_path = SharedParameters.Dataset_MAIN_PATH + self.DATASET_REGION + SharedParameters.IMAGES_SECTION + self.DATA_T2 + SharedParameters.DATA_TYPE
+        Reference_t1_path = SharedParameters.Dataset_MAIN_PATH + self.DATASET_REGION + SharedParameters.REFERENCE_SECTION + self.REFERENCE_T1 + SharedParameters.DATA_TYPE
 
         if args.compute_ndvi:
             self.shape = (int(args.patches_dimension), int(args.patches_dimension), 2 * int(args.image_channels) + 2)
@@ -39,24 +40,30 @@ class AMAZON_PA():
             self.shape = (int(args.patches_dimension), int(args.patches_dimension), 2 * int(args.image_channels))
 
         if not os.path.exists(Image_t1_path):
-            raise Exception("Invalid Image_t1_path.")
+            raise Exception("Invalid Image_t1_path: " + Image_t1_path)
 
         if not os.path.exists(Image_t2_path):
-            raise Exception("Invalid Image_t2_path.")
+            raise Exception("Invalid Image_t2_path: " + Image_t2_path)
         
         if not os.path.exists(Reference_t1_path):
-            raise Exception("Invalid Reference_t1_path.")        
+            raise Exception("Invalid Reference_t1_path: " + Reference_t1_path)       
 
         if args.reference_t2_name is not None:
-            reference_t2_name = args.reference_t2_name
-        elif args.phase == 'train':
-            reference_t2_name = self.PSEUDO_REFERENCE
+            reference_t2_name = args.reference_t2_name  
+        elif args.phase != SharedParameters.PHASE_TRAIN:
+            reference_t2_name = self.REFERENCE_T2       
+        elif args.role == SharedParameters.ROLE_SOURCE:
+            reference_t2_name = self.REFERENCE_T2
+        elif args.training_type == SharedParameters.TRAINING_TYPE_CLASSIFICATION:
+            reference_t2_name = self.REFERENCE_T2 
         else:
-            reference_t2_name = self.REFERENCE_T2        
+            #PSEUDO_REFERENCE USED ONLY IF: ROLE == TARGET, TRAINING TYPE == DOMAIN_ADAPTATION, PHASE == TRAIN:
+            reference_t2_name = self.PSEUDO_REFERENCE
 
+        print("Phase " + args.phase)        
         print("Reference t2: " + reference_t2_name)
         #Reference_t2 can be an actual file or simply 'None'
-        Reference_t2_path = args.dataset_main_path + self.DATASET_REGION + args.reference_section + reference_t2_name + args.data_type
+        Reference_t2_path = SharedParameters.Dataset_MAIN_PATH + self.DATASET_REGION + SharedParameters.REFERENCE_SECTION + reference_t2_name + SharedParameters.DATA_TYPE
         
         if args.reference_t2_name is not None and args.reference_t2_name != 'None' and not os.path.exists(Reference_t2_path):
             raise Exception("Invalid Reference_t2_path.")
@@ -87,12 +94,12 @@ class AMAZON_PA():
         if args.buffer:
             print('[*]Computing buffer regions...')
             #Dilating the reference_t1
-            reference_t1 = skimage.morphology.dilation(reference_t1, disk(args.buffer_dimension_out))
+            reference_t1 = skimage.morphology.dilation(reference_t1, disk(SharedParameters.BUFFER_DIMENSION_OUT))
             if os.path.exists(Reference_t2_path) or args.reference_t2_name == 'NDVI':
                 #Dilating the reference_t2
-                reference_t2_dilated = skimage.morphology.dilation(reference_t2, disk(args.buffer_dimension_out))
+                reference_t2_dilated = skimage.morphology.dilation(reference_t2, disk(SharedParameters.BUFFER_DIMENSION_OUT))
                 buffer_t2_from_dilation = reference_t2_dilated - reference_t2
-                reference_t2_eroded  = skimage.morphology.erosion(reference_t2 , disk(args.buffer_dimension_in))
+                reference_t2_eroded  = skimage.morphology.erosion(reference_t2 , disk(SharedParameters.BUFFER_DIMENSION_IN))
                 buffer_t2_from_erosion  = reference_t2 - reference_t2_eroded
                 buffer_t2 = buffer_t2_from_dilation + buffer_t2_from_erosion
                 reference_t2 = reference_t2 - buffer_t2_from_erosion
