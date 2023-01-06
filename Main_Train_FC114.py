@@ -96,8 +96,6 @@ parser.add_argument('--save_intermediate_model', dest='save_intermediate_model',
 
 args = parser.parse_args()
 
-
-# TODO Lucas: P
 def main():
     print(args)    
 
@@ -113,15 +111,17 @@ def main():
         args.reference_t2_name = args.source_reference_t2_name  
         dataset_s = AMAZON_RO(args)
 
-    if args.source_dataset == 'Amazon_PA':
+    elif args.source_dataset == 'Amazon_PA':
         args.role = ROLE_SOURCE
         args.reference_t2_name = args.source_reference_t2_name
         dataset_s = AMAZON_PA(args)
 
-    if args.source_dataset == 'Cerrado_MA':     
+    elif args.source_dataset == 'Cerrado_MA':     
         args.role = ROLE_SOURCE   
         args.reference_t2_name = args.source_reference_t2_name
         dataset_s = CERRADO_MA(args)
+    else:
+        raise Exception("Invalid argument source_dataset: " + args.source_dataset)
 
     if AMAZON_RO.DATASET in args.target_dataset:              
         args.role = ROLE_TARGET     

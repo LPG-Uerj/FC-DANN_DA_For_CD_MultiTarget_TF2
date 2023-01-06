@@ -2,6 +2,7 @@ import os
 import sys
 import numpy as np
 import matplotlib.pyplot as plt
+import Charts
 
 
 num_samples = 100
@@ -20,13 +21,7 @@ labels = []
 labels.append('1-Tr: MA,Ts: MA (Source only training)')
 #labels.append('2-Tr: MA,Ts: PA (Multi Domain training)')
 
-colors = []
-colors.append('#1724BD')
-#colors.append('#0EB7C2')
-#colors.append('#BF114B')
-#colors.append('#E98E2C')
-#colors.append('#008f39')
-#colors.append('#663300')
+colors = Charts.colors.copy()
 
 titles = []
 

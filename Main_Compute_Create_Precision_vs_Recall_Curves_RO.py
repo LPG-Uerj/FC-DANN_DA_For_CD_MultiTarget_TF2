@@ -2,6 +2,7 @@ import os
 import sys
 import numpy as np
 import matplotlib.pyplot as plt
+import Charts
 
 
 num_samples = 100
@@ -18,13 +19,7 @@ labels = []
 labels.append('1-Tr: RO,Ts: RO (Source only training)')
 #labels.append('2-Tr: PA,Ts: MA (Multi Domain training)')
 
-colors = []
-colors.append('#1724BD')
-#colors.append('#0EB7C2')
-#colors.append('#BF114B')
-#colors.append('#E98E2C')
-#colors.append('#008f39')
-#colors.append('#663300')
+colors = Charts.colors.copy()
 
 titles = []
 
@@ -97,9 +92,6 @@ if __name__ == '__main__':
                     fscore__ = np.load(fscore_path)
 
                     print(precision__)
-
-                    #print(precision__)
-                    #print(recall__)
 
                     if np.size(recall__, 1) > Npoints:
                         recall__ = recall__[:,:-1]
