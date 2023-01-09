@@ -10,7 +10,7 @@ class WeightedCrossEntropyC(Loss):
         self.mask = mask        
 
     def call(self, y_true, y_pred):
-        print("WeightedCrossEntropyC call - ClassWeights: {0} - Mask: {1}".format(str(np.shape(self.class_weights)),np.shape(self.mask)))
+        #print("WeightedCrossEntropyC call - ClassWeights: {0} - Mask: {1}".format(str(np.shape(self.class_weights)),np.shape(self.mask)))
         temp = -y_true * tf.math.log(y_pred + 1e-3)
         temp_weighted = tf.math.multiply(self.class_weights,temp)
         loss = tf.math.reduce_sum(temp_weighted, 3)

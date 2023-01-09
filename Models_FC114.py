@@ -101,28 +101,31 @@ class Models():
         return empty_model
 
     @tf.function
-    def _training_step(self, x_batch_train, y_batch_train, class_weights, mask_c, is_training = True):
+    def _training_step(self, x_batch_train, y_batch_train, class_weights, mask_c):
         with tf.GradientTape() as tape:
             self.classifier_loss.class_weights = class_weights
             self.classifier_loss.mask = mask_c
-            y_pred = self.model(x_batch_train,training = is_training)            
-            loss = self.classifier_loss(y_batch_train, y_pred)
-        
+            y_pred = self.model(x_batch_train,training = True)            
+            loss = self.classifier_loss(y_batch_train, y_pred)        
+
         gradients = tape.gradient(loss, self.model.trainable_weights)        
         self.training_optimizer.apply_gradients(zip(gradients, self.model.trainable_weights))       
-
-        #self.acc_function_segmentation.update_state(y_batch_train, y_pred)
-        
-        #y_true = tf.math.argmax(y_true, axis = -1)
-        #y_pred = tf.math.argmax(y_pred, axis = -1)
-        #self.precision.update_state(y_true, y_pred)
-        #self.recall.update_state(y_true, y_pred)        
+       
         del tape        
         return loss, y_pred
 
     @tf.function
+    def _test_step(self, x_batch_train, y_batch_train, class_weights, mask_c):
+            self.classifier_loss.class_weights = class_weights
+            self.classifier_loss.mask = mask_c
+            y_pred = self.model(x_batch_train, training = False)            
+            loss = self.classifier_loss(y_batch_train, y_pred) 
+
+            return loss, y_pred
+
+    @tf.function
     def _training_step_domain_adaptation(self, inputs, outputs, class_weights, mask_c, train_segmentation = True,
-                                         train_discriminator = True, is_training = True):
+                                         train_discriminator = True):
 
         y_true_segmentation, y_true_discriminator = outputs
         x_input, lambdas = inputs
@@ -130,9 +133,9 @@ class Models():
             self.classifier_loss.class_weights = class_weights
             self.classifier_loss.mask = mask_c
 
-            y_pred_segmentation, features = self.model.main_network(x_input, training = is_training)   
+            y_pred_segmentation, features = self.model.main_network(x_input, training=True)   
             discriminator_input = self.model.gradient_reversal_layer([features, lambdas])
-            _, logits_discriminator = self.model.domain_discriminator(discriminator_input, training=is_training)
+            _, logits_discriminator = self.model.domain_discriminator(discriminator_input,training=True)
             
             loss_segmentation = self.classifier_loss(y_true_segmentation, y_pred_segmentation)
             #loss_segmentation =  tf.reduce_sum(mask_c * temp_loss) / tf.reduce_sum(mask_c)
@@ -154,6 +157,22 @@ class Models():
             #self.acc_function_discriminator.update_state(y_true_discriminator, y_pred_discriminator)
 
         del tape
+
+        return loss_segmentation, y_pred_segmentation, loss_discriminator
+
+    @tf.function
+    def _test_step_domain_adaptation(self, inputs, outputs, class_weights, mask_c):
+
+        y_true_segmentation, y_true_discriminator = outputs       
+    
+        self.classifier_loss.class_weights = class_weights
+        self.classifier_loss.mask = mask_c
+
+        y_pred_segmentation, _, logits_discriminator = self.model(inputs,training=False)        
+        
+        loss_segmentation = self.classifier_loss(y_true_segmentation, y_pred_segmentation)
+        loss_discriminator = self.domainregressor_loss(y_true_discriminator, logits_discriminator)
+        #loss_global = loss_segmentation + loss_discriminator
 
         return loss_segmentation, y_pred_segmentation, loss_discriminator
 
@@ -524,8 +543,7 @@ class Models():
                     Weights[:,:,:,0] = class_weights[0] * Weights[:,:,:,0]
                     Weights[:,:,:,1] = class_weights[1] * Weights[:,:,:,1]
 
-                    if self.args.training_type == TRAINING_TYPE_CLASSIFICATION:                    
-                        # _, c_batch_loss, batch_probs  = self.sess.run([self.training_optimizer, self.total_loss, self.prediction_c],feed_dict={self.data: data_batch, self.label_c: y_train_c_hot_batch,self.mask_c: classification_mask_batch, self.class_weights: Weights, self.learning_rate: self.lr})
+                    if self.args.training_type == TRAINING_TYPE_CLASSIFICATION:
                         c_batch_loss, batch_probs = self._training_step(data_batch, y_train_c_hot_batch, Weights, classification_mask_batch)
                     elif self.args.training_type == TRAINING_TYPE_DOMAIN_ADAPTATION:
                         if 'DR' in self.args.da_type:
@@ -534,20 +552,12 @@ class Models():
                             else:
                                 y_train_d_batch = y_train_d[b * self.args.batch_size : (b + 1) * self.args.batch_size, :]
 
-                            y_train_d_hot_batch = tf.keras.utils.to_categorical(y_train_d_batch, self.num_targets)
-
-                            # _, c_batch_loss, batch_probs, d_batch_loss  = self.sess.run([self.training_optimizer, self.classifier_loss, self.prediction_c, self.domainregressor_loss],
-                            #                                              feed_dict={self.data: data_batch, self.label_c: y_train_c_hot_batch, self.label_d: y_train_d_hot_batch,
-                            #                                                         self.mask_c: classification_mask_batch, self.class_weights: Weights, self.L: self.l, self.learning_rate: self.lr})
+                            y_train_d_hot_batch = tf.keras.utils.to_categorical(y_train_d_batch, self.num_targets)                            
 
                             c_batch_loss, batch_probs, d_batch_loss = self._training_step_domain_adaptation([data_batch,self.l], [y_train_c_hot_batch, y_train_d_hot_batch], Weights, classification_mask_batch)
 
                             loss_dr_tr[0 , 0] += d_batch_loss
                         else:
-                            # _, c_batch_loss, batch_probs  = self.sess.run([self.training_optimizer, self.total_loss, self.prediction_c],
-                            #                                               feed_dict={self.data: data_batch, self.label_c: y_train_c_hot_batch,
-                            #                                                          self.mask_c: classification_mask_batch, self.class_weights: Weights, self.learning_rate: self.lr})
-
                             c_batch_loss, batch_probs = self._training_step(data_batch, y_train_c_hot_batch, Weights, classification_mask_batch)
                     
                     loss_cl_tr[0 , 0] += c_batch_loss
@@ -629,34 +639,21 @@ class Models():
                     Weights[:,:,:,1] = class_weights[1] * Weights[:,:,:,1]
                     
                     if self.args.training_type == TRAINING_TYPE_CLASSIFICATION:
-                        # c_batch_loss, batch_probs = self.sess.run([self.total_loss, self.prediction_c],
-                        #                                          feed_dict={self.data: data_batch, self.label_c: y_valid_c_hot_batch,
-                        #                                                     self.mask_c: classification_mask_batch, self.class_weights: Weights,  self.learning_rate: self.lr})
-                                            
-                        c_batch_loss, batch_probs = self._training_step(data_batch, y_valid_c_hot_batch, Weights, classification_mask_batch, is_training = False)
+                        c_batch_loss, batch_probs = self._test_step(data_batch, y_valid_c_hot_batch, Weights, classification_mask_batch)
                     if self.args.training_type == TRAINING_TYPE_DOMAIN_ADAPTATION:
                         if 'DR' in self.args.da_type:
                             if len(self.D_out_shape) > 2:
                                 y_valid_d_batch = y_valid_d[b * self.args.batch_size : (b + 1) * self.args.batch_size, :, :,:]
                             else:
                                 y_valid_d_batch = y_valid_d[b * self.args.batch_size : (b + 1) * self.args.batch_size, :]
-
-                            #y_valid_d_batch = y_valid_d[b * self.args.batch_size : (b + 1) * self.args.batch_size, :]
-                            y_valid_d_hot_batch = tf.keras.utils.to_categorical(y_valid_d_batch, self.num_targets)
                             
-                            # c_batch_loss, batch_probs, d_batch_loss = self.sess.run([self.classifier_loss, self.prediction_c, self.domainregressor_loss],
-                            #                                                        feed_dict={self.data: data_batch, self.label_c: y_valid_c_hot_batch, self.label_d: y_valid_d_hot_batch,
-                            #                                                        self.mask_c: classification_mask_batch, self.class_weights: Weights, self.L: 0, self.learning_rate: self.lr})
+                            y_valid_d_hot_batch = tf.keras.utils.to_categorical(y_valid_d_batch, self.num_targets)
 
-                            c_batch_loss, batch_probs, d_batch_loss = self._training_step_domain_adaptation([data_batch,self.l], [y_valid_c_hot_batch, y_valid_d_hot_batch], Weights, classification_mask_batch, is_training = False)
+                            c_batch_loss, batch_probs, d_batch_loss = self._test_step_domain_adaptation([data_batch,self.l], [y_valid_c_hot_batch, y_valid_d_hot_batch], Weights, classification_mask_batch)
 
                             loss_dr_vl[0 , 0] += d_batch_loss
                         else:
-                            c_batch_loss, batch_probs = self._training_step(data_batch, y_valid_c_hot_batch, Weights, classification_mask_batch, is_training = False)
-
-                            # c_batch_loss, batch_probs = self.sess.run([self.total_loss, self.prediction_c],
-                            #                                          feed_dict={self.data: data_batch, self.label_c: y_valid_c_hot_batch,
-                            #                                                     self.mask_c: classification_mask_batch, self.class_weights: Weights,  self.learning_rate: self.lr})
+                            c_batch_loss, batch_probs = self._test_step(data_batch, y_valid_c_hot_batch, Weights, classification_mask_batch)                            
 
                     loss_cl_vl[0 , 0] += c_batch_loss
 
@@ -704,15 +701,12 @@ class Models():
                     if 'DR' in self.args.da_type:
                         if np.isnan(loss_cl_tr[0,0]) or np.isnan(loss_cl_vl[0,0]):
                             print('Nan value detected!!!!')
-                            print('[*]ReLoading the models weights...')
-                            #self.sess.run(tf.initialize_all_variables())
-                            try:
-                                self.load(self.args.save_checkpoint_path)                            
+                            print('[*]ReLoading the models weights...')                            
+                            try:                                   
+                                self.load_weights(self.args.save_checkpoint_path)                         
                                 print(" [*] Load successfuly")
                             except Exception as e:                                 
-                                print(" [!] Load failed... Details: {0}".format(e))
-                                #self.sess.run(tf.initialize_all_variables())
-                                #self.__init__(self.args, self.dataset)
+                                print(" [!] Load failed... Details: {0}".format(e))                                
 
                         elif self.l != 0:
                             FLAG = False
@@ -724,8 +718,7 @@ class Models():
                                     best_mod_dr = loss_dr_vl[0 , 0]
                                     best_model_epoch = e
                                     print('[!]Saving best ideal model at epoch: ' + str(e))
-                                    f.write("[!]Ideal best ideal model\n")
-                                    #self.save(self.args.save_checkpoint_path, best_model_epoch)
+                                    f.write("[!]Ideal best ideal model\n")                                    
                                     self.save_weights(self.args.save_checkpoint_path)
                                     FLAG = True
                                 elif np.abs(best_val_fs - f1_score_vl) < 3:
@@ -734,8 +727,7 @@ class Models():
                                     best_mod_dr = loss_dr_vl[0 , 0]
                                     best_model_epoch = e
                                     print('[!]Saving best model attending best Dr_loss at epoch: ' + str(e))
-                                    f.write("[!]Best model attending best Dr_loss\n")
-                                    #self.save(self.args.save_checkpoint_path, best_model_epoch)
+                                    f.write("[!]Best model attending best Dr_loss\n")                                    
                                     self.save_weights(self.args.save_checkpoint_path)
                                     FLAG = True
                             elif best_val_fs < f1_score_vl:
@@ -745,8 +737,7 @@ class Models():
                                     best_mod_dr = loss_dr_vl[0 , 0]
                                     best_model_epoch = e
                                     print('[!]Saving best model attending best f1-score at epoch: ' + str(e))
-                                    f.write("[!]Best model attending best f1-score \n")
-                                    #self.save(self.args.save_checkpoint_path)
+                                    f.write("[!]Best model attending best f1-score \n")                                    
                                     self.save_weights(self.args.save_checkpoint_path)
                                     FLAG = True
 
@@ -767,8 +758,7 @@ class Models():
                             print('[!] Best Validation F1 score: %.2f%%'%(best_val_fs))
                             best_model_epoch = e
                             if self.args.save_intermediate_model:
-                                print('[!]Saving best model at epoch: ' + str(e))
-                                #self.save(self.args.save_checkpoint_path, best_model_epoch)
+                                print('[!]Saving best model at epoch: ' + str(e))                                
                                 self.save_weights(self.args.save_checkpoint_path)
                         else:
                             pat += 1
@@ -782,8 +772,7 @@ class Models():
                     print('[!] Best Validation F1 score: %.2f%%'%(best_val_fs))
                     best_model_epoch = e
                     if self.args.save_intermediate_model:
-                        print('[!]Saving best model at epoch: ' + str(e))
-                        #self.save(self.args.save_checkpoint_path, best_model_epoch)
+                        print('[!]Saving best model at epoch: ' + str(e))                        
                         self.save_weights(self.args.save_checkpoint_path)
                 else:
                     pat += 1
