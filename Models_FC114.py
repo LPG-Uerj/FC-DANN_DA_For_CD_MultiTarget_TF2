@@ -6,8 +6,6 @@ import scipy.io as sio
 from tqdm import trange
 import tensorflow as tf
 from tensorflow import keras
-from sklearn.manifold import TSNE
-from sklearn.decomposition import PCA
 import matplotlib.pyplot as plt
 from sklearn.utils import shuffle
 from contextlib import redirect_stdout
@@ -19,7 +17,7 @@ from keras.backend import clear_session
 from SharedParameters import TRAINING_TYPE_DOMAIN_ADAPTATION,TRAINING_TYPE_CLASSIFICATION
 from Tools import *
 from Networks import *
-from layers import GradientReversalLayer
+from discriminators import *
 
 class Models():
     def __init__(self, args, dataset_s, dataset_t):
@@ -71,43 +69,34 @@ class Models():
             Encoder_Outputs, low_Level_Features, features_c = deepLab.build_DeepLab_Encoder(input_block, name = "DeepLab_Encoder")
             
             #Building Decoder
-            Decoder_Outputs, logits = deepLab.build_DeepLab_Decoder(Encoder_Outputs, low_Level_Features, name = "DeepLab_Decoder")
+            Decoder_Outputs = deepLab.build_DeepLab_Decoder(Encoder_Outputs, low_Level_Features, name = "DeepLab_Decoder")
 
-            if 'DR' in self.args.da_type:
-                deeplab_model = tf.keras.Model(inputs = input_block, outputs = [Decoder_Outputs, features_c], name = 'deeplabv3plus_domain_adaptation')
+            if self.args.training_type == TRAINING_TYPE_DOMAIN_ADAPTATION:
+                if 'DR' in self.args.da_type:
+                    deeplab_model = tf.keras.Model(inputs = input_block, outputs = [Decoder_Outputs, features_c], name = 'deeplabv3plus_domain_adaptation')
+                    if self.args.domain_regressor_type == 'FC':
+                        domain_discriminator_model = Domain_Regressor_FullyConnected(input_shape=features_c.shape[1:], units=1024, num_targets=self.num_targets)
+                    if self.args.domain_regressor_type == 'Dense':
+                        domain_discriminator_model = Domain_Regressor_Convolutional(input_shape=features_c.shape[1:], num_targets=self.num_targets)
+
+                    self.D_out_shape = domain_discriminator_model.layers[-2].output.shape[1:]
+                    print("self.D_out_shape: " + str(self.D_out_shape))
+    
+                    empty_model = DomainAdaptationModel(self.input_shape,deeplab_model,domain_discriminator_model)
+                    self.compile_model(empty_model)                    
+                    if showSummary:                
+                        self.summary(empty_model.main_network, "Encoder/Decoder: ") 
+                        self.summary(empty_model.domain_discriminator, "Domain_Regressor: ")
             else:
-                deeplab_model = tf.keras.Model(inputs = input_block, outputs = Decoder_Outputs, name = 'deeplabv3plus')           
+                empty_model = tf.keras.Model(inputs = input_block, outputs = Decoder_Outputs, name = 'deeplabv3plus')                 
+                self.compile_model(empty_model)  
+                if showSummary:
+                    self.summary(empty_model, "Encoder/Decoder: ")                      
 
-            if showSummary:
-                self.summary(deeplab_model, "Encoder/Decoder: ")
-                
+            if showSummary:                
+                self.summary(empty_model, "Full model: ")                
         else:
-            raise Exception("Invalid or not implemented classifier_type: {0}".format(self.args.classifier_type))
-
-        if self.args.training_type == TRAINING_TYPE_DOMAIN_ADAPTATION:
-            if 'DR' in self.args.da_type:
-                self.DR = Domain_Regressors(self.args)
-                self.args.num_targets = self.num_targets
-                gradient_reversal_layer = GradientReversalLayer()(features_c)                
-
-                if self.args.domain_regressor_type == 'FC':
-                    DR_Ouputs = self.DR.build_Domain_Classifier_Arch(gradient_reversal_layer, name = 'FC_Domain_Classifier')
-                if self.args.domain_regressor_type == 'Dense':
-                    DR_Ouputs = self.DR.build_Conv_Domain_Classifier(gradient_reversal_layer, name = 'Dense_Domain_Classifier')
-                
-                domain_discriminator_model = tf.keras.Model(inputs = gradient_reversal_layer, outputs = DR_Ouputs)                
-  
-                empty_model = DomainAdaptationModel(deeplab_model,gradient_reversal_layer,domain_discriminator_model,self.classifier_loss,self.domainregressor_loss, self.training_optimizer)
-                empty_model.build()                
-
-                if showSummary:                
-                    self.summary(domain_discriminator_model, "Domain_Regressor: ")
-        else:
-            empty_model = deeplab_model
-            self.compile_model(empty_model)        
-
-        if showSummary:                
-            self.summary(empty_model, "Full model: ")
+            raise Exception("Invalid or not implemented classifier_type: {0}".format(self.args.classifier_type))        
         
         return empty_model
 
@@ -142,13 +131,13 @@ class Models():
             self.classifier_loss.mask = mask_c
 
             y_pred_segmentation, features = self.model.main_network(x_input, training = is_training)   
-            discriminator_input = self.model.gradient_reversal_layer(features, lambdas)
-            y_pred_discriminator = self.model.domain_discriminator(discriminator_input, training=is_training)
+            discriminator_input = self.model.gradient_reversal_layer([features, lambdas])
+            _, logits_discriminator = self.model.domain_discriminator(discriminator_input, training=is_training)
             
             loss_segmentation = self.classifier_loss(y_true_segmentation, y_pred_segmentation)
             #loss_segmentation =  tf.reduce_sum(mask_c * temp_loss) / tf.reduce_sum(mask_c)
 
-            loss_discriminator = self.domainregressor_loss(y_true_discriminator, y_pred_discriminator)
+            loss_discriminator = self.domainregressor_loss(y_true_discriminator, logits_discriminator)
             loss_global = loss_segmentation + loss_discriminator
 
         if train_segmentation:
@@ -166,7 +155,7 @@ class Models():
 
         del tape
 
-        return loss_segmentation, loss_discriminator
+        return loss_segmentation, y_pred_segmentation, loss_discriminator
 
     def compile_model(self, model, show_summary: bool = True):        
         model.compile(optimizer = self.training_optimizer)
@@ -174,7 +163,7 @@ class Models():
             model.summary()
 
     def summary(self, net, name):
-        summaryFile = os.path.join(self.args.save_checkpoint_path,"Architecture.txt")
+        summaryFile = os.path.join(self.args.save_checkpoint_path,"Architecture.txt")        
         with open(summaryFile, 'a') as f:
             f.write(name + "\n")
             with redirect_stdout(f):
@@ -272,9 +261,9 @@ class Models():
                     target_length_tr.append(len(corners_coordinates_tr_t[i]))
                     target_length_vl.append(len(corners_coordinates_vl_t[i]))
         
-        if len(self.dataset_t) > 1:
-            corners_coordinates_tr_t = np.concatenate(corners_coordinates_tr_t, axis=0)
-            corners_coordinates_vl_t = np.concatenate(corners_coordinates_vl_t, axis=0)
+        #Combines different targets into one
+        corners_coordinates_tr_t = np.concatenate(corners_coordinates_tr_t, axis=0)
+        corners_coordinates_vl_t = np.concatenate(corners_coordinates_vl_t, axis=0)
 
         print('Sets dimensions before balancing')
         print('Source dimensions: ')
@@ -287,11 +276,11 @@ class Models():
             print(np.shape(corners_coordinates_vl_t))
 
             # Balancing the number of samples between source and target domain
-            size_tr_s = corners_coordinates_tr_s.shape[0]
-            size_tr_t = corners_coordinates_tr_t.shape[0]
+            size_tr_s = np.shape(corners_coordinates_tr_s)[0]
+            size_tr_t = np.shape(corners_coordinates_tr_t)[0]
             #size_tr_t = sum([np.shape(i)[0] for i in corners_coordinates_tr_t])
-            size_vl_s = corners_coordinates_vl_s.shape[0]
-            size_vl_t = corners_coordinates_vl_t.shape[0]
+            size_vl_s = np.shape(corners_coordinates_vl_s)[0]
+            size_vl_t = np.shape(corners_coordinates_vl_t)[0]
             #size_vl_t = sum([np.shape(i)[0] for i in corners_coordinates_vl_t])
 
             #Shuffling the num_samples
@@ -349,18 +338,18 @@ class Models():
             corners_coordinates_tr = corners_coordinates_tr_s.copy()
             corners_coordinates_vl = corners_coordinates_vl_s.copy()
 
-            domain_indexs_tr = np.zeros((corners_coordinates_tr.shape[0], 1))
-            domain_indexs_vl = np.zeros((corners_coordinates_vl.shape[0], 1))
+            domain_indexs_tr = np.zeros((np.shape(corners_coordinates_tr)[0], 1))
+            domain_indexs_vl = np.zeros((np.shape(corners_coordinates_vl)[0], 1))
 
-        if self.args.training_type == TRAINING_TYPE_DOMAIN_ADAPTATION:
+        elif self.args.training_type == TRAINING_TYPE_DOMAIN_ADAPTATION:
             # Concatenating coordinates from source and target domains
             corners_coordinates_tr = np.concatenate((corners_coordinates_tr_s, corners_coordinates_tr_t), axis = 0)
             corners_coordinates_vl = np.concatenate((corners_coordinates_vl_s, corners_coordinates_vl_t), axis = 0)
             # Domain indexs configuration
-            domain_indexs_tr_s = np.zeros((corners_coordinates_tr_s.shape[0], 1))
-            domain_indexs_tr_t = np.ones((corners_coordinates_tr_t.shape[0], 1))
-            domain_indexs_vl_s = np.zeros((corners_coordinates_vl_s.shape[0], 1))
-            domain_indexs_vl_t = np.ones((corners_coordinates_vl_t.shape[0], 1))
+            domain_indexs_tr_s = np.zeros((np.shape(corners_coordinates_tr_s)[0], 1))
+            domain_indexs_tr_t = np.ones((np.shape(corners_coordinates_tr_t)[0], 1))
+            domain_indexs_vl_s = np.zeros((np.shape(corners_coordinates_vl_s)[0], 1))
+            domain_indexs_vl_t = np.ones((np.shape(corners_coordinates_vl_t)[0], 1))
 
             domain_indexs_tr = np.concatenate((domain_indexs_tr_s, domain_indexs_tr_t), axis = 0)
             domain_indexs_vl = np.concatenate((domain_indexs_vl_s, domain_indexs_vl_t), axis = 0)
@@ -369,24 +358,27 @@ class Models():
                 # Domain labels configuration
                 # Source: 0
                 # Target 1: 1
-                # Target 2: 2                   
+                # Target 2: 2    
+                                               
                 target_labels_tr = []                
                 target_labels_vl = []             
                 if len(self.D_out_shape) > 2:
-                    source_labels_tr = np.zeros((corners_coordinates_tr_s.shape[0], self.D_out_shape[0], self.D_out_shape[1],1))
-                    source_labels_vl = np.zeros((corners_coordinates_vl_s.shape[0], self.D_out_shape[0], self.D_out_shape[1],1))
+                    source_labels_tr = np.zeros((np.shape(corners_coordinates_tr_s)[0], self.D_out_shape[0], self.D_out_shape[1],1))
+                    source_labels_vl = np.zeros((np.shape(corners_coordinates_vl_s)[0], self.D_out_shape[0], self.D_out_shape[1],1))
                     target_label_value = 1                    
                     for i in range(len(self.dataset_t)):                        
                         target_labels_tr.append(np.full((target_length_tr[i], self.D_out_shape[0], self.D_out_shape[1],1),target_label_value))
                         target_labels_vl.append(np.full((target_length_vl[i], self.D_out_shape[0], self.D_out_shape[1],1),target_label_value))
                         
-                        print('target_labels_tr['+str(i)+']')
-                        print(np.shape(target_labels_tr[i]))
+                        print("Target " + self.dataset_t[i].DATASET)
                         print('Label value: ' + str(target_label_value))
+
+                        print('target_labels_tr['+str(i)+']')
+                        print(np.shape(target_labels_tr[i]))                        
                         
                         print('target_labels_vl['+str(i)+']')
                         print(np.shape(target_labels_vl[i]))
-                        print('Label value: ' + str(target_label_value))
+                        
                         
                         target_label_value += 1
                 else:
@@ -397,13 +389,14 @@ class Models():
                         target_labels_tr.append(np.full((target_length_tr[i], 1),target_label_value))
                         target_labels_vl.append(np.full((target_length_vl[i], 1),target_label_value))
                         
-                        print('target_labels_tr['+str(i)+']')
-                        print(np.shape(target_labels_tr))
+                        print("Target " + self.dataset_t[i].DATASET)
                         print('Label value: ' + str(target_label_value))
+
+                        print('target_labels_tr['+str(i)+']')
+                        print(np.shape(target_labels_tr))                        
                         
                         print('target_labels_vl['+str(i)+']')
-                        print(np.shape(target_labels_vl))
-                        print('Label value: ' + str(target_label_value))                        
+                        print(np.shape(target_labels_vl))                        
                         
                         target_label_value += 1
 
@@ -488,7 +481,7 @@ class Models():
                     if e >= warmup:
                         self.l = 2. / (1. + np.exp(-2.5 * self.p)) - 1
                     else:
-                        self.l = 0
+                        self.l = 0.
                     print("lambda_p: " + str(self.l))
 
                 self.lr = self.learning_rate_decay()            

@@ -1,60 +1,10 @@
 import tensorflow as tf
-from layers import ReshapeTensor, GradientReversalLayer
+from layers import ReshapeTensor
+from tensorflow.keras.models import Model
 
 #--------------------
 
 from BaseModels import *
-
-
-class Domain_Regressors():
-    
-    def __init__(self, args):
-        super(Domain_Regressors, self).__init__()
-        self.args = args
-    
-    def build_Domain_Classifier_Arch(self, input_layer, name = "Domain_Classifier_Arch"):            
-        #layers = GradientReversalLayer()(input_layer)
-        layers = input_layer
-            
-        layers = tf.keras.layers.Flatten()(layers)
-        layers = tf.keras.layers.Dense(units=1024, activation_function="relu")(layers)
-        layers = tf.keras.layers.Dense(units=1024, activation_function="relu")(layers)
-            
-        layers = tf.keras.layers.Dense(units=self.args.num_targets, activation=None)(layers)
-        
-        layers = tf.keras.layers.Softmax()(layers)
-
-        return layers
-
-
-    def build_Conv_Domain_Classifier(self, input_layer, name = "Domain_Classifier_Arch"):
-        num_filters = input_layer.shape[3]
-
-        layers = input_layer
-        
-        for i in range(3):            
-            layers = self.general_conv2d(layers, num_filters/(2**i), 3, strides=1, padding='SAME', activation_function='leakyrelu', do_norm=True, name=name + '_conv2d_' + str(i))
-        
-        layers = self.general_conv2d(layers, 2, 1, strides=1, padding='SAME', activation_function='None', do_norm=False, name=name + '_conv2d_' + str(i + 1))
-        layers = tf.keras.layers.Softmax()(layers)
-        return layers
-
-    def general_conv2d(self, input_data, filters=64,  kernel_size=7, strides=1, stddev=0.02, activation_function="relu", padding="VALID", do_norm=True, relu_factor=0, name="conv2d"):        
-        conv = tf.keras.layers.Conv2D(filters, kernel_size, strides, padding, activation=None, kernel_initializer='glorot_uniform')(input_data)
-        if do_norm:
-            conv = tf.keras.layers.BatchNormalization(momentum=0.9)(conv)            
-        if activation_function.casefold() == "leakyrelu":                
-            conv = tf.keras.layers.LeakyReLU(alpha=relu_factor)(conv)
-        elif activation_function.casefold() != "none":
-            conv = tf.keras.layers.Activation(activation_function)(conv)        
-        return conv
-
-    def general_dense(self, input_data, units=1024, activation_function="relu", use_bias=True, kernel_initializer=None,
-                      bias_initializer=tf.zeros_initializer(), kernel_regularizer=None,bias_regularizer=None, activity_regularizer=None,
-                      kernel_constraint=None, bias_constraint=None, trainable=True, name='dense'):       
-        dense = tf.keras.layers.Dense(units, activation=None)(input_data)
-        dense = tf.keras.layers.Activation(activation_function)(dense)        
-        return dense
 
 class DeepLabV3Plus():
     def __init__(self, args):
@@ -143,7 +93,7 @@ class DeepLabV3Plus():
         logits = ReshapeTensor(inputs_size)(layer)
         layer = tf.keras.layers.Softmax()(logits)
 
-        return layer, logits
+        return layer
 
     def atrous_Spatial_Pyramid_Pooling(self, inputs, aspp_rates, batch_norm_decay, is_training, depth=256):
         """Atrous Spatial Pyramid Pooling.
