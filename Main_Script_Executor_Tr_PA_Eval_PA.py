@@ -58,6 +58,9 @@ DATASETS = [AMAZON_PA.DATASET]
 for dr_localization in DR_LOCALIZATION:
     for method in METHODS:
         for da in DA_TYPES:
+
+            checkpoint_dir_param = checkpoint_dir + training_type + "_" + target_dataset
+
             if args.train:
                 
                 Schedule.append("python " + Train_MAIN_COMMAND + " "
@@ -89,12 +92,14 @@ for dr_localization in DR_LOCALIZATION:
                                 "--da_type " + da + " "
                                 "--runs " + runs + " "
                                 "--patience 10 "
-                                "--checkpoint_dir " + checkpoint_dir + method + "_" + da + "_" + target_dataset + " "
+                                "--checkpoint_dir " + checkpoint_dir_param + " "
                                 "--source_dataset " + source_dataset + " "
                                 "--target_dataset " + target_dataset + " "                                
                                 "--checkpoint_results_main_path " + Checkpoint_Results_MAIN_PATH + " ")
 
             for target_ds in DATASETS:
+
+                results_dir_param = results_dir + training_type + "_" + target_dataset
 
                 if args.test:                    
                     Schedule.append("python " + Test_MAIN_COMMAND + " "
@@ -113,8 +118,8 @@ for dr_localization in DR_LOCALIZATION:
                                 "--phase test "
                                 "--training_type " + training_type + " "
                                 "--da_type " + da + " "
-                                "--checkpoint_dir " + checkpoint_dir + method + "_" + da + "_" + target_dataset + " "
-                                "--results_dir " + results_dir + method + "_" + da + "_" + target_dataset + "_multi_" + target_ds + " "
+                                "--checkpoint_dir " + checkpoint_dir_param + " "
+                                "--results_dir " + results_dir_param + " "
                                 "--dataset " + target_ds + " "                                
                                 "--checkpoint_results_main_path " + Checkpoint_Results_MAIN_PATH + " ")                
 
@@ -133,8 +138,8 @@ for dr_localization in DR_LOCALIZATION:
                                 "--phase compute_metrics "
                                 "--training_type " + training_type + " "
                                 "--save_result_text True "
-                                "--checkpoint_dir " + checkpoint_dir + method + "_" + da + "_" + target_dataset + " "
-                                "--results_dir " + results_dir + method + "_" + da + "_" + target_dataset + "_multi_" + target_ds + " "
+                                "--checkpoint_dir " + checkpoint_dir_param + " "
+                                "--results_dir " + results_dir_param + " "
                                 "--dataset " + target_ds + " "                                 
                                 "--checkpoint_results_main_path " + Checkpoint_Results_MAIN_PATH + " ")
 
@@ -153,8 +158,8 @@ for dr_localization in DR_LOCALIZATION:
                                 "--phase compute_metrics "
                                 "--training_type " + training_type + " "
                                 "--save_result_text False "
-                                "--checkpoint_dir " + checkpoint_dir + method + "_" + da + "_" + target_dataset + " "
-                                "--results_dir " + results_dir + method + "_" + da + "_" + target_dataset + "_multi_" + target_ds + " "
+                                "--checkpoint_dir " + checkpoint_dir_param + " "
+                                "--results_dir " + results_dir_param + " "
                                 "--dataset " + target_ds + " "                                
                                 "--checkpoint_results_main_path " + Checkpoint_Results_MAIN_PATH + " ")
 

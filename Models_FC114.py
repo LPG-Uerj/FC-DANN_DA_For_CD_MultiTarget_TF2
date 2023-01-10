@@ -27,6 +27,8 @@ class Models():
 
         self.num_targets = self.args.num_targets
 
+        print("self.num_targets: " + str(self.num_targets))
+
         self.checkpoint_name = self.args.classifier_type
 
         self.best_weights = None
@@ -36,6 +38,17 @@ class Models():
 
         self.classifier_loss = WeightedCrossEntropyC()
         self.domainregressor_loss = CategoricalCrossentropy(from_logits=True)
+
+        self.segmentation_history = {}
+        self.discriminator_history = {}
+
+        self.segmentation_history["loss"] = []        
+        self.segmentation_history["f1"] = []
+        self.segmentation_history["val_loss"] = []
+        self.segmentation_history["val_f1"] = []
+
+        self.discriminator_history["loss"] = []        
+        self.discriminator_history["val_loss"] = []        
 
         if args.compute_ndvi:
             self.input_shape = (int(args.patches_dimension), int(args.patches_dimension), 2 * int(args.image_channels) + 2)
@@ -138,7 +151,6 @@ class Models():
             _, logits_discriminator = self.model.domain_discriminator(discriminator_input,training=True)
             
             loss_segmentation = self.classifier_loss(y_true_segmentation, y_pred_segmentation)
-            #loss_segmentation =  tf.reduce_sum(mask_c * temp_loss) / tf.reduce_sum(mask_c)
 
             loss_discriminator = self.domainregressor_loss(y_true_discriminator, logits_discriminator)
             loss_global = loss_segmentation + loss_discriminator
@@ -147,14 +159,9 @@ class Models():
             gradients_segmentation = tape.gradient(loss_global, self.model.main_network.trainable_weights)
             self.training_optimizer.apply_gradients(zip(gradients_segmentation, self.model.main_network.trainable_weights))
 
-            #self.acc_function_segmentation.update_state(y_true_segmentation, y_pred_segmentation, sample_weight = acc_mask)
-
         if train_discriminator:
             gradients_discriminator = tape.gradient(loss_discriminator, self.model.domain_discriminator.trainable_weights)
             self.discriminator_optimizer.apply_gradients(zip(gradients_discriminator, self.model.domain_discriminator.trainable_weights))
-
-            #y_true_discriminator = tf.expand_dims(y_true_discriminator, axis = -1)
-            #self.acc_function_discriminator.update_state(y_true_discriminator, y_pred_discriminator)
 
         del tape
 
@@ -171,8 +178,8 @@ class Models():
         y_pred_segmentation, _, logits_discriminator = self.model(inputs,training=False)        
         
         loss_segmentation = self.classifier_loss(y_true_segmentation, y_pred_segmentation)
+        
         loss_discriminator = self.domainregressor_loss(y_true_discriminator, logits_discriminator)
-        #loss_global = loss_segmentation + loss_discriminator
 
         return loss_segmentation, y_pred_segmentation, loss_discriminator
 
@@ -195,7 +202,7 @@ class Models():
         return loss # [Batch_size, patch_dimension, patc_dimension, 1]
 
     def learning_rate_decay(self):
-        lr = self.args.lr / (1. + 10 * self.p)**0.75 #modificado de **0.75 para **0.95 - maior decaimento
+        lr = self.args.lr / (1. + 10 * self.p)**0.75
         return lr
 
     def Train(self):
@@ -445,6 +452,7 @@ class Models():
 
         #Training starts now:
         e = 0
+        best_model_epoch = -1
         while (e < self.args.epochs):        
             #Shuffling the data and the labels
             num_samples = corners_coordinates_tr.shape[0]
@@ -493,7 +501,7 @@ class Models():
                 print("----------------------------------------------------------")
                 #Computing some parameters
                 self.p = float(e) / self.args.epochs
-                print("Percentage of epochs: " + str(self.p))
+                print("Current Epoch: {0}/{1}".format(str(e),str(self.args.epochs)))
 
                 if self.args.training_type == TRAINING_TYPE_DOMAIN_ADAPTATION:
                     warmup = 1
@@ -552,7 +560,7 @@ class Models():
                             else:
                                 y_train_d_batch = y_train_d[b * self.args.batch_size : (b + 1) * self.args.batch_size, :]
 
-                            y_train_d_hot_batch = tf.keras.utils.to_categorical(y_train_d_batch, self.num_targets)                            
+                            y_train_d_hot_batch = tf.keras.utils.to_categorical(y_train_d_batch, self.num_targets) 
 
                             c_batch_loss, batch_probs, d_batch_loss = self._training_step_domain_adaptation([data_batch,self.l], [y_train_c_hot_batch, y_train_d_hot_batch], Weights, classification_mask_batch)
 
@@ -589,17 +597,19 @@ class Models():
                 f1_score_tr = f1_score_tr/batch_counter_cl
                 recall_tr = recall_tr/batch_counter_cl
                 precission_tr = precission_tr/batch_counter_cl
+
+                self.segmentation_history["loss"].append(loss_cl_tr[0,0])       
+                self.segmentation_history["f1"].append(f1_score_tr)
+
+                print("batch_counter_cl:")
                 print(batch_counter_cl)
 
-                if self.args.training_type == TRAINING_TYPE_DOMAIN_ADAPTATION:
-                    if 'DR' in self.args.da_type:
-                        loss_dr_tr = loss_dr_tr/batch_counter_cl
-                        print ("%d [Training loss: %f, acc.: %.2f%%, precission: %.2f%%, recall: %.2f%%, f1: %.2f%%, Dr loss: %f]" % (e, loss_cl_tr[0,0], accuracy_tr, precission_tr, recall_tr, f1_score_tr, loss_dr_tr[0,0]))
-                        f.write("%d [Training loss: %f, acc.: %.2f%%, precission: %.2f%%, recall: %.2f%%, f1: %.2f%%, Dr loss: %f]\n" % (e, loss_cl_tr[0,0], accuracy_tr, precission_tr, recall_tr, f1_score_tr, loss_dr_tr[0,0]))
-                    else:
-                        print ("%d [Training loss: %f, acc.: %.2f%%, precission: %.2f%%, recall: %.2f%%, f1: %.2f%%]" % (e, loss_cl_tr[0,0], accuracy_tr, precission_tr, recall_tr, f1_score_tr))
-                        f.write("%d [Training loss: %f, acc.: %.2f%%, precission: %.2f%%, recall: %.2f%%, f1: %.2f%%]\n" % (e, loss_cl_tr[0,0], accuracy_tr, precission_tr, recall_tr, f1_score_tr))
+                if self.args.training_type == TRAINING_TYPE_DOMAIN_ADAPTATION and 'DR' in self.args.da_type:                    
+                    loss_dr_tr = loss_dr_tr/batch_counter_cl
+                    self.discriminator_history["loss"].append(loss_dr_tr[0,0])
 
+                    print ("%d [Training loss: %f, acc.: %.2f%%, precission: %.2f%%, recall: %.2f%%, f1: %.2f%%, Dr loss: %f]" % (e, loss_cl_tr[0,0], accuracy_tr, precission_tr, recall_tr, f1_score_tr, loss_dr_tr[0,0]))
+                    f.write("%d [Training loss: %f, acc.: %.2f%%, precission: %.2f%%, recall: %.2f%%, f1: %.2f%%, Dr loss: %f]\n" % (e, loss_cl_tr[0,0], accuracy_tr, precission_tr, recall_tr, f1_score_tr, loss_dr_tr[0,0]))
                 else:
                     print ("%d [Training loss: %f, acc.: %.2f%%, precission: %.2f%%, recall: %.2f%%, f1: %.2f%%]" % (e, loss_cl_tr[0,0], accuracy_tr, precission_tr, recall_tr, f1_score_tr))
                     f.write("%d [Training loss: %f, acc.: %.2f%%, precission: %.2f%%, recall: %.2f%%, f1: %.2f%%]\n" % (e, loss_cl_tr[0,0], accuracy_tr, precission_tr, recall_tr, f1_score_tr))
@@ -615,7 +625,6 @@ class Models():
 
                     if self.args.data_augmentation:
                         transformation_indexs_batch = corners_coordinates_vl[b * self.args.batch_size : (b + 1) * self.args.batch_size , 4]
-
 
                     #Extracting the data patches from it's coordinates
                     data_batch_ = Patch_Extraction(data, corners_coordinates_vl_batch, domain_index_batch, self.args.patches_dimension)
@@ -683,15 +692,16 @@ class Models():
                 f1_score_vl = f1_score_vl/(batch_counter_cl)
                 recall_vl = recall_vl/(batch_counter_cl)
                 precission_vl = precission_vl/(batch_counter_cl)
+
+                self.segmentation_history["val_loss"].append(loss_cl_vl[0,0])      
+                self.segmentation_history["val_f1"].append(f1_score_vl)
                 
-                if self.args.training_type == TRAINING_TYPE_DOMAIN_ADAPTATION:
-                    if 'DR' in self.args.da_type:
-                        loss_dr_vl = loss_dr_vl/batch_counter_cl
-                        print ("%d [Validation loss: %f, acc.: %.2f%%,  precission: %.2f%%, recall: %.2f%%, f1: %.2f%%, DrV loss: %f]" % (e, loss_cl_vl[0,0], accuracy_vl, precission_vl, recall_vl, f1_score_vl, loss_dr_vl[0 , 0]))
-                        f.write("%d [Validation loss: %f, acc.: %.2f%%, precission: %.2f%%, recall: %.2f%%, f1: %.2f%%, DrV loss: %f]\n" % (e, loss_cl_vl[0,0], accuracy_vl, precission_vl, recall_vl, f1_score_vl, loss_dr_vl[0 , 0]))
-                    else:
-                        print ("%d [Validation loss: %f, acc.: %.2f%%,  precission: %.2f%%, recall: %.2f%%, f1: %.2f%%]" % (e, loss_cl_vl[0,0], accuracy_vl, precission_vl, recall_vl, f1_score_vl))
-                        f.write("%d [Validation loss: %f, acc.: %.2f%%, precission: %.2f%%, recall: %.2f%%, f1: %.2f%%]\n" % (e, loss_cl_vl[0,0], accuracy_vl, precission_vl, recall_vl, f1_score_vl))
+                if self.args.training_type == TRAINING_TYPE_DOMAIN_ADAPTATION and 'DR' in self.args.da_type:                    
+                    loss_dr_vl = loss_dr_vl/batch_counter_cl
+                    self.discriminator_history["val_loss"].append(loss_dr_vl[0,0])
+
+                    print ("%d [Validation loss: %f, acc.: %.2f%%,  precission: %.2f%%, recall: %.2f%%, f1: %.2f%%, DrV loss: %f]" % (e, loss_cl_vl[0,0], accuracy_vl, precission_vl, recall_vl, f1_score_vl, loss_dr_vl[0 , 0]))
+                    f.write("%d [Validation loss: %f, acc.: %.2f%%, precission: %.2f%%, recall: %.2f%%, f1: %.2f%%, DrV loss: %f]\n" % (e, loss_cl_vl[0,0], accuracy_vl, precission_vl, recall_vl, f1_score_vl, loss_dr_vl[0 , 0]))
                 else:
                     print ("%d [Validation loss: %f, acc.: %.2f%%,  precission: %.2f%%, recall: %.2f%%, f1: %.2f%%]" % (e, loss_cl_vl[0,0], accuracy_vl, precission_vl, recall_vl, f1_score_vl))
                     f.write("%d [Validation loss: %f, acc.: %.2f%%, precission: %.2f%%, recall: %.2f%%, f1: %.2f%%]\n" % (e, loss_cl_vl[0,0], accuracy_vl, precission_vl, recall_vl, f1_score_vl))
@@ -746,9 +756,10 @@ class Models():
                                 print('[!] Best Model with DrV loss: %.3f and F1-Score: %.2f%%'% (best_mod_dr, best_mod_fs))
                             else:
                                 print('[!] The Model has not been considered as suitable for saving procedure.')
-                                pat += 1
-                                if pat > self.args.patience:
-                                    break
+                                if best_model_epoch != -1:
+                                    pat += 1
+                                    if pat > self.args.patience:
+                                        break
                         else:
                             print("Warming up!")
                     else:
@@ -763,7 +774,7 @@ class Models():
                         else:
                             pat += 1
                             if pat > self.args.patience:
-                                print("Patience limit reachead. Exiting training...")
+                                print("Patience limit reached. Exiting training...")
                                 break
             else:
                 if best_val_fs < f1_score_vl:
@@ -782,24 +793,45 @@ class Models():
             clear_session()        
             e += 1
 
-        with open(os.path.join(self.args.save_checkpoint_path,"Log.txt"),"a") as f:
-            if self.args.training_type == TRAINING_TYPE_CLASSIFICATION:
+        
+        if self.args.training_type == TRAINING_TYPE_CLASSIFICATION:
+            self.plot_metrics_segmentation()
+            with open(os.path.join(self.args.save_checkpoint_path,"Log.txt"),"a") as f:
                 print('Training ended')
                 f.write("Training ended\n")
                 print("[!] Best Validation F1 score: %.2f%%"%(best_val_fs))
                 f.write("[!] Best Validation F1 score: %.2f%%"%(best_val_fs))
 
-            if self.args.training_type == TRAINING_TYPE_DOMAIN_ADAPTATION:
-                print("Training ended")
-                print("[!] Best epoch: %d" %(best_model_epoch))
-                print("[!] Domain Regressor Validation F1-score: %.2f%%" % (best_mod_fs))
-                print("[!] DrV loss: %.3f" % (best_val_dr))
-                print("[!] Best DR Validation for higher DrV loss: %.3f and F1-Score: %.2f%%" % (best_mod_dr, best_mod_fs))
+        elif self.args.training_type == TRAINING_TYPE_DOMAIN_ADAPTATION:
+            self.plot_metrics_segmentation()
+            self.plot_metrics_discriminator()   
 
-                f.write("Training ended\n")
-                f.write("[!] Best epoch: %d\n" %(best_model_epoch))
-                f.write("[!] Domain Regressor Validation F1-score: %.2f%%: \n" % (best_mod_fs))
-                f.write("[!] DrV loss: %.3f: \n" % (best_val_dr))
+            with open(os.path.join(self.args.save_checkpoint_path,"Log.txt"),"a") as f:
+                if best_model_epoch != -1:
+                    print("Training ended")
+                    print("[!] Best epoch: %d" %(best_model_epoch))
+                    print("[!] Domain Regressor Validation F1-score: %.2f%%" % (best_mod_fs))
+                    print("[!] DrV loss: %.3f" % (best_val_dr))
+                    print("[!] Best DR Validation for higher DrV loss: %.3f and F1-Score: %.2f%%" % (best_mod_dr, best_mod_fs))
+
+                    f.write("Training ended\n")
+                    f.write("[!] Best epoch: %d\n" %(best_model_epoch))
+                    f.write("[!] Domain Regressor Validation F1-score: %.2f%%: \n" % (best_mod_fs))
+                    f.write("[!] DrV loss: %.3f: \n" % (best_val_dr))
+                else:
+                    print("Training ended")
+                    print("[!] [!] No Model has been selected.")
+                    print("loss_dr_vl:")
+                    print(loss_dr_vl[0 , 0])
+                    print("f1_score_vl:")
+                    print(f1_score_vl)
+
+                    f.write("Training ended")
+                    f.write("[!] [!] No Model has been selected.")
+                    f.write("loss_dr_vl:")
+                    f.write(loss_dr_vl[0 , 0])
+                    f.write("f1_score_vl:")
+                    f.write(f1_score_vl)
         
 
     def Test(self):
@@ -878,7 +910,31 @@ class Models():
             self.model.load_weights(os.path.join(weights_path,self.checkpoint_name))  
         elif self.args.training_type == TRAINING_TYPE_DOMAIN_ADAPTATION:
             self.model.main_network.load_weights(os.path.join(weights_path,self.checkpoint_name))        
-    
+
+    def plot_metrics_segmentation(self):
+        plt.figure(figsize=(10, 10))
+        plt.plot(self.segmentation_history["loss"], label="train_loss")
+        plt.plot(self.segmentation_history["f1"], label="train_f1score")
+        plt.plot(self.segmentation_history["val_loss"], label="validation_loss")
+        plt.plot(self.segmentation_history["val_f1"], label="validation_f1score")
+        plt.title("Loss / F1 evolution")
+        plt.xlabel("Epoch #")
+        plt.ylabel("Loss / F1")
+        plt.ylim([0, 5])
+        leg=plt.legend()
+        plt.savefig(os.path.join(self.args.save_checkpoint_path,"segmentation_metrics.png"))
+
+    def plot_metrics_discriminator(self):
+        plt.figure(figsize=(10, 10))
+        plt.plot(self.discriminator_history["loss"], label="train_loss")    
+        plt.plot(self.discriminator_history["val_loss"], label="validation_loss")    
+        plt.title("Loss evolution")
+        plt.xlabel("Epoch #")
+        plt.ylabel("Loss")
+        #plt.ylim([0, 5])
+        leg=plt.legend()
+        plt.savefig(os.path.join(self.args.save_checkpoint_path,"discriminator_metrics.png"))
+
 def Metrics_For_Test(hit_map,
                      reference_t1, reference_t2,
                      Train_tiles, Valid_tiles, Undesired_tiles,

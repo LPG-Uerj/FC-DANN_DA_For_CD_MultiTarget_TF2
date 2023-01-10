@@ -60,8 +60,8 @@ TARGET_DATASETS = [AMAZON_PA.DATASET]
 for dr_localization in DR_LOCALIZATION:
     for method in METHODS:
         for da in DA_TYPES:
-
-            checkpoint_dir_param = checkpoint_dir + method + "_" + da + "_" + target_dataset
+            
+            checkpoint_dir_param = checkpoint_dir + training_type + "_" + da + "_single_" + target_dataset
 
             if args.train:
                 
@@ -99,10 +99,9 @@ for dr_localization in DR_LOCALIZATION:
                                 "--target_dataset " + target_dataset + " "
                                 "--checkpoint_results_main_path " + Checkpoint_Results_MAIN_PATH + " ")
 
-            for target_ds in TARGET_DATASETS:     
-
-                results_dir_param = results_dir + method + "_" + da + "_" + target_dataset + "_single"
-                #results_dir_param = results_dir + method + "_" + da + "_" + target_dataset + "_multi_" + target_ds + " "       
+            for target_ds in TARGET_DATASETS:
+                
+                results_dir_param = results_dir + training_type + "_" + da + "_single_" + target_dataset
 
                 if args.test:                    
                     Schedule.append("python " + Test_MAIN_COMMAND + " "
