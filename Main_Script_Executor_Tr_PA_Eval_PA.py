@@ -44,7 +44,7 @@ runs = "5"
 num_classes = "2"
 
 #Source PA, Target PA
-num_targets = "1" 
+num_targets = "2" 
 
 #TARGET: PA
 target_dataset = AMAZON_PA.DATASET
@@ -91,6 +91,7 @@ for dr_localization in DR_LOCALIZATION:
                                 "--training_type " + training_type + " "
                                 "--da_type " + da + " "
                                 "--runs " + runs + " "
+                                "--warmup 1 "
                                 "--patience 10 "
                                 "--checkpoint_dir " + checkpoint_dir_param + " "
                                 "--source_dataset " + source_dataset + " "

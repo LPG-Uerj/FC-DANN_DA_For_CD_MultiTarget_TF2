@@ -12,18 +12,20 @@ main_path = "./results/results_avg/"
 
 
 #X = PA, Y = PA
-result_path.append(main_path + 'results_tr_Amazon_PA_DeepLab_None_Amazon_PA_multi_Amazon_PA/')
+result_path.append(main_path + 'results_tr_Amazon_PA_classification_Amazon_PA/')
+#X = RO->PA, Y = PA
+result_path.append(main_path + 'results_tr_Amazon_RO_domain_adaptation_DR_single_Amazon_PA/')
 
 
 labels = []
 labels.append('1-Tr: PA,Ts: PA (Source only training)')
-#labels.append('2-Tr: PA,Ts: MA (Multi Domain training)')
+labels.append('2-Tr: RO->PA, Ts: PA (domain adaptation single-target)')
 
 colors = Charts.colors.copy()
 
 titles = []
 
-titles.append('X = PA, Y = PA')
+titles.append('Target = PA')
 
 def Area_under_the_curve(X, Y):
     X = X[0,:]
@@ -142,5 +144,5 @@ if __name__ == '__main__':
         plt.title(titles[init])
         plt.ylabel('Precision')
         plt.xlabel('Recall')
-        plt.savefig(main_path + 'Recall_vs_Precision_5_runs_PA_multi_DeepLab_Xception.png')
+        plt.savefig(main_path + 'Recall_vs_Precision_5_runs_Target_PA_DeepLab_Xception.png')
         init += 1

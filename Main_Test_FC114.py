@@ -91,21 +91,28 @@ def main():
         checkpoint_files = os.listdir(args.checkpoint_dir)
         for i in range(len(checkpoint_files)):
 
-            model_folder = checkpoint_files[i]
+            model_folder = checkpoint_files[i]            
+
             args.trained_model_path = os.path.join(args.checkpoint_dir,model_folder)
             model_folder_fields = model_folder.split('_')
 
             now = datetime.now()
             dt_string = now.strftime("%d_%m_%Y_%H_%M_%S")
             args.save_results_dir = os.path.join(args.results_dir, args.classifier_type + '_' + 'Model_Results_' + 'Trained_' + model_folder_fields[3] + '_' + model_folder_fields[4] + '_' + model_folder[-19:] + '_Tested_' + args.data_t1_year + '_' + args.data_t2_year + '_' + dt_string)
+            
+            print(f'Testing checkpoint {model_folder} at {dt_string}')
+            
             #args.save_results_dir = args.results_dir + '\\model_' + str(i) + '\\'
             if not os.path.exists(args.save_results_dir):
                 os.makedirs(args.save_results_dir)
 
             print('[*]Initializing the model...')
-            model = Models(args, None, dataset)
 
-            model.Test()
+            try:
+                model = Models(args, None, dataset)
+                model.Test()
+            except Exception as e:
+                print(e)                
 
 if __name__=='__main__':
     main()

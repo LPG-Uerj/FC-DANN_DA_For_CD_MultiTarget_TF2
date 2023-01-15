@@ -9,7 +9,7 @@ from tensorflow import keras
 import matplotlib.pyplot as plt
 from sklearn.utils import shuffle
 from contextlib import redirect_stdout
-from da_model import DomainAdaptationModel
+from da_model import DomainAdaptationModel, MainNetwork, DomainRegressorNetwork
 from keras.optimizers import Adam
 from keras.losses import CategoricalCrossentropy
 from loss_functions import WeightedCrossEntropyC
@@ -33,11 +33,11 @@ class Models():
 
         self.best_weights = None
 
-        self.training_optimizer = Adam(beta_1=self.args.beta1)
-        self.discriminator_optimizer = Adam(beta_1=self.args.beta1)
+        self.training_optimizer = Adam(beta_1=self.args.beta1)        
+        self.discriminator_optimizer = Adam(beta_1=self.args.beta1)        
 
         self.classifier_loss = WeightedCrossEntropyC()
-        self.domainregressor_loss = CategoricalCrossentropy(from_logits=True)
+        self.domainregressor_loss = CategoricalCrossentropy(from_logits=True)        
 
         self.segmentation_history = {}
         self.discriminator_history = {}
@@ -63,9 +63,8 @@ class Models():
                 print("[*] Loading weights from {0}".format(self.args.trained_model_path))
                 self.load_weights(self.args.trained_model_path)            
                 print('[*] Weights loaded successfuly.')
-            except Exception as e: 
-                print('[!] Load failed... Details: {0}'.format(e))
-                sys.exit()
+            except Exception as e:
+                raise Exception('[!] Load failed... Details: {0}'.format(e))                
 
     def assembly_empty_model(self, showSummary: bool = False):
         if self.args.classifier_type == 'DeepLab':
@@ -78,36 +77,35 @@ class Models():
 
             input_block = tf.keras.layers.Input(shape = self.input_shape)
 
-            #Building the encoder
-            Encoder_Outputs, low_Level_Features, features_c = deepLab.build_DeepLab_Encoder(input_block, name = "DeepLab_Encoder")
-            
+            #Building the encoder            
+            Encoder_Outputs, low_Level_Features = deepLab.build_DeepLab_Encoder(input_block)
+            encoder_model = tf.keras.Model(inputs = input_block, outputs = [Encoder_Outputs, low_Level_Features], name = 'deeplabv3plus_encoder')
+ 
             #Building Decoder
-            Decoder_Outputs = deepLab.build_DeepLab_Decoder(Encoder_Outputs, low_Level_Features, name = "DeepLab_Decoder")
+            Decoder_Outputs = deepLab.build_DeepLab_Decoder([Encoder_Outputs, low_Level_Features])            
+            decoder_model = tf.keras.Model(inputs = [Encoder_Outputs,low_Level_Features], outputs = Decoder_Outputs, name = 'deeplabv3plus_decoder')
 
-            if self.args.training_type == TRAINING_TYPE_DOMAIN_ADAPTATION:
-                if 'DR' in self.args.da_type:
-                    deeplab_model = tf.keras.Model(inputs = input_block, outputs = [Decoder_Outputs, features_c], name = 'deeplabv3plus_domain_adaptation')
-                    if self.args.domain_regressor_type == 'FC':
-                        domain_discriminator_model = Domain_Regressor_FullyConnected(input_shape=features_c.shape[1:], units=1024, num_targets=self.num_targets)
-                    if self.args.domain_regressor_type == 'Dense':
-                        domain_discriminator_model = Domain_Regressor_Convolutional(input_shape=features_c.shape[1:], num_targets=self.num_targets)
+            if self.args.training_type == TRAINING_TYPE_DOMAIN_ADAPTATION and 'DR' in self.args.da_type:
+                if self.args.domain_regressor_type == 'FC':
+                    discriminator_model = Domain_Regressor_FullyConnected(input_shape=Encoder_Outputs.shape[1:],units=1024, num_targets=self.num_targets)                    
+                if self.args.domain_regressor_type == 'Dense':
+                    discriminator_model = Domain_Regressor_Convolutional(input_shape=Encoder_Outputs.shape[1:], num_targets=self.num_targets)
 
-                    self.D_out_shape = domain_discriminator_model.layers[-2].output.shape[1:]
-                    print("self.D_out_shape: " + str(self.D_out_shape))
-    
-                    empty_model = DomainAdaptationModel(self.input_shape,deeplab_model,domain_discriminator_model)
-                    self.compile_model(empty_model)                    
-                    if showSummary:                
-                        self.summary(empty_model.main_network, "Encoder/Decoder: ") 
-                        self.summary(empty_model.domain_discriminator, "Domain_Regressor: ")
+                self.D_out_shape = discriminator_model.layers[-2].output.shape[1:]
+
+                print(f'D_out_shape: {self.D_out_shape}')
+
+                empty_model = DomainAdaptationModel(self.input_shape, encoder_model,decoder_model, discriminator_model)                
+
+                if showSummary:
+                    self.summary(empty_model.encoder_model, "Encoder: ")
+                    self.summary(empty_model.decoder_model, "Decoder: ")
+                    self.summary(empty_model.domain_discriminator, "Domain_Regressor: ")
+
             else:
-                empty_model = tf.keras.Model(inputs = input_block, outputs = Decoder_Outputs, name = 'deeplabv3plus')                 
-                self.compile_model(empty_model)  
+                empty_model = tf.keras.Model(inputs = input_block, outputs = Decoder_Outputs, name = 'deeplabv3plus')
                 if showSummary:
                     self.summary(empty_model, "Encoder/Decoder: ")                      
-
-            if showSummary:                
-                self.summary(empty_model, "Full model: ")                
         else:
             raise Exception("Invalid or not implemented classifier_type: {0}".format(self.args.classifier_type))        
         
@@ -141,54 +139,48 @@ class Models():
                                          train_discriminator = True):
 
         y_true_segmentation, y_true_discriminator = outputs
-        x_input, lambdas = inputs
+        x_input, _ = inputs
         with tf.GradientTape(persistent = True) as tape:
             self.classifier_loss.class_weights = class_weights
             self.classifier_loss.mask = mask_c
-
-            y_pred_segmentation, features = self.model.main_network(x_input, training=True)   
-            discriminator_input = self.model.gradient_reversal_layer([features, lambdas])
-            _, logits_discriminator = self.model.domain_discriminator(discriminator_input,training=True)
             
-            loss_segmentation = self.classifier_loss(y_true_segmentation, y_pred_segmentation)
-
-            loss_discriminator = self.domainregressor_loss(y_true_discriminator, logits_discriminator)
-            loss_global = loss_segmentation + loss_discriminator
-
+            y_pred_segmentation = self.model.main_network(x_input,training=True) 
+            loss_segmentation = self.classifier_loss(y_true_segmentation, y_pred_segmentation)            
+            
+            _,logits_discriminator = self.model.domain_regressor_network(inputs,training=True)
+            loss_discriminator = self.domainregressor_loss(y_true=y_true_discriminator, y_pred=logits_discriminator)            
+            
         if train_segmentation:
-            gradients_segmentation = tape.gradient(loss_global, self.model.main_network.trainable_weights)
+            gradients_segmentation = tape.gradient(loss_segmentation, self.model.main_network.trainable_weights)            
             self.training_optimizer.apply_gradients(zip(gradients_segmentation, self.model.main_network.trainable_weights))
-
+        
         if train_discriminator:
-            gradients_discriminator = tape.gradient(loss_discriminator, self.model.domain_discriminator.trainable_weights)
-            self.discriminator_optimizer.apply_gradients(zip(gradients_discriminator, self.model.domain_discriminator.trainable_weights))
-
+            gradients_discriminator = tape.gradient(loss_discriminator, self.model.domain_regressor_network.trainable_weights)
+            self.discriminator_optimizer.apply_gradients(zip(gradients_discriminator, self.model.domain_regressor_network.trainable_weights))
+        
         del tape
-
         return loss_segmentation, y_pred_segmentation, loss_discriminator
-
+		
+		
     @tf.function
     def _test_step_domain_adaptation(self, inputs, outputs, class_weights, mask_c):
-
+        x_input, _ = inputs
         y_true_segmentation, y_true_discriminator = outputs       
     
         self.classifier_loss.class_weights = class_weights
         self.classifier_loss.mask = mask_c
 
-        y_pred_segmentation, _, logits_discriminator = self.model(inputs,training=False)        
-        
+        y_pred_segmentation = self.model.main_network(x_input,training=False)
         loss_segmentation = self.classifier_loss(y_true_segmentation, y_pred_segmentation)
-        
-        loss_discriminator = self.domainregressor_loss(y_true_discriminator, logits_discriminator)
+            
+        _,logits_discriminator = self.model.domain_regressor_network(inputs,training=False)
+        loss_discriminator = self.domainregressor_loss(y_true=y_true_discriminator, y_pred=logits_discriminator)             
 
         return loss_segmentation, y_pred_segmentation, loss_discriminator
 
-    def compile_model(self, model, show_summary: bool = True):        
-        model.compile(optimizer = self.training_optimizer)
-        if show_summary:
-            model.summary()
-
     def summary(self, net, name):
+        print(name)
+        net.summary()
         summaryFile = os.path.join(self.args.save_checkpoint_path,"Architecture.txt")        
         with open(summaryFile, 'a') as f:
             f.write(name + "\n")
@@ -228,8 +220,8 @@ class Models():
             reference_t1_t.append(np.zeros((t.references_[0].shape[0], t.references_[0].shape[1], 1)))
             reference_t2_t.append(np.zeros((t.references_[0].shape[0], t.references_[0].shape[1], 1)))
 
-        #if self.args.balanced_tr:
-        #    class_weights = self.dataset_s.class_weights
+        if self.args.balanced_tr:
+            class_weights = self.dataset_s.class_weights
 
         # Copy the original input values
         corners_coordinates_tr_s = self.dataset_s.corners_coordinates_tr.copy()
@@ -277,37 +269,65 @@ class Models():
             corners_coordinates_tr_s = Data_Augmentation_Definition(corners_coordinates_tr_s)
             corners_coordinates_vl_s = Data_Augmentation_Definition(corners_coordinates_vl_s)
             if self.args.training_type == TRAINING_TYPE_DOMAIN_ADAPTATION:
-                for i in range(len(self.dataset_t)):                    
-                    print('Length of target training dataset ' + self.dataset_t[i].DATASET)
-                    print(str(len(corners_coordinates_tr_t[i])))
-                    print('Length of target validation dataset ' + self.dataset_t[i].DATASET)
-                    print(str(len(corners_coordinates_vl_t[i])))
+                for i in range(len(self.dataset_t)):
                     corners_coordinates_tr_t[i] = Data_Augmentation_Definition(corners_coordinates_tr_t[i])
                     corners_coordinates_vl_t[i] = Data_Augmentation_Definition(corners_coordinates_vl_t[i])
-                    target_length_tr.append(len(corners_coordinates_tr_t[i]))
-                    target_length_vl.append(len(corners_coordinates_vl_t[i]))
+                    #target_length_tr.append(len(corners_coordinates_tr_t[i]))
+                    #target_length_vl.append(len(corners_coordinates_vl_t[i]))
         
-        #Combines different targets into one
-        corners_coordinates_tr_t = np.concatenate(corners_coordinates_tr_t, axis=0)
-        corners_coordinates_vl_t = np.concatenate(corners_coordinates_vl_t, axis=0)
-
-        print('Sets dimensions before balancing')
-        print('Source dimensions: ')
-        print(np.shape(corners_coordinates_tr_s))
-        print(np.shape(corners_coordinates_vl_s))
-        
+                
         if self.args.training_type == TRAINING_TYPE_DOMAIN_ADAPTATION:
+            #Generating target labels before data shuffling and balancing
+            if 'DR' in self.args.da_type:
+                # Target Domain labels configuration
+                # Source: 0
+                # Target 1: 1
+                # Target 2: 2                
+                target_labels_tr = []                
+                target_labels_vl = []             
+                
+                target_label_value = 1                    
+                for i in range(len(self.dataset_t)): 
+                    print(f"Target Dataset {self.dataset_t[i].DATASET}")
+                    print("Assigned label value: %d"%(target_label_value))
+
+                    if len(self.D_out_shape) > 2:
+                        target_labels_tr.append(np.full((corners_coordinates_tr_t[i].shape[0], self.D_out_shape[0], self.D_out_shape[1],1),target_label_value))
+                        target_labels_vl.append(np.full((corners_coordinates_vl_t[i].shape[0], self.D_out_shape[0], self.D_out_shape[1],1),target_label_value))
+                    else:
+                        target_labels_tr.append(np.full((corners_coordinates_tr_t[i].shape[0], 1), target_label_value))
+                        target_labels_vl.append(np.full((corners_coordinates_vl_t[i].shape[0], 1), target_label_value))
+                    target_label_value += 1
+
+                target_labels_tr = np.concatenate(target_labels_tr,axis=0)
+                target_labels_vl = np.concatenate(target_labels_vl,axis=0)
+
+
+            #Combines different targets into one dataset
+            corners_coordinates_tr_t = np.concatenate(corners_coordinates_tr_t, axis=0)
+            corners_coordinates_vl_t = np.concatenate(corners_coordinates_vl_t, axis=0)
+
+            print('Sets dimensions before balancing')
+            print('Source dimensions: ')
+            print(np.shape(corners_coordinates_tr_s))
+            print(np.shape(corners_coordinates_vl_s))            
+
             print('Target dimension: ')
             print(np.shape(corners_coordinates_tr_t))
             print(np.shape(corners_coordinates_vl_t))
 
+            print('concatenated target_labels_tr')
+            print(np.shape(target_labels_tr))
+            print('concatenated target_labels_vl')
+            print(np.shape(target_labels_vl))
+
+
             # Balancing the number of samples between source and target domain
             size_tr_s = np.shape(corners_coordinates_tr_s)[0]
-            size_tr_t = np.shape(corners_coordinates_tr_t)[0]
-            #size_tr_t = sum([np.shape(i)[0] for i in corners_coordinates_tr_t])
+            size_tr_t = np.shape(corners_coordinates_tr_t)[0]            
             size_vl_s = np.shape(corners_coordinates_vl_s)[0]
             size_vl_t = np.shape(corners_coordinates_vl_t)[0]
-            #size_vl_t = sum([np.shape(i)[0] for i in corners_coordinates_vl_t])
+            
 
             #Shuffling the num_samples
             index_tr_s = np.arange(size_tr_s)
@@ -321,27 +341,31 @@ class Models():
             np.random.shuffle(index_vl_t)
 
             corners_coordinates_tr_s = corners_coordinates_tr_s[index_tr_s, :]
-            corners_coordinates_tr_t = corners_coordinates_tr_t[index_tr_t, :]
+            corners_coordinates_tr_t = corners_coordinates_tr_t[index_tr_t, :]            
+
             corners_coordinates_vl_s = corners_coordinates_vl_s[index_vl_s, :]
             corners_coordinates_vl_t = corners_coordinates_vl_t[index_vl_t, :]
+            
+            target_labels_tr = target_labels_tr[index_tr_t]
+            target_labels_vl = target_labels_vl[index_vl_t]
 
             #RETIRA AMOSTRAS DO CONJUNTO MAIOR PARA SE IGUALAR AO MENOR
             if size_tr_s > size_tr_t:
                 corners_coordinates_tr_s = corners_coordinates_tr_s[:size_tr_t,:]
             if size_tr_t > size_tr_s:
                 corners_coordinates_tr_t = corners_coordinates_tr_t[:size_tr_s,:]
+                target_labels_tr = target_labels_tr[:size_tr_s]
 
             if size_vl_s > size_vl_t:
                 corners_coordinates_vl_s = corners_coordinates_vl_s[:size_vl_t,:]
             if size_vl_t > size_vl_s:
                 corners_coordinates_vl_t = corners_coordinates_vl_t[:size_vl_s,:]
+                target_labels_vl = target_labels_vl[:size_vl_s]
 
             print('Sets dimensions after balancing')
             print('Source dimensions: ')
             print(np.shape(corners_coordinates_tr_s))
-            print(np.shape(corners_coordinates_vl_s))
-
-        if self.args.training_type == TRAINING_TYPE_DOMAIN_ADAPTATION:
+            print(np.shape(corners_coordinates_vl_s))        
             print('Target dimension: ')
             print(np.shape(corners_coordinates_tr_t))
             print(np.shape(corners_coordinates_vl_t))
@@ -353,24 +377,39 @@ class Models():
         x_train_s = np.concatenate((self.dataset_s.images_norm_[0], self.dataset_s.images_norm_[1], reference_t1_s, reference_t2_s), axis = 2)
         data.append(x_train_s)
 
-        if self.args.training_type == TRAINING_TYPE_DOMAIN_ADAPTATION:
-            for i in range(len(self.dataset_t)):
-                x_train_t = np.concatenate((self.dataset_t[i].images_norm_[0], self.dataset_t[i].images_norm_[1], reference_t1_t[i], reference_t2_t[i]), axis = 2)
-                data.append(x_train_t)
-
         # Training configuration
         if self.args.training_type == TRAINING_TYPE_CLASSIFICATION:
             # Domain indexs configuration
             corners_coordinates_tr = corners_coordinates_tr_s.copy()
             corners_coordinates_vl = corners_coordinates_vl_s.copy()
-
             domain_indexs_tr = np.zeros((np.shape(corners_coordinates_tr)[0], 1))
             domain_indexs_vl = np.zeros((np.shape(corners_coordinates_vl)[0], 1))
 
         elif self.args.training_type == TRAINING_TYPE_DOMAIN_ADAPTATION:
+            x_train_t = []
+            for i in range(len(self.dataset_t)):
+                x_train_t.append(np.concatenate((self.dataset_t[i].images_norm_[0], self.dataset_t[i].images_norm_[1], reference_t1_t[i], reference_t2_t[i]), axis = 2))
+            x_train_t = np.concatenate(x_train_t, axis=0)
+            data.append(x_train_t)
+                        
             # Concatenating coordinates from source and target domains
+            print("Concatenating references:")
+            print("corners_coordinates_tr_s")
+            print(np.shape(corners_coordinates_tr_s))
+
+            print("corners_coordinates_tr_t")
+            print(np.shape(corners_coordinates_tr_t))
+
             corners_coordinates_tr = np.concatenate((corners_coordinates_tr_s, corners_coordinates_tr_t), axis = 0)
             corners_coordinates_vl = np.concatenate((corners_coordinates_vl_s, corners_coordinates_vl_t), axis = 0)
+            
+            print("Concatenated references:")
+            print("corners_coordinates_tr")
+            print(np.shape(corners_coordinates_tr))
+
+            print("corners_coordinates_vl")
+            print(np.shape(corners_coordinates_vl))
+            
             # Domain indexs configuration
             domain_indexs_tr_s = np.zeros((np.shape(corners_coordinates_tr_s)[0], 1))
             domain_indexs_tr_t = np.ones((np.shape(corners_coordinates_tr_t)[0], 1))
@@ -381,59 +420,21 @@ class Models():
             domain_indexs_vl = np.concatenate((domain_indexs_vl_s, domain_indexs_vl_t), axis = 0)
 
             if 'DR' in self.args.da_type:
-                # Domain labels configuration
-                # Source: 0
-                # Target 1: 1
-                # Target 2: 2    
-                                               
-                target_labels_tr = []                
-                target_labels_vl = []             
+                # Source Domain labels configuration
                 if len(self.D_out_shape) > 2:
                     source_labels_tr = np.zeros((np.shape(corners_coordinates_tr_s)[0], self.D_out_shape[0], self.D_out_shape[1],1))
                     source_labels_vl = np.zeros((np.shape(corners_coordinates_vl_s)[0], self.D_out_shape[0], self.D_out_shape[1],1))
-                    target_label_value = 1                    
-                    for i in range(len(self.dataset_t)):                        
-                        target_labels_tr.append(np.full((target_length_tr[i], self.D_out_shape[0], self.D_out_shape[1],1),target_label_value))
-                        target_labels_vl.append(np.full((target_length_vl[i], self.D_out_shape[0], self.D_out_shape[1],1),target_label_value))
-                        
-                        print("Target " + self.dataset_t[i].DATASET)
-                        print('Label value: ' + str(target_label_value))
-
-                        print('target_labels_tr['+str(i)+']')
-                        print(np.shape(target_labels_tr[i]))                        
-                        
-                        print('target_labels_vl['+str(i)+']')
-                        print(np.shape(target_labels_vl[i]))
-                        
-                        
-                        target_label_value += 1
                 else:
                     source_labels_tr = np.zeros((corners_coordinates_tr_s.shape[0], 1))
                     source_labels_vl = np.zeros((corners_coordinates_vl_s.shape[0], 1))
-                    target_label_value = 1
-                    for i in range(len(self.dataset_t)):                        
-                        target_labels_tr.append(np.full((target_length_tr[i], 1),target_label_value))
-                        target_labels_vl.append(np.full((target_length_vl[i], 1),target_label_value))
-                        
-                        print("Target " + self.dataset_t[i].DATASET)
-                        print('Label value: ' + str(target_label_value))
-
-                        print('target_labels_tr['+str(i)+']')
-                        print(np.shape(target_labels_tr))                        
-                        
-                        print('target_labels_vl['+str(i)+']')
-                        print(np.shape(target_labels_vl))                        
-                        
-                        target_label_value += 1
-
-                target_labels_tr = np.concatenate(target_labels_tr,axis=0)
-                target_labels_vl = np.concatenate(target_labels_vl,axis=0)
-
-                print('concatenated target_labels_tr')
-                print(np.shape(target_labels_tr))                
-                        
-                print('concatenated target_labels_vl')
-                print(np.shape(target_labels_vl))                
+                
+                print(f"Source Dataset {self.dataset_s.DATASET}")
+                print("Assigned label value: 0")                
+                
+                print('source_labels_tr')
+                print(np.shape(source_labels_tr))
+                print('source_labels_vl')
+                print(np.shape(source_labels_vl))
 
                 y_train_d = np.concatenate((source_labels_tr, target_labels_tr), axis = 0)
                 y_valid_d = np.concatenate((source_labels_vl, target_labels_vl), axis = 0)
@@ -444,11 +445,9 @@ class Models():
                 print('y_valid_d:')
                 print(np.shape(y_valid_d))
 
-
         #Computing the number of batches
         num_batches_tr = corners_coordinates_tr.shape[0]//self.args.batch_size
-        num_batches_vl = corners_coordinates_vl.shape[0]//self.args.batch_size
-        
+        num_batches_vl = corners_coordinates_vl.shape[0]//self.args.batch_size        
 
         #Training starts now:
         e = 0
@@ -504,18 +503,19 @@ class Models():
                 print("Current Epoch: {0}/{1}".format(str(e),str(self.args.epochs)))
 
                 if self.args.training_type == TRAINING_TYPE_DOMAIN_ADAPTATION:
-                    warmup = 1
+                    warmup = self.args.warmup
+                    print("Number of warm-up epochs: %d"%(warmup))
                     if e >= warmup:
                         self.l = 2. / (1. + np.exp(-2.5 * self.p)) - 1
                     else:
                         self.l = 0.
-                    print("lambda_p: " + str(self.l))
+                    print("lambda_p: %.3f" %(self.l))
 
                 self.lr = self.learning_rate_decay()            
                 print("Learning rate decay: " + str(self.lr))
 
-                self.training_optimizer.learning_rate = self.lr  
-                self.discriminator_optimizer.learning_rate = self.lr  
+                self.training_optimizer.learning_rate = self.lr
+                self.discriminator_optimizer.learning_rate = self.lr
 
                 batch_counter_cl = 0
                 batchs = trange(num_batches_tr)
@@ -562,7 +562,7 @@ class Models():
 
                             y_train_d_hot_batch = tf.keras.utils.to_categorical(y_train_d_batch, self.num_targets) 
 
-                            c_batch_loss, batch_probs, d_batch_loss = self._training_step_domain_adaptation([data_batch,self.l], [y_train_c_hot_batch, y_train_d_hot_batch], Weights, classification_mask_batch)
+                            c_batch_loss, batch_probs, d_batch_loss = self._training_step_domain_adaptation([data_batch,self.l], [y_train_c_hot_batch, y_train_d_hot_batch], Weights, classification_mask_batch,True,True)
 
                             loss_dr_tr[0 , 0] += d_batch_loss
                         else:
@@ -790,12 +790,13 @@ class Models():
                     if pat > self.args.patience:
                         print("Patience limit reachead. Exiting training...")
                         break
-            clear_session()        
+            #clear_session()        
             e += 1
 
         
         if self.args.training_type == TRAINING_TYPE_CLASSIFICATION:
             self.plot_metrics_segmentation()
+            self.plot_f1score_segmentation()
             with open(os.path.join(self.args.save_checkpoint_path,"Log.txt"),"a") as f:
                 print('Training ended')
                 f.write("Training ended\n")
@@ -804,6 +805,7 @@ class Models():
 
         elif self.args.training_type == TRAINING_TYPE_DOMAIN_ADAPTATION:
             self.plot_metrics_segmentation()
+            self.plot_f1score_segmentation()
             self.plot_metrics_discriminator()   
 
             with open(os.path.join(self.args.save_checkpoint_path,"Log.txt"),"a") as f:
@@ -821,17 +823,13 @@ class Models():
                 else:
                     print("Training ended")
                     print("[!] [!] No Model has been selected.")
-                    print("loss_dr_vl:")
-                    print(loss_dr_vl[0 , 0])
-                    print("f1_score_vl:")
-                    print(f1_score_vl)
+                    print("loss_dr_vl: %.3f"%(loss_dr_vl[0 , 0]))                    
+                    print("f1_score_vl: %.3f"%(f1_score_vl))                    
 
                     f.write("Training ended")
                     f.write("[!] [!] No Model has been selected.")
-                    f.write("loss_dr_vl:")
-                    f.write(loss_dr_vl[0 , 0])
-                    f.write("f1_score_vl:")
-                    f.write(f1_score_vl)
+                    f.write("loss_dr_vl: %.3f \n"%(loss_dr_vl[0 , 0]))                    
+                    f.write("f1_score_vl: %.3f \n"%(f1_score_vl))
         
 
     def Test(self):
@@ -880,49 +878,43 @@ class Models():
                     hit_map_[int(self.corners_coordinates_ts_batch[i, 0]) : int(self.corners_coordinates_ts_batch[i, 0]) + int(ds.stride),
                         int(self.corners_coordinates_ts_batch[i, 1]) : int(self.corners_coordinates_ts_batch[i, 1]) + int(ds.stride)] = probs[i, int(ds.overlap//2) : int(ds.overlap//2) + int(ds.stride),
                                                                                                                                                            int(ds.overlap//2) : int(ds.overlap//2) + int(ds.stride),1]
-
             hit_map = hit_map_[:ds.k1 * ds.stride - ds.step_row, :ds.k2 * ds.stride - ds.step_col]
             
             print("Hit map:")
             print(np.shape(hit_map))
-            np.save(os.path.join(self.args.save_results_dir,'hit_map'), hit_map)
+            np.save(os.path.join(self.args.save_results_dir,'hit_map'), hit_map)    
 
-    
-
-    def save_weights(self, weights_path: str):        
-        #full_path = os.path.join(weights_path, model_name + "{:0>3d}".format(epoch))
-        full_path = os.path.join(weights_path, self.checkpoint_name)
-        #model_to_save = self.assembly_empty_model()
-        #model_to_save.set_weights(self.model.get_weights())
-        
-        if self.args.training_type == TRAINING_TYPE_CLASSIFICATION:
-            #model_to_save.save_weights(full_path)
-            self.model.save_weights(full_path)
-        elif self.args.training_type == TRAINING_TYPE_DOMAIN_ADAPTATION:
-            #model_to_save.main_network.save_weights(full_path)
-            self.model.main_network.save_weights(full_path)
+    def save_weights(self, weights_path: str):
+        full_path = os.path.join(weights_path, self.checkpoint_name)        
+        self.model.save_weights(full_path)
         print("Checkpoint saved successfuly!")
 
     def load_weights(self, weights_path: str, piece: str = None):
         print("[*] Reading checkpoint...")          
-        self.model = self.assembly_empty_model()        
-        if self.args.training_type == TRAINING_TYPE_CLASSIFICATION:
-            self.model.load_weights(os.path.join(weights_path,self.checkpoint_name))  
-        elif self.args.training_type == TRAINING_TYPE_DOMAIN_ADAPTATION:
-            self.model.main_network.load_weights(os.path.join(weights_path,self.checkpoint_name))        
+        self.model = self.assembly_empty_model()
+        self.model.load_weights(os.path.join(weights_path,self.checkpoint_name))          
 
     def plot_metrics_segmentation(self):
         plt.figure(figsize=(10, 10))
-        plt.plot(self.segmentation_history["loss"], label="train_loss")
-        plt.plot(self.segmentation_history["f1"], label="train_f1score")
-        plt.plot(self.segmentation_history["val_loss"], label="validation_loss")
-        plt.plot(self.segmentation_history["val_f1"], label="validation_f1score")
-        plt.title("Loss / F1 evolution")
+        plt.plot(self.segmentation_history["loss"], label="train_loss")        
+        plt.plot(self.segmentation_history["val_loss"], label="validation_loss")        
+        plt.title("Loss evolution")
         plt.xlabel("Epoch #")
-        plt.ylabel("Loss / F1")
+        plt.ylabel("Loss")
         plt.ylim([0, 5])
         leg=plt.legend()
         plt.savefig(os.path.join(self.args.save_checkpoint_path,"segmentation_metrics.png"))
+
+    def plot_f1score_segmentation(self):
+        plt.figure(figsize=(10, 10))        
+        plt.plot(self.segmentation_history["f1"], label="train_f1score")        
+        plt.plot(self.segmentation_history["val_f1"], label="validation_f1score")
+        plt.title("F1 evolution")
+        plt.xlabel("Epoch #")
+        plt.ylabel("F1")
+        plt.ylim([0, 1])
+        leg=plt.legend()
+        plt.savefig(os.path.join(self.args.save_checkpoint_path,"segmentation_f1score.png"))
 
     def plot_metrics_discriminator(self):
         plt.figure(figsize=(10, 10))
@@ -931,7 +923,7 @@ class Models():
         plt.title("Loss evolution")
         plt.xlabel("Epoch #")
         plt.ylabel("Loss")
-        #plt.ylim([0, 5])
+        plt.ylim([0, 100])
         leg=plt.legend()
         plt.savefig(os.path.join(self.args.save_checkpoint_path,"discriminator_metrics.png"))
 

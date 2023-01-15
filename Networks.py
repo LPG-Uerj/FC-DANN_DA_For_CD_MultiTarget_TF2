@@ -11,7 +11,7 @@ class DeepLabV3Plus():
         super(DeepLabV3Plus, self).__init__()
         self.args = args
 
-    def build_DeepLab_Encoder(self, input_block, name = "DeepLab_Encoder_Arch"):
+    def build_DeepLab_Encoder(self, input_block):
 
         """
         Generator for DeepLab v3 plus models.
@@ -71,13 +71,21 @@ class DeepLabV3Plus():
         '''
         if self.args.backbone == 'xception':
             backbone = Xception(self.args)
-            Encoder_Layers, low_layer = backbone.build_Encoder_Layers(input_block, name = name)
+            Encoder_Layers, low_layer = backbone.build_Encoder_Layers(input_block)
             low_Level_Features =  tf.keras.layers.Conv2D(48, 1, 1, padding = 'SAME', activation=None, kernel_initializer='glorot_uniform')(low_layer)
-            Encoder_Layers = atrous_layer = self.atrous_Spatial_Pyramid_Pooling(Encoder_Layers, self.args.aspp_rates, self.args.bn_decay, True)
-            return Encoder_Layers, low_Level_Features, atrous_layer
+            
+            #Layer that feedforward domain regressor model
+            Encoder_Layers = self.atrous_Spatial_Pyramid_Pooling(Encoder_Layers, self.args.aspp_rates, self.args.bn_decay, True)
 
-    def build_DeepLab_Decoder(self, encoder_layer, low_Level_Features, name = "DeepLab_Decoder_Arch"):
-        #layer = tf.keras.layers.Input(shape = X.shape)
+            #model = tf.keras.Model(inputs = input_block, outputs = [Encoder_Layers, low_Level_Features], name = 'deeplabv3plus_encoder')
+
+            return Encoder_Layers, low_Level_Features
+        else:
+            raise Exception(f'Backbone not implemented {self.args.backbone}')
+
+    def build_DeepLab_Decoder(self, inputs):        
+        encoder_layer, low_Level_Features = inputs
+
         layer = encoder_layer
 
         if low_Level_Features is not None:                
@@ -85,14 +93,14 @@ class DeepLabV3Plus():
             layer = ReshapeTensor(low_level_features_size)(layer)
             layer = tf.keras.layers.Concatenate(axis=3)([layer,low_Level_Features]) 
 
-        layer = tf.keras.layers.Conv2D(256,1, strides = 1)(layer)
-        layer = tf.keras.layers.Conv2D(256,1, strides = 1)(layer)
+        layer = tf.keras.layers.Conv2D(256, 3, strides = 1)(layer)
+        layer = tf.keras.layers.Conv2D(256, 3, strides = 1)(layer)
 
         layer = tf.keras.layers.Conv2D(int(self.args.num_classes),1)(layer)
         inputs_size = [self.args.patches_dimension, self.args.patches_dimension]
         logits = ReshapeTensor(inputs_size)(layer)
         layer = tf.keras.layers.Softmax()(logits)
-
+        
         return layer
 
     def atrous_Spatial_Pyramid_Pooling(self, inputs, aspp_rates, batch_norm_decay, is_training, depth=256):

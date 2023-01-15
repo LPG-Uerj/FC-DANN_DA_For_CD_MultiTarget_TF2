@@ -14,4 +14,8 @@ for reference in REFERENCES:
     Schedule.append("python " + reference + " ")
 
 for i in range(len(Schedule)):
-    os.system(Schedule[i])
+    try:
+        os.system(Schedule[i])
+    except Exception as e:
+        print(e)
+        continue

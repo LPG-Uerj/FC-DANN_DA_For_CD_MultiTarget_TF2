@@ -33,29 +33,29 @@ Schedule = []
 
 Checkpoint_Results_MAIN_PATH = "./results/"
 
-source_dataset = AMAZON_RO.DATASET
+source_dataset = AMAZON_PA.DATASET
 
 training_type = SharedParameters.TRAINING_TYPE_DOMAIN_ADAPTATION
 
 checkpoint_dir = "checkpoint_tr_"+source_dataset+"_"
 results_dir = "results_tr_"+source_dataset+"_"
-runs = "1"
+runs = "5"
 
 #Deforastation / No Deforastation
 num_classes = "2"
 
-#Source RO, Target PA
+#Source PA, Target RO
 num_targets = "2" 
 
-#TARGET: PA
-target_dataset = AMAZON_PA.DATASET
-source_to_target = AMAZON_RO.DATASET + "_to_" + target_dataset
+#TARGET: RO
+target_dataset = AMAZON_RO.DATASET
+source_to_target = AMAZON_PA.DATASET + "_to_" + target_dataset
 
 
 DR_LOCALIZATION = ['55']
 METHODS  = [SharedParameters.METHOD]
 DA_TYPES = ['DR']
-TARGET_DATASETS = [AMAZON_PA.DATASET]
+TARGET_DATASETS = [AMAZON_RO.DATASET]
 
 for dr_localization in DR_LOCALIZATION:
     for method in METHODS:

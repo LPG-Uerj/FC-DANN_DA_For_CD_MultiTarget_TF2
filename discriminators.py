@@ -15,6 +15,7 @@ def Domain_Regressor_Convolutional(input_shape, num_targets: int):
     print("Domain_Regressor_Convolutional - input_shape: " + str(input_shape))
     num_filters = input_shape[3]
     inputs = tf.keras.Input(shape=input_shape)
+    
     layers = inputs    
     for i in range(3):            
         layers = general_conv2d(layers, num_filters/(2**i), 3, strides=1, padding='SAME', activation_function='leakyrelu', do_norm=True)

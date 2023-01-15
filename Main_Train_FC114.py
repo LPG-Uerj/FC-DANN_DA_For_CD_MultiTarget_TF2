@@ -1,4 +1,5 @@
 import os
+import shutil
 import sys
 import json
 import argparse
@@ -69,6 +70,7 @@ parser.add_argument('--runs', dest='runs', type=int, default=1, help='number of 
 #parser.add_argument('--change_every_epoch', dest='change_every_epoch', type=eval, choices=[True, False], default=False, help='Decide if the target set will be change every epoch in order to balance the training')
 # Early stop parameter
 parser.add_argument('--patience', dest='patience', type=int, default=10, help='number of epochs without improvement to apply early stop')
+parser.add_argument('--warmup', dest='warmup', type=int, default=1, help='number of epochs without backpropagation of discriminator gradients')
 #Checkpoint dir
 parser.add_argument('--checkpoint_dir', dest='checkpoint_dir', default='prove', help='Domain adaptation checkpoints')
 # Images dir and names
@@ -139,11 +141,15 @@ def main():
         dataset_t.append(CERRADO_MA(args))
 
     print(np.shape(dataset_s.images_norm))
+
+    print(f'Cleaning up {args.checkpoint_dir}')
+    cleanup_folder(args.checkpoint_dir)
     
     for i in range(len(dataset_t)):
         print(np.shape(dataset_t[i].images_norm))
     #print(np.shape(dataset_t.images_norm))
     for i in range(args.runs):
+        print('[*]Training Run %d'%(i))
         dataset = []
         print(i)
         now = datetime.now()
@@ -178,6 +184,17 @@ def main():
 
         model.Train()
 
+def cleanup_folder(checkpoint_folder):  
+    if os.path.exists(checkpoint_folder):            
+        for filename in os.listdir(checkpoint_folder):
+            file_path = os.path.join(checkpoint_folder, filename)
+            try:
+                if os.path.isfile(file_path) or os.path.islink(file_path):
+                    os.unlink(file_path)
+                elif os.path.isdir(file_path):
+                    shutil.rmtree(file_path)
+            except Exception as e:
+                print('Failed to delete %s. Reason: %s' % (file_path, e))
 
 if __name__=='__main__':
     main()

@@ -12,7 +12,8 @@ main_path = "./results/results_avg/"
 
 
 #X = MA, Y = MA
-result_path.append(main_path + 'results_tr_Cerrado_MA_DeepLab_None_Cerrado_MA_multi_Cerrado_MA/')
+#result_path.append(main_path + 'results_tr_Cerrado_MA_DeepLab_None_Cerrado_MA_multi_Cerrado_MA/')
+result_path.append(main_path + 'results_tr_Cerrado_MA_classification_Cerrado_MA/')
 
 #X = MA, Y = PA
 #result_path.append(main_path + 'results_tr_Cerrado_MA_DeepLab_DR_Amazon_PA_Amazon_RO_multi_Amazon_PA/')

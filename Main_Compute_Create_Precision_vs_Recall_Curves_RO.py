@@ -12,18 +12,18 @@ main_path = "./results/results_avg/"
 
 
 #X = RO, Y = RO
-result_path.append(main_path + 'results_tr_Amazon_RO_DeepLab_None_Amazon_RO_multi_Amazon_RO/')
+result_path.append(main_path + 'results_tr_Amazon_RO_classification_Amazon_RO/')
 
 
 labels = []
 labels.append('1-Tr: RO,Ts: RO (Source only training)')
-#labels.append('2-Tr: PA,Ts: MA (Multi Domain training)')
+
 
 colors = Charts.colors.copy()
 
 titles = []
 
-titles.append('X = RO, Y = RO')
+titles.append('Source = RO')
 
 def Area_under_the_curve(X, Y):
     X = X[0,:]

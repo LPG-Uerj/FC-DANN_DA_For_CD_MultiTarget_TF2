@@ -3,9 +3,9 @@ from tensorflow import keras
 from keras.layers import Layer
 
 @tf.custom_gradient
-def GradientReversalOperator(x, l=1.0):
-    def grad(dy):
-        return -1. * dy * l, 0. * dy
+def GradientReversalOperator(x, l):
+    def grad(dy):        
+        return tf.negative(dy) * l, 0. * dy
     return x, grad
 
 class GradientReversalLayer(Layer):
