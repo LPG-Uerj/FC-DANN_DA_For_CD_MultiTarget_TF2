@@ -1,11 +1,11 @@
 import os
-import shutil
 import sys
 import json
 import argparse
 import numpy as np
 from datetime import datetime
 from SharedParameters import TRAINING_TYPE_DOMAIN_ADAPTATION,TRAINING_TYPE_CLASSIFICATION,ROLE_SOURCE,ROLE_TARGET
+from Tools import cleanup_folder
 
 #from tensordash.tensordash import Tensordash, Customdash
 
@@ -183,18 +183,6 @@ def main():
         model = Models(args, dataset_s, dataset_t)
 
         model.Train()
-
-def cleanup_folder(checkpoint_folder):  
-    if os.path.exists(checkpoint_folder):            
-        for filename in os.listdir(checkpoint_folder):
-            file_path = os.path.join(checkpoint_folder, filename)
-            try:
-                if os.path.isfile(file_path) or os.path.islink(file_path):
-                    os.unlink(file_path)
-                elif os.path.isdir(file_path):
-                    shutil.rmtree(file_path)
-            except Exception as e:
-                print('Failed to delete %s. Reason: %s' % (file_path, e))
 
 if __name__=='__main__':
     main()

@@ -9,8 +9,6 @@ from datetime import datetime
 import matplotlib.pyplot as plt
 from skimage.morphology import square, disk
 from sklearn.preprocessing import StandardScaler
-#from tensordash.tensordash import Tensordash, Customdash
-
 from Tools import *
 from Models_FC114 import *
 from Amazonia_Legal_RO import AMAZON_RO
@@ -100,11 +98,13 @@ def main():
             dt_string = now.strftime("%d_%m_%Y_%H_%M_%S")
             args.save_results_dir = os.path.join(args.results_dir, args.classifier_type + '_' + 'Model_Results_' + 'Trained_' + model_folder_fields[3] + '_' + model_folder_fields[4] + '_' + model_folder[-19:] + '_Tested_' + args.data_t1_year + '_' + args.data_t2_year + '_' + dt_string)
             
-            print(f'Testing checkpoint {model_folder} at {dt_string}')
+            print(f'Testing checkpoint {model_folder} at {dt_string}')            
             
-            #args.save_results_dir = args.results_dir + '\\model_' + str(i) + '\\'
             if not os.path.exists(args.save_results_dir):
                 os.makedirs(args.save_results_dir)
+
+            print(f'Cleaning up {args.save_results_dir}')
+            cleanup_folder(args.save_results_dir)
 
             print('[*]Initializing the model...')
 

@@ -854,7 +854,7 @@ class Models():
                 #probs = self.sess.run(self.prediction_c,feed_dict={self.data: self.x_test_batch})
 
                 if self.args.training_type == TRAINING_TYPE_DOMAIN_ADAPTATION:
-                    probs, _ = self.model.main_network.predict(self.x_test_batch)
+                    probs = self.model.main_network.predict(self.x_test_batch)
                 else:
                     probs = self.model.predict(self.x_test_batch)
 
@@ -870,7 +870,7 @@ class Models():
                 #probs = self.sess.run(self.prediction_c,feed_dict={self.data: self.x_test_batch})
 
                 if self.args.training_type == TRAINING_TYPE_DOMAIN_ADAPTATION:
-                    probs, _ = self.model.main_network.predict(self.x_test_batch)
+                    probs = self.model.main_network.predict(self.x_test_batch)
                 else:
                     probs = self.model.predict(self.x_test_batch)
 

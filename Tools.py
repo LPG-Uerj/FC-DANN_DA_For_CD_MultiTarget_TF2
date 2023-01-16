@@ -2,7 +2,7 @@ import os
 import numpy as np
 import scipy.io as sio
 import skimage as sk
-#from osgeo import gdal
+import shutil
 from sklearn.metrics import f1_score, precision_score, recall_score, accuracy_score, confusion_matrix
 
 def Analyse_hyperparameters_test(args, hyperparameters_file_path):
@@ -367,7 +367,17 @@ def plot_embedding(X, y, d, title=None):
     if title is not None:
         plt.title(title)       
     
-    
+def cleanup_folder(folder):  
+    if os.path.exists(folder):            
+        for filename in os.listdir(folder):
+            file_path = os.path.join(folder, filename)
+            try:
+                if os.path.isfile(file_path) or os.path.islink(file_path):
+                    os.unlink(file_path)
+                elif os.path.isdir(file_path):
+                    shutil.rmtree(file_path)
+            except Exception as e:
+                print('Failed to delete %s. Reason: %s' % (file_path, e))  
     
     
     

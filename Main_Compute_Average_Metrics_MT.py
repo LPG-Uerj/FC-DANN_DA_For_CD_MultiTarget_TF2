@@ -9,10 +9,8 @@ from datetime import datetime
 import matplotlib.pyplot as plt
 from skimage.morphology import square, disk
 from sklearn.preprocessing import StandardScaler
-#from tensordash.tensordash import Tensordash, Customdash
-
-from Tools import*
-from Models_FC114 import*
+from Tools import *
+from Models_FC114 import *
 from Amazonia_Legal_RO import AMAZON_RO
 from Amazonia_Legal_PA import AMAZON_PA
 from Cerrado_Biome_MA import CERRADO_MA
@@ -80,6 +78,9 @@ def Main():
     if not os.path.exists(args.average_results_dir):
         os.makedirs(args.average_results_dir)
 
+    print(f'Cleaning up {args.average_results_dir}')
+    cleanup_folder(args.average_results_dir)
+
     args.results_dir = args.checkpoint_results_main_path + 'results/' + args.results_dir + '/'
     args.checkpoint_dir = args.checkpoint_results_main_path + 'checkpoints/' + args.checkpoint_dir + '/'
     counter = 0
@@ -101,7 +102,8 @@ def Main():
     dataset.Tiles_Configuration(args, 0)
     Avg_hit_map = HIT_MAP/counter
     args.file = 'Avg_Scores'
-    args.results_dir = args.average_results_dir
+    args.results_dir = args.average_results_dir    
+
     if not os.path.exists(args.results_dir + args.file + '/'):
         os.makedirs(args.results_dir + args.file + '/')
 
