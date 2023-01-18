@@ -1,7 +1,5 @@
 import tensorflow as tf
 from layers import ReshapeTensor
-from tensorflow.keras.models import Model
-
 #--------------------
 
 from BaseModels import *
@@ -93,8 +91,8 @@ class DeepLabV3Plus():
             layer = ReshapeTensor(low_level_features_size)(layer)
             layer = tf.keras.layers.Concatenate(axis=3)([layer,low_Level_Features]) 
 
-        layer = tf.keras.layers.Conv2D(256, 3, strides = 1)(layer)
-        layer = tf.keras.layers.Conv2D(256, 3, strides = 1)(layer)
+        layer = tf.keras.layers.Conv2D(256, 1, strides = 1)(layer)
+        layer = tf.keras.layers.Conv2D(256, 1, strides = 1)(layer)
 
         layer = tf.keras.layers.Conv2D(int(self.args.num_classes),1)(layer)
         inputs_size = [self.args.patches_dimension, self.args.patches_dimension]

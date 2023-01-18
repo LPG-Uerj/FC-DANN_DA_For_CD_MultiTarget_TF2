@@ -12,7 +12,7 @@ main_path = "./results/results_avg/"
 
 
 #X = RO, Y = RO
-result_path.append(main_path + 'results_tr_Amazon_RO_classification_Amazon_RO/')
+result_path.append(main_path + 'results_tr_Amazon_RO_classification_S_Amazon_RO_T_Amazon_RO/')
 
 
 labels = []
@@ -23,7 +23,7 @@ colors = Charts.colors.copy()
 
 titles = []
 
-titles.append('Source = RO')
+titles.append('Target = RO')
 
 def Area_under_the_curve(X, Y):
     X = X[0,:]
@@ -139,5 +139,5 @@ if __name__ == '__main__':
         plt.title(titles[init])
         plt.ylabel('Precision')
         plt.xlabel('Recall')
-        plt.savefig(main_path + 'Recall_vs_Precision_5_runs_RO_multi_DeepLab_Xception.png')
+        plt.savefig(main_path + 'Recall_vs_Precision_5_runs_Target_RO_DeepLab_Xception.png')
         init += 1

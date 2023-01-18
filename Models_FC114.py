@@ -75,6 +75,9 @@ class Models():
 
             deepLab = DeepLabV3Plus(self.args)
 
+            print("Assemblying model")
+            print(f"Input shape: {self.input_shape}")
+
             input_block = tf.keras.layers.Input(shape = self.input_shape)
 
             #Building the encoder            
@@ -194,7 +197,7 @@ class Models():
         return loss # [Batch_size, patch_dimension, patc_dimension, 1]
 
     def learning_rate_decay(self):
-        lr = self.args.lr / (1. + 10 * self.p)**0.75
+        lr = self.args.lr / (1. + 10 * self.p)**0.75        
         return lr
 
     def Train(self):
@@ -220,8 +223,8 @@ class Models():
             reference_t1_t.append(np.zeros((t.references_[0].shape[0], t.references_[0].shape[1], 1)))
             reference_t2_t.append(np.zeros((t.references_[0].shape[0], t.references_[0].shape[1], 1)))
 
-        if self.args.balanced_tr:
-            class_weights = self.dataset_s.class_weights
+        #if self.args.balanced_tr:
+        #    class_weights = self.dataset_s.class_weights
 
         # Copy the original input values
         corners_coordinates_tr_s = self.dataset_s.corners_coordinates_tr.copy()
@@ -507,15 +510,16 @@ class Models():
                     print("Number of warm-up epochs: %d"%(warmup))
                     if e >= warmup:
                         self.l = 2. / (1. + np.exp(-2.5 * self.p)) - 1
+                        #self.l = 2. / (1. + np.exp(-10. * self.p)) - 1
                     else:
                         self.l = 0.
-                    print("lambda_p: %.3f" %(self.l))
+                    print("lambda_p: %.5f" %(self.l))
 
                 self.lr = self.learning_rate_decay()            
                 print("Learning rate decay: " + str(self.lr))
 
                 self.training_optimizer.learning_rate = self.lr
-                self.discriminator_optimizer.learning_rate = self.lr
+                self.discriminator_optimizer.learning_rate = self.lr                
 
                 batch_counter_cl = 0
                 batchs = trange(num_batches_tr)

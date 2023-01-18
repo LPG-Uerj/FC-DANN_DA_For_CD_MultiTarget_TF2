@@ -1,7 +1,9 @@
 import os
 import warnings
 import argparse
+from Amazonia_Legal_RO import AMAZON_RO
 from Amazonia_Legal_PA import AMAZON_PA
+from Cerrado_Biome_MA import CERRADO_MA
 import SharedParameters
 
 #os.environ["CUDA_VISIBLE_DEVICES"] = "0"
@@ -34,7 +36,7 @@ Schedule = []
 
 Checkpoint_Results_MAIN_PATH = "./results/"
 
-source_dataset = AMAZON_PA.DATASET
+source_dataset = AMAZON_RO.DATASET
 training_type = SharedParameters.TRAINING_TYPE_CLASSIFICATION
 checkpoint_dir = "checkpoint_tr_"+source_dataset+"_"
 results_dir = "results_tr_"+source_dataset+"_"
@@ -43,17 +45,16 @@ runs = "5"
 #Deforastation / No Deforastation
 num_classes = "2"
 
-#Source PA, Target PA
+#Source RO, Target RO
 num_targets = "2" 
 
-#TARGET: PA
-target_dataset = AMAZON_PA.DATASET
-source_to_target = AMAZON_PA.DATASET + "_to_" + target_dataset
+#TARGET: RO
+target_dataset = AMAZON_RO.DATASET
 
 DR_LOCALIZATION = ['55']
 METHODS  = [SharedParameters.METHOD]
 DA_TYPES = ['None']
-DATASETS = [AMAZON_PA.DATASET]
+DATASETS = [AMAZON_RO.DATASET,AMAZON_PA.DATASET,CERRADO_MA.DATASET]
 
 for dr_localization in DR_LOCALIZATION:
     for method in METHODS:
@@ -95,12 +96,12 @@ for dr_localization in DR_LOCALIZATION:
                                 "--patience 10 "
                                 "--checkpoint_dir " + checkpoint_dir_param + " "
                                 "--source_dataset " + source_dataset + " "
-                                "--target_dataset " + target_dataset + " "                                
+                                "--target_dataset " + target_dataset + " "
                                 "--checkpoint_results_main_path " + Checkpoint_Results_MAIN_PATH + " ")
 
             for target_ds in DATASETS:
 
-                results_dir_param = results_dir + training_type + "_" + target_dataset
+                results_dir_param = results_dir + training_type + "_S_" + source_dataset + "_T_" + target_ds
 
                 if args.test:                    
                     Schedule.append("python " + Test_MAIN_COMMAND + " "
@@ -121,7 +122,7 @@ for dr_localization in DR_LOCALIZATION:
                                 "--da_type " + da + " "
                                 "--checkpoint_dir " + checkpoint_dir_param + " "
                                 "--results_dir " + results_dir_param + " "
-                                "--dataset " + target_ds + " "                                
+                                "--dataset " + target_ds + " "                                                           
                                 "--checkpoint_results_main_path " + Checkpoint_Results_MAIN_PATH + " ")                
 
                 if args.metrics:
@@ -141,7 +142,7 @@ for dr_localization in DR_LOCALIZATION:
                                 "--save_result_text True "
                                 "--checkpoint_dir " + checkpoint_dir_param + " "
                                 "--results_dir " + results_dir_param + " "
-                                "--dataset " + target_ds + " "                                 
+                                "--dataset " + target_ds + " "                                
                                 "--checkpoint_results_main_path " + Checkpoint_Results_MAIN_PATH + " ")
 
                     Schedule.append("python " + Metrics_th_MAIN_COMMAND + " "

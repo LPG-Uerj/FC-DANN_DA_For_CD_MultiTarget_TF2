@@ -12,21 +12,21 @@ main_path = "./results/results_avg/"
 
 
 #X = MA, Y = MA
-#result_path.append(main_path + 'results_tr_Cerrado_MA_DeepLab_None_Cerrado_MA_multi_Cerrado_MA/')
-result_path.append(main_path + 'results_tr_Cerrado_MA_classification_Cerrado_MA/')
+result_path.append(main_path + 'results_tr_Cerrado_MA_classification_S_Cerrado_MA_T_Cerrado_MA/')
 
-#X = MA, Y = PA
-#result_path.append(main_path + 'results_tr_Cerrado_MA_DeepLab_DR_Amazon_PA_Amazon_RO_multi_Amazon_PA/')
+#X = RO, Y = MA
+result_path.append(main_path + 'results_tr_Amazon_RO_classification_S_Amazon_RO_T_Cerrado_MA/')
 
 labels = []
 labels.append('1-Tr: MA,Ts: MA (Source only training)')
-#labels.append('2-Tr: MA,Ts: PA (Multi Domain training)')
+#labels.append('2-Tr: RO->PA, Ts: PA (domain adaptation single-target)')
+labels.append('3-Tr: RO, Ts: MA (Source only training)')
 
 colors = Charts.colors.copy()
 
 titles = []
 
-titles.append('X = MA, Y = MA')
+titles.append('Target = MA')
 
 def Area_under_the_curve(X, Y):
     X = X[0,:]
@@ -145,5 +145,5 @@ if __name__ == '__main__':
         plt.title(titles[init])
         plt.ylabel('Precision')
         plt.xlabel('Recall')
-        plt.savefig(main_path + 'Recall_vs_Precision_5_runs_MA_multi_DeepLab_Xception.png')
+        plt.savefig(main_path + 'Recall_vs_Precision_5_runs_Target_MA_DeepLab_Xception.png')
         init += 1

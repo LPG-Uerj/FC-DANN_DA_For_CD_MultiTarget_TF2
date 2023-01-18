@@ -70,6 +70,12 @@ def main():
         args.results_dir = args.checkpoint_results_main_path + 'results/' + args.results_dir + '/'
         args.checkpoint_dir = args.checkpoint_results_main_path + 'checkpoints/' + args.checkpoint_dir + '/'
 
+        if not os.path.exists(args.results_dir):
+            os.makedirs(args.results_dir)
+
+        print(f'Cleaning up {args.results_dir}')
+        cleanup_folder(args.results_dir)
+
         dataset = []
 
         if args.dataset == AMAZON_RO.DATASET:            
@@ -102,9 +108,6 @@ def main():
             
             if not os.path.exists(args.save_results_dir):
                 os.makedirs(args.save_results_dir)
-
-            print(f'Cleaning up {args.save_results_dir}')
-            cleanup_folder(args.save_results_dir)
 
             print('[*]Initializing the model...')
 

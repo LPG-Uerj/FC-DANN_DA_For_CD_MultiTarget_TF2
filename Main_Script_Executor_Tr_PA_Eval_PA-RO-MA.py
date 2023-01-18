@@ -3,6 +3,7 @@ import warnings
 import argparse
 from Amazonia_Legal_RO import AMAZON_RO
 from Amazonia_Legal_PA import AMAZON_PA
+from Cerrado_Biome_MA import CERRADO_MA
 import SharedParameters
 
 #os.environ["CUDA_VISIBLE_DEVICES"] = "0"
@@ -35,9 +36,7 @@ Schedule = []
 
 Checkpoint_Results_MAIN_PATH = "./results/"
 
-source_dataset = AMAZON_RO.DATASET
-source_reference_t2_name = AMAZON_RO.REFERENCE_T2
-target_reference_t2_name = AMAZON_PA.REFERENCE_T2
+source_dataset = AMAZON_PA.DATASET
 training_type = SharedParameters.TRAINING_TYPE_CLASSIFICATION
 checkpoint_dir = "checkpoint_tr_"+source_dataset+"_"
 results_dir = "results_tr_"+source_dataset+"_"
@@ -46,17 +45,16 @@ runs = "5"
 #Deforastation / No Deforastation
 num_classes = "2"
 
-#Source RO, Target PA
+#Source PA, Target PA
 num_targets = "2" 
 
-#TARGET: RO
+#TARGET: PA
 target_dataset = AMAZON_PA.DATASET
-source_to_target = AMAZON_RO.DATASET + "_to_" + target_dataset
 
 DR_LOCALIZATION = ['55']
 METHODS  = [SharedParameters.METHOD]
 DA_TYPES = ['None']
-DATASETS = [AMAZON_RO.DATASET]
+DATASETS = [AMAZON_PA.DATASET,AMAZON_RO.DATASET,CERRADO_MA.DATASET]
 
 for dr_localization in DR_LOCALIZATION:
     for method in METHODS:
@@ -103,7 +101,7 @@ for dr_localization in DR_LOCALIZATION:
 
             for target_ds in DATASETS:
 
-                results_dir_param = results_dir + training_type + "_" + target_dataset
+                results_dir_param = results_dir + training_type + "_S_" + source_dataset + "_T_" + target_ds
 
                 if args.test:                    
                     Schedule.append("python " + Test_MAIN_COMMAND + " "

@@ -39,7 +39,7 @@ training_type = SharedParameters.TRAINING_TYPE_DOMAIN_ADAPTATION
 
 checkpoint_dir = "checkpoint_tr_"+source_dataset+"_"
 results_dir = "results_tr_"+source_dataset+"_"
-runs = "1"
+runs = "5"
 
 #Deforastation / No Deforastation
 num_classes = "2"
@@ -55,7 +55,7 @@ source_to_target = AMAZON_RO.DATASET + "_to_" + target_dataset
 DR_LOCALIZATION = ['55']
 METHODS  = [SharedParameters.METHOD]
 DA_TYPES = ['DR']
-TARGET_DATASETS = [AMAZON_PA.DATASET]
+TARGET_DATASETS = [AMAZON_PA.DATASET, AMAZON_RO.DATASET]
 
 for dr_localization in DR_LOCALIZATION:
     for method in METHODS:
@@ -72,7 +72,7 @@ for dr_localization in DR_LOCALIZATION:
                                 "--skip_connections False "
                                 "--epochs 100 "
                                 "--batch_size 32 "
-                                "--lr 0.0001 "
+                                "--lr 0.01 "
                                 "--beta1 0.9 "
                                 "--data_augmentation True "                                                              
                                 "--fixed_tiles True "

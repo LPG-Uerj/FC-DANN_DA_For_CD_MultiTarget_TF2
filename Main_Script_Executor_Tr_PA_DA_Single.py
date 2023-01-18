@@ -39,7 +39,7 @@ training_type = SharedParameters.TRAINING_TYPE_DOMAIN_ADAPTATION
 
 checkpoint_dir = "checkpoint_tr_"+source_dataset+"_"
 results_dir = "results_tr_"+source_dataset+"_"
-runs = "5"
+runs = "1"
 
 #Deforastation / No Deforastation
 num_classes = "2"
