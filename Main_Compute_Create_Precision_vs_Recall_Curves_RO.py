@@ -14,9 +14,14 @@ main_path = "./results/results_avg/"
 #X = RO, Y = RO
 result_path.append(main_path + 'results_tr_Amazon_RO_classification_S_Amazon_RO_T_Amazon_RO/')
 
+#X = MA->RO, Y = RO
+result_path.append(main_path + 'results_tr_Cerrado_MA_to_Amazon_RO_domain_adaptation_DR_single_Amazon_RO/')
+
 
 labels = []
 labels.append('1-Tr: RO,Ts: RO (Source only training)')
+
+labels.append('2-Tr: MA->RO, Ts: RO (domain adaptation single-target)')
 
 
 colors = Charts.colors.copy()

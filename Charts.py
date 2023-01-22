@@ -7,6 +7,7 @@ from Models_FC114 import *
 from Amazonia_Legal_RO import AMAZON_RO
 from Amazonia_Legal_PA import AMAZON_PA
 from Cerrado_Biome_MA import CERRADO_MA
+import SharedParameters
 
 colors = []
 colors.append('#1724BD')
@@ -18,6 +19,17 @@ colors.append('#663300')
 
 def get_metrics(args):
     Thresholds = np.array([0.5])
+
+    args.checkpoint_results_main_path = "./results/"
+    args.eliminate_regions = True
+    args.defined_before = False
+    args.reference_t2_name = None
+    args.fixed_tiles = True
+    args.patches_dimension = 64
+    args.compute_ndvi = False
+    args.image_channels = 7
+    args.phase = SharedParameters.PHASE_METRICS
+    args.buffer = True
     
     if args.target_dataset == AMAZON_RO.DATASET:        
         dataset = AMAZON_RO(args)
@@ -34,8 +46,18 @@ def get_metrics(args):
 
     args.results_dir = args.checkpoint_results_main_path + 'results/' + args.results_dir + '/'
     args.checkpoint_dir = args.checkpoint_results_main_path + 'checkpoints/' + args.checkpoint_dir + '/'
+
+    if not os.path.exists(args.results_dir):
+        raise Exception(f"Folder does not exist: {args.results_dir}")
+    if not os.path.exists(args.checkpoint_dir):
+        raise Exception(f"Folder does not exist: {args.checkpoint_dir}")
+
+
     counter = 0
     files = os.listdir(args.results_dir)
+
+    if len(files) == 0:
+        raise Exception(f"There is no result recorded in: {args.results_dir}")
 
     ACCURACY_ = []
     FSCORE_ = []
@@ -67,48 +89,57 @@ def get_metrics(args):
     
     return ACCURACY_m,FSCORE_m,RECALL_m,PRECISION_m
 
-def create_chart(experiments, result_list,checkpoint_list, path_to_export_chart, title, args):
+def create_chart(args,experiments, target_list, result_list,checkpoint_list, path_to_export_chart, title):
+    if not (len(target_list) == len(result_list) and len(target_list) == len(checkpoint_list)):
+        raise Exception("Lists are not the same length. Please verify.")
+    
+    _experiments = []
+    accuracy_list = []
+    fscore_list = []
+    recall_list = []
+    precision_list = []
     args.save_result_text = True
     for i in range(0,len(result_list)):
+        args.target_dataset = target_list[i]
         args.checkpoint_dir = checkpoint_list[i]
         args.results_dir = result_list[i]
-        accuracy,fscore,recall,precision = get_metrics(args)
+        try:
+            accuracy,fscore,recall,precision = get_metrics(args)
+        except Exception as e: 
+            print(e)
+            continue
+        accuracy_list.append("%.2f"%(accuracy))
+        fscore_list.append("%.2f%%"%(fscore))
+        recall_list.append("%.2f"%(recall))
+        precision_list.append("%.2f"%(precision))
+        _experiments.append(experiments[i])
 
-    x = np.arange(len(experiments))
-    # set width of bars
-    barWidth = 0.25
-    
-    bars_Accuracy = accuracy.copy()
-    bars_F1 = fscore.copy()
-    bars_Recall = recall.copy()
-    bars_Precision = precision.copy()
+    x = np.arange(len(_experiments))
+        
+    bars_Accuracy = accuracy_list.copy()
+    bars_F1 = fscore_list.copy()
+    bars_Recall = recall_list.copy()
+    bars_Precision = precision_list.copy()
 
-    width = 0.35
-    
-    # Set position of bar on X axis
-    r1 = np.arange(len(bars_Accuracy))
-    r2 = [x + barWidth for x in r1]
-    r3 = [x + barWidth for x in r2]
-    r4 = [x + barWidth for x in r3]
-
+    width = 0.25
 
     fig, ax = plt.subplots()
-    rects1 = ax.bar(x - width/2, bars_Accuracy, width, label='Accuracy')
-    rects2 = ax.bar(x + width/2, bars_F1, width, label='F1-Score')
-    rects3 = ax.bar(x + width/2, bars_Recall, width, label='Recall')
-    rects4 = ax.bar(x + width/2, bars_Precision, width, label='Precision')
+    rects1 = ax.bar(x - width, bars_Accuracy, width, label='Accuracy')
+    rects2 = ax.bar(x + width, bars_F1, width, label='F1-Score')
+    rects3 = ax.bar(x + 2*(width), bars_Recall, width, label='Recall')
+    rects4 = ax.bar(x + 3*(width), bars_Precision, width, label='Precision')
 
     # Add some text for labels, title and custom x-axis tick labels, etc.
     ax.set_ylabel('Scores %')
     ax.set_xlabel('Experiments') 
     ax.set_title(title)   
-    ax.set_xticks(x, experiments)
+    ax.set_xticks(x, _experiments)
     ax.legend()
 
-    ax.bar_label(rects1, padding=3)
-    ax.bar_label(rects2, padding=3)
-    ax.bar_label(rects3, padding=3)
-    ax.bar_label(rects4, padding=3)
+    ax.bar_label(rects1, padding=4)
+    ax.bar_label(rects2, padding=4)
+    ax.bar_label(rects3, padding=4)
+    ax.bar_label(rects4, padding=4)
 
     ax.set_ylim(0,100)
 
@@ -116,4 +147,8 @@ def create_chart(experiments, result_list,checkpoint_list, path_to_export_chart,
 
     plt.show()  
 
-    plt.savefig(path_to_export_chart + title + '.png')
+    full_chart_path = path_to_export_chart + title + '.png'
+
+    plt.savefig(full_chart_path)
+
+    print(f"Done! {full_chart_path} has been saved.")

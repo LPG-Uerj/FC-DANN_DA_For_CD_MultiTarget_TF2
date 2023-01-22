@@ -149,7 +149,7 @@ class AMAZON_RO():
 
     def Tiles_Configuration(self, args, i):
         #Generating random training and validation tiles
-        if args.phase == 'train' or args.phase == 'compute_metrics':
+        if args.phase == SharedParameters.PHASE_TRAIN or args.phase == SharedParameters.PHASE_METRICS:
             if args.fixed_tiles:
                 if args.defined_before:
                     if args.phase == 'train':
@@ -159,7 +159,7 @@ class AMAZON_RO():
                         self.Valid_tiles = np.load(args.checkpoint_dir_posterior + '/' + files[i] + '/' + 'Valid_tiles.npy')
                         np.save(args.save_checkpoint_path + 'Train_tiles' , self.Train_tiles)
                         np.save(args.save_checkpoint_path + 'Valid_tiles' , self.Valid_tiles)
-                    if args.phase == 'compute_metrics':
+                    if SharedParameters.PHASE_METRICS:
                         self.Train_tiles = np.load(args.save_checkpoint_path +  'Train_tiles.npy')
                         self.Valid_tiles = np.load(args.save_checkpoint_path +  'Valid_tiles.npy')
                 else:

@@ -1,7 +1,9 @@
 import os
 
-Dataset_MAIN_PATH = os.getenv("HOME")+"/workspace/dataset/"
+home = os.getenv("HOME")
+Dataset_MAIN_PATH = str(home)+"/workspace/dataset/"
 METHOD = "DeepLab"
+
 Train_MAIN_COMMAND = "Main_Train_FC114.py"
 Test_MAIN_COMMAND = "Main_Test_FC114.py"
 Metrics_05_MAIN_COMMAND = "Main_Compute_Metrics_05.py"
@@ -13,6 +15,8 @@ ROLE_TARGET = "T"
 PHASE_TRAIN = "train"
 PHASE_TEST = "test"
 PHASE_METRICS = "compute_metrics"
+
+LR = str(0.0001)
 
 Full_Path_Train_MAIN_COMMAND = "$HOME/workspace/FC-DANN_DA_For_CD_MultiTarget_TF2/"+Train_MAIN_COMMAND
 Full_Path_Test_MAIN_COMMAND = "$HOME/workspace/FC-DANN_DA_For_CD_MultiTarget_TF2/"+Test_MAIN_COMMAND

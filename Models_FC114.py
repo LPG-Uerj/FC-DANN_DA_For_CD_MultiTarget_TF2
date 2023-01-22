@@ -18,6 +18,7 @@ from SharedParameters import TRAINING_TYPE_DOMAIN_ADAPTATION,TRAINING_TYPE_CLASS
 from Tools import *
 from Networks import *
 from discriminators import *
+from tensorflow.keras.optimizers.schedules import LearningRateSchedule
 
 class Models():
     def __init__(self, args, dataset_s, dataset_t):
@@ -33,8 +34,14 @@ class Models():
 
         self.best_weights = None
 
-        self.training_optimizer = Adam(beta_1=self.args.beta1)        
-        self.discriminator_optimizer = Adam(beta_1=self.args.beta1)        
+        #self.training_optimizer = Adam(beta_1=self.args.beta1)
+        self.training_optimizer = Adam(learning_rate=MyDecay(self.args.epochs, self.args.lr), beta_1=self.args.beta1)
+
+        #self.discriminator_optimizer = Adam(beta_1=self.args.beta1)
+        #self.discriminator_optimizer = Adam(learning_rate=MyDecay(self.args.epochs, self.args.lr), beta_1=self.args.beta1)
+
+        #self.encoder_optimizer = Adam(beta_1=self.args.beta1)
+        #self.encoder_optimizer = Adam(learning_rate=MyDecay(self.args.epochs, self.args.lr), beta_1=self.args.beta1)
 
         self.classifier_loss = WeightedCrossEntropyC()
         self.domainregressor_loss = CategoricalCrossentropy(from_logits=True)        
@@ -142,26 +149,36 @@ class Models():
                                          train_discriminator = True):
 
         y_true_segmentation, y_true_discriminator = outputs
-        x_input, _ = inputs
-        with tf.GradientTape(persistent = True) as tape:
+        x_input, l = inputs
+        with tf.GradientTape() as seg_tape, tf.GradientTape() as disc_tape, tf.GradientTape() as enc_tape:
             self.classifier_loss.class_weights = class_weights
-            self.classifier_loss.mask = mask_c
+            self.classifier_loss.mask = mask_c        
             
-            y_pred_segmentation = self.model.main_network(x_input,training=True) 
-            loss_segmentation = self.classifier_loss(y_true_segmentation, y_pred_segmentation)            
+            y_pred_segmentation,_,logits_discriminator = self.model([x_input, l],training=True)                       
             
-            _,logits_discriminator = self.model.domain_regressor_network(inputs,training=True)
+            #y_pred_segmentation = self.model.main_network(x_input,training=True) 
+            loss_segmentation = self.classifier_loss(y_true_segmentation, y_pred_segmentation)
+        
+            #_,logits_discriminator = self.model.domain_regressor_network(inputs,training=True)
             loss_discriminator = self.domainregressor_loss(y_true=y_true_discriminator, y_pred=logits_discriminator)            
             
+            total_loss = loss_segmentation + loss_discriminator
+
         if train_segmentation:
-            gradients_segmentation = tape.gradient(loss_segmentation, self.model.main_network.trainable_weights)            
-            self.training_optimizer.apply_gradients(zip(gradients_segmentation, self.model.main_network.trainable_weights))
+            gradients_segmentation = seg_tape.gradient(total_loss, self.model.trainable_weights)            
+            self.training_optimizer.apply_gradients(zip(gradients_segmentation, self.model.trainable_weights))
         
+        '''
         if train_discriminator:
-            gradients_discriminator = tape.gradient(loss_discriminator, self.model.domain_regressor_network.trainable_weights)
-            self.discriminator_optimizer.apply_gradients(zip(gradients_discriminator, self.model.domain_regressor_network.trainable_weights))
+            gradients_discriminator = disc_tape.gradient(loss_discriminator, self.model.domain_discriminator.trainable_weights)
+            self.discriminator_optimizer.apply_gradients(zip(gradients_discriminator, self.model.domain_discriminator.trainable_weights))
         
-        del tape
+        if train_segmentation or train_discriminator:
+            total_loss = loss_segmentation - (l * loss_discriminator)
+            gradients_encoder = enc_tape.gradient(total_loss, self.model.encoder_model.trainable_weights)
+            self.encoder_optimizer.apply_gradients(zip(gradients_encoder,self.model.encoder_model.trainable_weights))
+        '''
+                
         return loss_segmentation, y_pred_segmentation, loss_discriminator
 		
 		
@@ -173,10 +190,10 @@ class Models():
         self.classifier_loss.class_weights = class_weights
         self.classifier_loss.mask = mask_c
 
-        y_pred_segmentation = self.model.main_network(x_input,training=False)
-        loss_segmentation = self.classifier_loss(y_true_segmentation, y_pred_segmentation)
-            
-        _,logits_discriminator = self.model.domain_regressor_network(inputs,training=False)
+        y_pred_segmentation,_,logits_discriminator = self.model(inputs,training=False)
+        
+        loss_segmentation = self.classifier_loss(y_true_segmentation, y_pred_segmentation)            
+        #_,logits_discriminator = self.model.domain_regressor_network(inputs,training=False)
         loss_discriminator = self.domainregressor_loss(y_true=y_true_discriminator, y_pred=logits_discriminator)             
 
         return loss_segmentation, y_pred_segmentation, loss_discriminator
@@ -196,9 +213,8 @@ class Models():
         loss = tf.reduce_sum(temp_weighted, 3)
         return loss # [Batch_size, patch_dimension, patc_dimension, 1]
 
-    def learning_rate_decay(self):
-        lr = self.args.lr / (1. + 10 * self.p)**0.75        
-        return lr
+    def learning_rate_decay(self,lr_0):
+        return lr_0 / (1. + 10 * self.p)**0.75
 
     def Train(self):
 
@@ -502,24 +518,26 @@ class Models():
 
                 print("----------------------------------------------------------")
                 #Computing some parameters
-                self.p = float(e) / self.args.epochs
+                self.p = (float(e)+1) / self.args.epochs
                 print("Current Epoch: {0}/{1}".format(str(e),str(self.args.epochs)))
 
                 if self.args.training_type == TRAINING_TYPE_DOMAIN_ADAPTATION:
                     warmup = self.args.warmup
                     print("Number of warm-up epochs: %d"%(warmup))
                     if e >= warmup:
-                        self.l = 2. / (1. + np.exp(-2.5 * self.p)) - 1
-                        #self.l = 2. / (1. + np.exp(-10. * self.p)) - 1
+                        self.l = 2. / (1. + np.exp(-2.5 * self.p)) - 1                        
                     else:
                         self.l = 0.
-                    print("lambda_p: %.5f" %(self.l))
+                    print("lambda_p: %.6f" %(self.l))
 
-                self.lr = self.learning_rate_decay()            
-                print("Learning rate decay: " + str(self.lr))
+                lr = self.learning_rate_decay(self.args.lr)
+                #lr_disc = self.learning_rate_decay(self.args.lr)
+                print("Learning rate decay for Decoder: %.6f"%(lr))
+                #print("Learning rate decay for Feature Extractor and Discriminator: %.6f"%(lr_disc))
 
-                self.training_optimizer.learning_rate = self.lr
-                self.discriminator_optimizer.learning_rate = self.lr                
+                #self.training_optimizer.learning_rate = lr
+                #self.discriminator_optimizer.learning_rate = lr_disc               
+                #self.encoder_optimizer.learning_rate = lr_disc
 
                 batch_counter_cl = 0
                 batchs = trange(num_batches_tr)
@@ -700,6 +718,9 @@ class Models():
                 self.segmentation_history["val_loss"].append(loss_cl_vl[0,0])      
                 self.segmentation_history["val_f1"].append(f1_score_vl)
                 
+                print("GRL num calls:")
+                print(self.model.gradient_reversal_layer.num_calls)
+
                 if self.args.training_type == TRAINING_TYPE_DOMAIN_ADAPTATION and 'DR' in self.args.da_type:                    
                     loss_dr_vl = loss_dr_vl/batch_counter_cl
                     self.discriminator_history["val_loss"].append(loss_dr_vl[0,0])
@@ -714,14 +735,14 @@ class Models():
                 with open(os.path.join(self.args.save_checkpoint_path,"Log.txt"),"a") as f:
                     if 'DR' in self.args.da_type:
                         if np.isnan(loss_cl_tr[0,0]) or np.isnan(loss_cl_vl[0,0]):
-                            print('Nan value detected!!!!')
-                            print('[*]ReLoading the models weights...')                            
-                            try:                                   
-                                self.load_weights(self.args.save_checkpoint_path)                         
-                                print(" [*] Load successfuly")
-                            except Exception as e:                                 
-                                print(" [!] Load failed... Details: {0}".format(e))                                
-
+                            print('Nan value detected!!!!')                            
+                            if best_model_epoch != -1:
+                                print('[*]ReLoading the models weights...')
+                                try:                                   
+                                    self.load_weights(self.args.save_checkpoint_path)                         
+                                    print(" [*] Load successfuly")
+                                except Exception as e:                                 
+                                    print(" [!] Load failed... Details: {0}".format(e))
                         elif self.l != 0:
                             FLAG = False
                             if  best_val_dr < loss_dr_vl[0 , 0] and loss_dr_vl[0 , 0] < 1:
@@ -1180,3 +1201,17 @@ def Metrics_For_Test_M(hit_map,
     print(ALERT_AREA)
 
     return ACCURACY, FSCORE, RECALL, PRECISSION, CONFUSION_MATRIX, ALERT_AREA
+
+
+class MyDecay(LearningRateSchedule):
+
+    def __init__(self, max_steps=100., mu_0=0.01, alpha=10, beta=0.75):
+        self.mu_0 = mu_0
+        self.alpha = alpha
+        self.beta = beta
+        self.max_steps = max_steps
+
+    def __call__(self, step):        
+        step = tf.cast(step, dtype=tf.float32)
+        p = step / self.max_steps
+        return self.mu_0 / (1 + self.alpha * p)**self.beta

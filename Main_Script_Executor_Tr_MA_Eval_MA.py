@@ -70,7 +70,7 @@ for dr_localization in DR_LOCALIZATION:
                                 "--skip_connections False "
                                 "--epochs 100 "
                                 "--batch_size 32 "
-                                "--lr 0.0001 "
+                                "--lr " + SharedParameters.LR + " "
                                 "--beta1 0.9 "
                                 "--data_augmentation True "                                                              
                                 "--fixed_tiles True "
