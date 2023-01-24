@@ -35,7 +35,7 @@ class Models():
         self.best_weights = None
 
         #self.training_optimizer = Adam(beta_1=self.args.beta1)
-        self.training_optimizer = Adam(learning_rate=MyDecay(self.args.epochs, self.args.lr), beta_1=self.args.beta1)
+        #self.training_optimizer = Adam(learning_rate=MyDecay(self.args.epochs, self.args.lr), beta_1=self.args.beta1)
 
         #self.discriminator_optimizer = Adam(beta_1=self.args.beta1)
         #self.discriminator_optimizer = Adam(learning_rate=MyDecay(self.args.epochs, self.args.lr), beta_1=self.args.beta1)
@@ -63,6 +63,7 @@ class Models():
             self.input_shape = (int(args.patches_dimension), int(args.patches_dimension), 2 * int(args.image_channels))
 
         if self.args.phase == 'train':
+            self.training_optimizer = Adam(learning_rate=MyDecay(self.args.epochs, self.args.lr), beta_1=self.args.beta1)
             self.model = self.assembly_empty_model(showSummary=True)
         elif self.args.phase == 'test':
             print('[*] Loading the feature extractor and classifier trained models...')            
@@ -262,6 +263,7 @@ class Models():
                 corners_coordinates_vl_t.append(t.corners_coordinates_vl.copy())
 
             if 'CL' in self.args.da_type:
+                print("CL mode domain adaptation - Target domain will provide labels for training")
                 for i in range(len(self.dataset_t)):
                     reference_t1_ = t.references_[0].copy()
                     reference_t1_[t.references_[0] == 0] = 1

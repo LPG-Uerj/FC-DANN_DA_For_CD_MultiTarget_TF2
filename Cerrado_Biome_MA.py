@@ -55,6 +55,8 @@ class CERRADO_MA():
         elif args.role == SharedParameters.ROLE_SOURCE:
             reference_t2_name = self.REFERENCE_T2
         elif args.training_type == SharedParameters.TRAINING_TYPE_CLASSIFICATION:
+            reference_t2_name = self.REFERENCE_T2
+        elif 'CL' in args.da_type:
             reference_t2_name = self.REFERENCE_T2 
         else:
             #PSEUDO_REFERENCE USED ONLY IF: ROLE == TARGET, TRAINING TYPE == DOMAIN_ADAPTATION, PHASE == TRAIN:

@@ -152,3 +152,33 @@ def create_chart(args,experiments, target_list, result_list,checkpoint_list, pat
     plt.savefig(full_chart_path)
 
     print(f"Done! {full_chart_path} has been saved.")
+
+def Area_under_the_curve(X, Y):
+    X = X[0,:]
+    Y = Y[0,:]
+    dx = np.diff(X)
+    X_ = np.array([])
+    Y_ = np.array([])
+
+    eps = 5e-3
+    for i in range(len(dx)):
+        if dx[i] > eps:
+            x0 = X[i]; x1 = X[i+1]
+            y0 = Y[i]; y1 = Y[i+1]
+            a = (y1 - y0) / (x1 - x0)
+            b = y0 - a * x0
+            x = np.arange(x0, x1, eps)
+            y = a * x + b
+            X_ = np.concatenate((X_, x))
+            Y_ = np.concatenate((Y_, y))
+        else:
+            X_ = np.concatenate((X_, X[i:i+1]))
+            Y_ = np.concatenate((Y_, Y[i:i+1]))
+
+    X_ = np.concatenate((X_, X[-1:]))
+    Y_ = np.concatenate((Y_, Y[-1:]))
+
+    new_dx = np.diff(X_)
+    area = 100 * np.inner(Y_[:-1], new_dx)
+
+    return area

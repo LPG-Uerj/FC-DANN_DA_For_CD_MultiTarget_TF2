@@ -47,12 +47,12 @@ source_to_target = source_dataset + "_to_" + target_dataset
 
 checkpoint_dir = "checkpoint_tr_"+source_to_target+"_"
 results_dir = "results_tr_"+source_to_target+"_"
-runs = "1"
+runs = "5"
 
 
 DR_LOCALIZATION = ['55']
 METHODS  = [SharedParameters.METHOD]
-DA_TYPES = ['DR']
+DA_TYPES = ['DR','DRCL']
 TARGET_DATASETS = [AMAZON_PA.DATASET, source_dataset]
 
 for dr_localization in DR_LOCALIZATION:
@@ -175,7 +175,7 @@ results_dir = "results_tr_"+source_to_target+"_"
 
 DR_LOCALIZATION = ['55']
 METHODS  = [SharedParameters.METHOD]
-DA_TYPES = ['DR']
+DA_TYPES = ['DR','DRCL']
 TARGET_DATASETS = [CERRADO_MA.DATASET, source_dataset]
 
 for dr_localization in DR_LOCALIZATION:

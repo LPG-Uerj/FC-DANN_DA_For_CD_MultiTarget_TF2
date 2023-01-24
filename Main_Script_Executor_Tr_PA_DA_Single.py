@@ -53,8 +53,9 @@ runs = "5"
 
 DR_LOCALIZATION = ['55']
 METHODS  = [SharedParameters.METHOD]
-DA_TYPES = ['DR']
-TARGET_DATASETS = [AMAZON_RO.DATASET,source_dataset]
+#DA_TYPES = ['DR','DRCL']
+DA_TYPES = ['DRCL']
+TARGET_DATASETS = [target_dataset,source_dataset]
 
 for dr_localization in DR_LOCALIZATION:
     for method in METHODS:
@@ -176,8 +177,9 @@ results_dir = "results_tr_"+source_to_target+"_"
 
 DR_LOCALIZATION = ['55']
 METHODS  = [SharedParameters.METHOD]
-DA_TYPES = ['DR']
-TARGET_DATASETS = [CERRADO_MA.DATASET,source_dataset]
+#DA_TYPES = ['DR','DRCL']
+DA_TYPES = ['DRCL']
+TARGET_DATASETS = [target_dataset,source_dataset]
 
 for dr_localization in DR_LOCALIZATION:
     for method in METHODS:
