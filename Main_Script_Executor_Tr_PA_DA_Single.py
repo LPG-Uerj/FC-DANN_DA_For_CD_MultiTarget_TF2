@@ -53,8 +53,8 @@ runs = "5"
 
 DR_LOCALIZATION = ['55']
 METHODS  = [SharedParameters.METHOD]
-#DA_TYPES = ['DR','DRCL']
-DA_TYPES = ['DRCL']
+DA_TYPES = ['DR']
+#DA_TYPES = ['DRCL']
 TARGET_DATASETS = [target_dataset,source_dataset]
 
 for dr_localization in DR_LOCALIZATION:
@@ -177,8 +177,8 @@ results_dir = "results_tr_"+source_to_target+"_"
 
 DR_LOCALIZATION = ['55']
 METHODS  = [SharedParameters.METHOD]
-#DA_TYPES = ['DR','DRCL']
-DA_TYPES = ['DRCL']
+DA_TYPES = ['DR']
+#DA_TYPES = ['DRCL']
 TARGET_DATASETS = [target_dataset,source_dataset]
 
 for dr_localization in DR_LOCALIZATION:
@@ -292,4 +292,5 @@ for dr_localization in DR_LOCALIZATION:
 
 
 for i in range(len(Schedule)):
-    os.system(Schedule[i])
+    if os.system(Schedule[i]) != 0:
+        exit()

@@ -14,7 +14,7 @@ main_path = "./results/results_avg/"
 #X = RO, Y = RO
 result_path.append(main_path + 'results_tr_Amazon_RO_classification_S_Amazon_RO_T_Amazon_RO/')
 #X = PA->RO, Y = RO
-result_path.append(main_path + 'results_tr_Amazon_RO_to_Amazon_PA_domain_adaptation_DR_single_Amazon_RO/')
+result_path.append(main_path + 'results_tr_Amazon_PA_to_Amazon_RO_domain_adaptation_DR_single_Amazon_RO/')
 #X = RO->PA, Y = RO
 result_path.append(main_path + 'results_tr_Amazon_RO_to_Amazon_PA_domain_adaptation_DR_single_Amazon_RO/')
 #X = PA, Y = RO

@@ -93,57 +93,82 @@ def create_chart(args,experiments, target_list, result_list,checkpoint_list, pat
     if not (len(target_list) == len(result_list) and len(target_list) == len(checkpoint_list)):
         raise Exception("Lists are not the same length. Please verify.")
     
+    debugMode = args.debugMode
+
     _experiments = []
     accuracy_list = []
     fscore_list = []
     recall_list = []
     precision_list = []
+
     args.save_result_text = True
-    for i in range(0,len(result_list)):
-        args.target_dataset = target_list[i]
-        args.checkpoint_dir = checkpoint_list[i]
-        args.results_dir = result_list[i]
-        try:
-            accuracy,fscore,recall,precision = get_metrics(args)
-        except Exception as e: 
-            print(e)
-            continue
-        accuracy_list.append("%.2f"%(accuracy))
-        fscore_list.append("%.2f%%"%(fscore))
-        recall_list.append("%.2f"%(recall))
-        precision_list.append("%.2f"%(precision))
-        _experiments.append(experiments[i])
+    example_metrics = os.path.join(path_to_export_chart,'examples')
+
+    if not os.path.exists(example_metrics) or debugMode == False:
+        for i in range(0,len(result_list)):
+            args.target_dataset = target_list[i]
+            args.checkpoint_dir = checkpoint_list[i]
+            args.results_dir = result_list[i]
+            try:
+                accuracy,fscore,recall,precision = get_metrics(args)
+            except Exception as e: 
+                print(e)
+                continue
+            accuracy_list.append("%.2f"%(accuracy))
+            fscore_list.append("%.2f%%"%(fscore))
+            recall_list.append("%.2f"%(recall))
+            precision_list.append("%.2f"%(precision))
+            _experiments.append(experiments[i])
+
+        accuracy_list = np.array(accuracy_list)
+        fscore_list = np.array(fscore_list)
+        recall_list = np.array(recall_list)
+        precision_list = np.array(precision_list)
+
+        if not os.path.exists(example_metrics):
+            os.makedirs(example_metrics)
+
+            with open(os.path.join(example_metrics,'accuracy.npy'), 'wb') as f:
+                np.save(f, accuracy_list)
+            with open(os.path.join(example_metrics,'fscore.npy'), 'wb') as f:
+                np.save(f, fscore_list)
+            with open(os.path.join(example_metrics,'recall.npy'), 'wb') as f:
+                np.save(f, recall_list)
+            with open(os.path.join(example_metrics,'precision.npy'), 'wb') as f:
+                np.save(f, precision_list)
+
+    if debugMode:
+        with open(os.path.join(example_metrics,'accuracy.npy'), 'rb') as f:
+            accuracy_list = np.load(f)
+        with open(os.path.join(example_metrics,'fscore.npy'), 'rb') as f:
+            fscore_list = np.load(f)
+        with open(os.path.join(example_metrics,'recall.npy'), 'rb') as f:
+            recall_list = np.load(f)
+        with open(os.path.join(example_metrics,'precision.npy'), 'rb') as f:
+            precision_list = np.load(f)
 
     x = np.arange(len(_experiments))
         
-    bars_Accuracy = accuracy_list.copy()
-    bars_F1 = fscore_list.copy()
-    bars_Recall = recall_list.copy()
-    bars_Precision = precision_list.copy()
+    bars_Accuracy = accuracy_list
+    bars_F1 = fscore_list
+    bars_Recall = recall_list
+    bars_Precision = precision_list
 
-    width = 0.25
-
-    fig, ax = plt.subplots()
-    rects1 = ax.bar(x - width, bars_Accuracy, width, label='Accuracy')
-    rects2 = ax.bar(x + width, bars_F1, width, label='F1-Score')
-    rects3 = ax.bar(x + 2*(width), bars_Recall, width, label='Recall')
-    rects4 = ax.bar(x + 3*(width), bars_Precision, width, label='Precision')
+    width = 0.35  
+       
+    plt.bar(x + width, bars_Accuracy, width, label='Accuracy',color=colors[0])
+    plt.bar(x + width*2, bars_F1, width, label='F1-Score',color=colors[1])
+    plt.bar(x + width*3, bars_Recall, width, label='Recall',color=colors[2])
+    plt.bar(x + width*4, bars_Precision, width, label='Precision',color=colors[3])
 
     # Add some text for labels, title and custom x-axis tick labels, etc.
-    ax.set_ylabel('Scores %')
-    ax.set_xlabel('Experiments') 
-    ax.set_title(title)   
-    ax.set_xticks(x, _experiments)
-    ax.legend()
+    plt.ylabel('Scores %')
+    plt.xlabel('Experiments') 
+    plt.title(title)   
+    plt.xticks(x, _experiments)
+    plt.legend()
 
-    ax.bar_label(rects1, padding=4)
-    ax.bar_label(rects2, padding=4)
-    ax.bar_label(rects3, padding=4)
-    ax.bar_label(rects4, padding=4)
-
-    ax.set_ylim(0,100)
-
-    fig.tight_layout()  
+    plt.ylim(0,100)
 
     plt.show()  
 

@@ -25,9 +25,9 @@ result_path.append(main_path + 'results_tr_Cerrado_MA_classification_S_Cerrado_M
 
 
 labels = []
-labels.append('1-Tr: RO,Ts: PA (Source only training)')
-labels.append('2-Tr: MA->RO, Ts: PA (domain adaptation single-target)')
-labels.append('3-Tr: RO->MA, Ts: PA (domain adaptation single-target)')
+labels.append('1-Tr: PA,Ts: PA (Source only training)')
+labels.append('2-Tr: MA->PA, Ts: PA (domain adaptation single-target)')
+labels.append('3-Tr: PA->MA, Ts: PA (domain adaptation single-target)')
 labels.append('4-Tr: MA,Ts: PA (Source only training)')
 
 

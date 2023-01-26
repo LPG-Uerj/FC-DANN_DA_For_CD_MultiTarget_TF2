@@ -8,6 +8,7 @@ parser = argparse.ArgumentParser(description='')
 
 parser.add_argument('--source_dataset', dest='source_dataset', type=str, default=None,help='The name of the original source dataset used')
 parser.add_argument('--target_dataset', dest='target_dataset', type=str, default=None,help='The name of the target dataset whose metrics will be computed')
+parser.add_argument('--debugMode',dest='debugMode', type=eval, choices=[True, False], default=False)
 args = parser.parse_args()
 
 def main():

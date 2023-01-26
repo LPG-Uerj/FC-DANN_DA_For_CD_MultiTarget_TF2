@@ -146,39 +146,24 @@ class Models():
             return loss, y_pred
 
     @tf.function
-    def _training_step_domain_adaptation(self, inputs, outputs, class_weights, mask_c, train_segmentation = True,
-                                         train_discriminator = True):
+    def _training_step_domain_adaptation(self, inputs, outputs, class_weights, mask_c):
 
         y_true_segmentation, y_true_discriminator = outputs
         x_input, l = inputs
-        with tf.GradientTape() as seg_tape, tf.GradientTape() as disc_tape, tf.GradientTape() as enc_tape:
-            self.classifier_loss.class_weights = class_weights
-            self.classifier_loss.mask = mask_c        
-            
-            y_pred_segmentation,_,logits_discriminator = self.model([x_input, l],training=True)                       
-            
+        
+        self.classifier_loss.class_weights = class_weights
+        self.classifier_loss.mask = mask_c        
+        
+        with tf.GradientTape(persistent=True) as tape:
+            y_pred_segmentation,_,logits_discriminator = self.model([x_input, l],training=True)
             #y_pred_segmentation = self.model.main_network(x_input,training=True) 
             loss_segmentation = self.classifier_loss(y_true_segmentation, y_pred_segmentation)
-        
             #_,logits_discriminator = self.model.domain_regressor_network(inputs,training=True)
             loss_discriminator = self.domainregressor_loss(y_true=y_true_discriminator, y_pred=logits_discriminator)            
             
             total_loss = loss_segmentation + loss_discriminator
-
-        if train_segmentation:
-            gradients_segmentation = seg_tape.gradient(total_loss, self.model.trainable_weights)            
-            self.training_optimizer.apply_gradients(zip(gradients_segmentation, self.model.trainable_weights))
-        
-        '''
-        if train_discriminator:
-            gradients_discriminator = disc_tape.gradient(loss_discriminator, self.model.domain_discriminator.trainable_weights)
-            self.discriminator_optimizer.apply_gradients(zip(gradients_discriminator, self.model.domain_discriminator.trainable_weights))
-        
-        if train_segmentation or train_discriminator:
-            total_loss = loss_segmentation - (l * loss_discriminator)
-            gradients_encoder = enc_tape.gradient(total_loss, self.model.encoder_model.trainable_weights)
-            self.encoder_optimizer.apply_gradients(zip(gradients_encoder,self.model.encoder_model.trainable_weights))
-        '''
+    
+        self.training_optimizer.minimize(total_loss, self.model.trainable_weights,tape=tape)
                 
         return loss_segmentation, y_pred_segmentation, loss_discriminator
 		
@@ -193,8 +178,7 @@ class Models():
 
         y_pred_segmentation,_,logits_discriminator = self.model(inputs,training=False)
         
-        loss_segmentation = self.classifier_loss(y_true_segmentation, y_pred_segmentation)            
-        #_,logits_discriminator = self.model.domain_regressor_network(inputs,training=False)
+        loss_segmentation = self.classifier_loss(y_true_segmentation, y_pred_segmentation)
         loss_discriminator = self.domainregressor_loss(y_true=y_true_discriminator, y_pred=logits_discriminator)             
 
         return loss_segmentation, y_pred_segmentation, loss_discriminator
@@ -586,7 +570,7 @@ class Models():
 
                             y_train_d_hot_batch = tf.keras.utils.to_categorical(y_train_d_batch, self.num_targets) 
 
-                            c_batch_loss, batch_probs, d_batch_loss = self._training_step_domain_adaptation([data_batch,self.l], [y_train_c_hot_batch, y_train_d_hot_batch], Weights, classification_mask_batch,True,True)
+                            c_batch_loss, batch_probs, d_batch_loss = self._training_step_domain_adaptation([data_batch,self.l], [y_train_c_hot_batch, y_train_d_hot_batch], Weights, classification_mask_batch)
 
                             loss_dr_tr[0 , 0] += d_batch_loss
                         else:
@@ -719,9 +703,6 @@ class Models():
 
                 self.segmentation_history["val_loss"].append(loss_cl_vl[0,0])      
                 self.segmentation_history["val_f1"].append(f1_score_vl)
-                
-                print("GRL num calls:")
-                print(self.model.gradient_reversal_layer.num_calls)
 
                 if self.args.training_type == TRAINING_TYPE_DOMAIN_ADAPTATION and 'DR' in self.args.da_type:                    
                     loss_dr_vl = loss_dr_vl/batch_counter_cl
@@ -832,8 +813,7 @@ class Models():
 
         elif self.args.training_type == TRAINING_TYPE_DOMAIN_ADAPTATION:
             self.plot_metrics_segmentation()
-            self.plot_f1score_segmentation()
-            self.plot_metrics_discriminator()   
+            self.plot_f1score_segmentation()            
 
             with open(os.path.join(self.args.save_checkpoint_path,"Log.txt"),"a") as f:
                 if best_model_epoch != -1:
@@ -923,35 +903,37 @@ class Models():
 
     def plot_metrics_segmentation(self):
         plt.figure(figsize=(10, 10))
-        plt.plot(self.segmentation_history["loss"], label="train_loss")        
-        plt.plot(self.segmentation_history["val_loss"], label="validation_loss")        
+        plt.plot(self.segmentation_history["loss"], label="decoder training loss")        
+        plt.plot(self.segmentation_history["val_loss"], label="decoder validation loss")  
+        plt.plot(self.discriminator_history["loss"], label="discriminator training loss")    
+        plt.plot(self.discriminator_history["val_loss"], label="discriminator validation loss")        
         plt.title("Loss evolution")
         plt.xlabel("Epoch #")
         plt.ylabel("Loss")
-        plt.ylim([0, 5])
-        leg=plt.legend()
+        plt.ylim([0, 1])
+        plt.legend()
         plt.savefig(os.path.join(self.args.save_checkpoint_path,"segmentation_metrics.png"))
 
     def plot_f1score_segmentation(self):
         plt.figure(figsize=(10, 10))        
-        plt.plot(self.segmentation_history["f1"], label="train_f1score")        
-        plt.plot(self.segmentation_history["val_f1"], label="validation_f1score")
+        plt.plot(self.segmentation_history["f1"], label="training f1score")        
+        plt.plot(self.segmentation_history["val_f1"], label="validation f1score")
         plt.title("F1 evolution")
         plt.xlabel("Epoch #")
         plt.ylabel("F1")
-        plt.ylim([0, 1])
-        leg=plt.legend()
+        plt.ylim([0, 100])
+        plt.legend()
         plt.savefig(os.path.join(self.args.save_checkpoint_path,"segmentation_f1score.png"))
 
     def plot_metrics_discriminator(self):
         plt.figure(figsize=(10, 10))
-        plt.plot(self.discriminator_history["loss"], label="train_loss")    
-        plt.plot(self.discriminator_history["val_loss"], label="validation_loss")    
+        plt.plot(self.discriminator_history["loss"], label="discriminator training loss")    
+        plt.plot(self.discriminator_history["val_loss"], label="discriminator validation loss")    
         plt.title("Loss evolution")
         plt.xlabel("Epoch #")
         plt.ylabel("Loss")
-        plt.ylim([0, 100])
-        leg=plt.legend()
+        plt.ylim([0, 1])
+        plt.legend()
         plt.savefig(os.path.join(self.args.save_checkpoint_path,"discriminator_metrics.png"))
 
 def Metrics_For_Test(hit_map,

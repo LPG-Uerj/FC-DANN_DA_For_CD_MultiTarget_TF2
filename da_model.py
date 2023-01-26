@@ -20,13 +20,7 @@ class DomainAdaptationModel(Model):
         self.outputs = self.call(self.inputs)
 
         self.build()
-    '''
-    def save_weights(self,full_path):
-        self.main_network.save_weights(full_path)
     
-    def load_weights(self,full_path):
-        self.main_network.load_weights(full_path)
-    '''
     def call(self, inputs):
         input_img, l = inputs
 

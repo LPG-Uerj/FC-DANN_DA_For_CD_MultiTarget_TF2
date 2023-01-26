@@ -167,4 +167,5 @@ for dr_localization in DR_LOCALIZATION:
 
 
 for i in range(len(Schedule)):
-    os.system(Schedule[i])
+    if os.system(Schedule[i]) != 0:
+        exit()
