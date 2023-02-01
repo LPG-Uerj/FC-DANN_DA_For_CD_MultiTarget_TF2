@@ -30,18 +30,7 @@ class Models():
 
         print("self.num_targets: " + str(self.num_targets))
 
-        self.checkpoint_name = self.args.classifier_type
-
-        self.best_weights = None
-
-        #self.training_optimizer = Adam(beta_1=self.args.beta1)
-        #self.training_optimizer = Adam(learning_rate=MyDecay(self.args.epochs, self.args.lr), beta_1=self.args.beta1)
-
-        #self.discriminator_optimizer = Adam(beta_1=self.args.beta1)
-        #self.discriminator_optimizer = Adam(learning_rate=MyDecay(self.args.epochs, self.args.lr), beta_1=self.args.beta1)
-
-        #self.encoder_optimizer = Adam(beta_1=self.args.beta1)
-        #self.encoder_optimizer = Adam(learning_rate=MyDecay(self.args.epochs, self.args.lr), beta_1=self.args.beta1)
+        self.checkpoint_name = self.args.classifier_type        
 
         self.classifier_loss = WeightedCrossEntropyC()
         self.domainregressor_loss = CategoricalCrossentropy(from_logits=True)        
@@ -63,8 +52,8 @@ class Models():
             self.input_shape = (int(args.patches_dimension), int(args.patches_dimension), 2 * int(args.image_channels))
 
         if self.args.phase == 'train':
-            self.training_optimizer = Adam(learning_rate=MyDecay(self.args.epochs, self.args.lr), beta_1=self.args.beta1)
             self.model = self.assembly_empty_model(showSummary=True)
+        
         elif self.args.phase == 'test':
             print('[*] Loading the feature extractor and classifier trained models...')            
             try:
@@ -128,22 +117,18 @@ class Models():
             self.classifier_loss.class_weights = class_weights
             self.classifier_loss.mask = mask_c
             y_pred = self.model(x_batch_train,training = True)            
-            loss = self.classifier_loss(y_batch_train, y_pred)        
-
-        gradients = tape.gradient(loss, self.model.trainable_weights)        
-        self.training_optimizer.apply_gradients(zip(gradients, self.model.trainable_weights))       
-       
-        del tape        
+            loss = self.classifier_loss(y_batch_train, y_pred)
+              
+        self.training_optimizer.minimize(loss, self.model.trainable_weights,tape=tape)        
         return loss, y_pred
 
     @tf.function
     def _test_step(self, x_batch_train, y_batch_train, class_weights, mask_c):
-            self.classifier_loss.class_weights = class_weights
-            self.classifier_loss.mask = mask_c
-            y_pred = self.model(x_batch_train, training = False)            
-            loss = self.classifier_loss(y_batch_train, y_pred) 
-
-            return loss, y_pred
+        self.classifier_loss.class_weights = class_weights
+        self.classifier_loss.mask = mask_c
+        y_pred = self.model(x_batch_train, training = False)
+        loss = self.classifier_loss(y_batch_train, y_pred)
+        return loss, y_pred
 
     @tf.function
     def _training_step_domain_adaptation(self, inputs, outputs, class_weights, mask_c):
@@ -152,19 +137,23 @@ class Models():
         x_input, l = inputs
         
         self.classifier_loss.class_weights = class_weights
-        self.classifier_loss.mask = mask_c        
+        self.classifier_loss.mask = mask_c
+        #current_learning_rate = self.training_optimizer._decayed_lr(tf.float32)
+        #print("current_learning_rate: ")
+        #tf.print(current_learning_rate)
         
         with tf.GradientTape(persistent=True) as tape:
             y_pred_segmentation,_,logits_discriminator = self.model([x_input, l],training=True)
-            #y_pred_segmentation = self.model.main_network(x_input,training=True) 
-            loss_segmentation = self.classifier_loss(y_true_segmentation, y_pred_segmentation)
+            #y_pred_segmentation = self.model.main_network(x_input,training=True)
             #_,logits_discriminator = self.model.domain_regressor_network(inputs,training=True)
+            loss_segmentation = self.classifier_loss(y_true_segmentation, y_pred_segmentation)            
             loss_discriminator = self.domainregressor_loss(y_true=y_true_discriminator, y_pred=logits_discriminator)            
             
             total_loss = loss_segmentation + loss_discriminator
     
         self.training_optimizer.minimize(total_loss, self.model.trainable_weights,tape=tape)
-                
+        #self.discriminator_optimizer.minimize(loss_discriminator, self.model.domain_regressor_network.trainable_weights,tape=tape)      
+
         return loss_segmentation, y_pred_segmentation, loss_discriminator
 		
 		
@@ -193,10 +182,10 @@ class Models():
                 net.summary()
 
     def weighted_cross_entropy_c(self, label_c, prediction_c, class_weights):
-        temp = -label_c * tf.log(prediction_c + 1e-3)#[Batch_size, patch_dimension, patc_dimension, 2]
+        temp = -label_c * tf.log(prediction_c + 1e-3)
         temp_weighted = class_weights * temp
         loss = tf.reduce_sum(temp_weighted, 3)
-        return loss # [Batch_size, patch_dimension, patc_dimension, 1]
+        return loss
 
     def learning_rate_decay(self,lr_0):
         return lr_0 / (1. + 10 * self.p)**0.75
@@ -454,6 +443,8 @@ class Models():
         num_batches_tr = corners_coordinates_tr.shape[0]//self.args.batch_size
         num_batches_vl = corners_coordinates_vl.shape[0]//self.args.batch_size        
 
+        self.training_optimizer = Adam(learning_rate=MyDecay(num_batches_tr, self.args.epochs, self.args.lr), beta_1=self.args.beta1)
+
         #Training starts now:
         e = 0
         best_model_epoch = -1
@@ -504,7 +495,7 @@ class Models():
 
                 print("----------------------------------------------------------")
                 #Computing some parameters
-                self.p = (float(e)+1) / self.args.epochs
+                self.p = float(e) / self.args.epochs
                 print("Current Epoch: {0}/{1}".format(str(e),str(self.args.epochs)))
 
                 if self.args.training_type == TRAINING_TYPE_DOMAIN_ADAPTATION:
@@ -517,13 +508,8 @@ class Models():
                     print("lambda_p: %.6f" %(self.l))
 
                 lr = self.learning_rate_decay(self.args.lr)
-                #lr_disc = self.learning_rate_decay(self.args.lr)
-                print("Learning rate decay for Decoder: %.6f"%(lr))
-                #print("Learning rate decay for Feature Extractor and Discriminator: %.6f"%(lr_disc))
-
-                #self.training_optimizer.learning_rate = lr
-                #self.discriminator_optimizer.learning_rate = lr_disc               
-                #self.encoder_optimizer.learning_rate = lr_disc
+                
+                print("Learning rate decay: %.6f"%(lr))                
 
                 batch_counter_cl = 0
                 batchs = trange(num_batches_tr)
@@ -728,7 +714,7 @@ class Models():
                                     print(" [!] Load failed... Details: {0}".format(e))
                         elif self.l != 0:
                             FLAG = False
-                            if  best_val_dr < loss_dr_vl[0 , 0] and loss_dr_vl[0 , 0] < 1:
+                            if  best_val_dr < loss_dr_vl[0 , 0]:
                                 if best_val_fs < f1_score_vl:
                                     best_val_dr = loss_dr_vl[0 , 0]
                                     best_val_fs = f1_score_vl
@@ -1189,13 +1175,15 @@ def Metrics_For_Test_M(hit_map,
 
 class MyDecay(LearningRateSchedule):
 
-    def __init__(self, max_steps=100., mu_0=0.01, alpha=10, beta=0.75):
+    def __init__(self, batch_size, max_steps=100., mu_0=0.01, alpha=10, beta=0.75):
+        self.batch_size = batch_size
+        self.max_steps = max_steps        
         self.mu_0 = mu_0
         self.alpha = alpha
-        self.beta = beta
-        self.max_steps = max_steps
+        self.beta = beta        
 
     def __call__(self, step):        
         step = tf.cast(step, dtype=tf.float32)
-        p = step / self.max_steps
+        _step = step // self.batch_size
+        p = _step / self.max_steps
         return self.mu_0 / (1 + self.alpha * p)**self.beta
