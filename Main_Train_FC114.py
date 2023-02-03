@@ -6,6 +6,7 @@ import numpy as np
 from datetime import datetime
 from SharedParameters import TRAINING_TYPE_DOMAIN_ADAPTATION,TRAINING_TYPE_CLASSIFICATION,ROLE_SOURCE,ROLE_TARGET
 from Tools import cleanup_folder
+import time
 
 #from tensordash.tensordash import Tensordash, Customdash
 
@@ -183,6 +184,8 @@ def main():
         model = Models(args, dataset_s, dataset_t)
 
         model.Train()
+
+        time.sleep(300)
 
 if __name__=='__main__':
     main()

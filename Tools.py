@@ -160,12 +160,12 @@ def Patch_Extraction(data, corners_coordinates, domain_index, patch_size):
     data_rows = np.size(data[0], 0)
     data_cols = np.size(data[0], 1)
     data_depth = np.size(data[0], 2)
-    num_samp = np.size(corners_coordinates , 0)
+    num_samp = np.size(corners_coordinates , 0)    
     
-    patches_cointainer = np.zeros((num_samp, patch_size, patch_size, data_depth),dtype=np.float32) 
+    patches_cointainer = np.zeros((num_samp, patch_size, patch_size, data_depth),dtype=np.float32)
         
     data_padded = data
-    # ESto aqui tiene ser revisado para el nuevo contexto.
+    
     for i in range(num_samp):
         data_padded_ = data_padded[int(domain_index[i,0])]
         patches_cointainer[i, :, :, :] = data_padded_[int(corners_coordinates[i , 0]) : int(corners_coordinates[i , 2]) , int(corners_coordinates[i , 1]) : int(corners_coordinates[i , 3]) , :]
