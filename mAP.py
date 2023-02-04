@@ -10,7 +10,13 @@ REFERENCES = [
 'Main_Compute_Create_Precision_vs_Recall_Curves_PA-RO.py',
 'Main_Compute_Create_Precision_vs_Recall_Curves_PA-MA.py',
 'Main_Compute_Create_Precision_vs_Recall_Curves_RO-PA.py',
-'Main_Compute_Create_Precision_vs_Recall_Curves_RO-MA.py'
+'Main_Compute_Create_Precision_vs_Recall_Curves_RO-MA.py',
+'Main_Compute_Create_Precision_vs_Recall_Curves_Multi_Target_MA-PA.py',
+'Main_Compute_Create_Precision_vs_Recall_Curves_Multi_Target_MA-RO.py',
+'Main_Compute_Create_Precision_vs_Recall_Curves_Multi_Target_PA-MA.py',
+'Main_Compute_Create_Precision_vs_Recall_Curves_Multi_Target_PA-RO.py',
+'Main_Compute_Create_Precision_vs_Recall_Curves_Multi_Target_RO-MA.py',
+'Main_Compute_Create_Precision_vs_Recall_Curves_Multi_Target_RO-PA.py'
 ]
 
 for reference in REFERENCES:
