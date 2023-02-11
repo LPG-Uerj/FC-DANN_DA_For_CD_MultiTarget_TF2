@@ -96,6 +96,7 @@ parser.add_argument('--dataset_main_path', dest='dataset_main_path', type=str, d
 parser.add_argument('--checkpoint_results_main_path', dest='checkpoint_results_main_path', type=str, default='E:/PEDROWORK/Trabajo_Domain_Adaptation/Code/checkpoints_results/')
 parser.add_argument('--save_intermediate_model', dest='save_intermediate_model',type=eval, choices=[True, False], default=True, help='Save intermediate models or not')
 
+parser.add_argument('--source_targets_balanced', dest='source_targets_balanced', type=eval, choices=[True, False], default=True, help='Applies for Multi-target training. Decides whether each one of source and target datasets will correspont to 1/3 of training data. If not, source will correspond 50%% and both target datasets will share another 50%%.')
 
 args = parser.parse_args()
 

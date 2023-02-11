@@ -137,10 +137,7 @@ class Models():
         x_input, l = inputs
         
         self.classifier_loss.class_weights = class_weights
-        self.classifier_loss.mask = mask_c
-        #current_learning_rate = self.training_optimizer._decayed_lr(tf.float32)
-        #print("current_learning_rate: ")
-        #tf.print(current_learning_rate)
+        self.classifier_loss.mask = mask_c        
         
         with tf.GradientTape(persistent=True) as tape:
             y_pred_segmentation,_,logits_discriminator = self.model([x_input, l],training=True)
@@ -302,12 +299,19 @@ class Models():
                 target_labels_vl = np.concatenate(target_labels_vl,axis=0)
                 
                 domain_indexs_tr_t = np.concatenate(domain_indexs_tr_t,axis=0)
-                domain_indexs_vl_t = np.concatenate(domain_indexs_vl_t,axis=0)
+                domain_indexs_vl_t = np.concatenate(domain_indexs_vl_t,axis=0)                
+
+                if self.args.source_targets_balanced == True:
+                    size_tr_list = np.concatenate(([np.shape(corners_coordinates_tr_s)[0]],[x.shape[0] for x in corners_coordinates_tr_t]),axis=0)
+                    size_vl_list = np.concatenate(([np.shape(corners_coordinates_vl_s)[0]],[x.shape[0] for x in corners_coordinates_vl_t]),axis=0)
+
+                    index_min_size_tr = np.argmin(size_tr_list)
+                    index_min_size_vl = np.argmin(size_vl_list)
 
 
             #Combines different targets into one dataset
-            corners_coordinates_tr_t = np.concatenate(corners_coordinates_tr_t, axis=0)
-            corners_coordinates_vl_t = np.concatenate(corners_coordinates_vl_t, axis=0)
+            #corners_coordinates_tr_t = np.concatenate(corners_coordinates_tr_t, axis=0)
+            #corners_coordinates_vl_t = np.concatenate(corners_coordinates_vl_t, axis=0)
 
             # Balancing the number of samples between source and target domain
             size_tr_s = np.shape(corners_coordinates_tr_s)[0]
@@ -954,7 +958,10 @@ def Metrics_For_Test(hit_map,
 
         accuracy, f1score, recall, precission, conf_mat = compute_metrics(y_test.astype('int'), Probs.astype('int'))
 
-        Classification_map, _, _ = Classification_Maps(Probs, y_test, central_pixels_coordinates_ts_, hit_map)
+        if args.create_classification_map:
+            Classification_map, _, _ = Classification_Maps(Probs, y_test, central_pixels_coordinates_ts_, hit_map)
+            #plt.imshow(Classification_map)
+            plt.savefig(os.path.join(save_path,'Classification_map.jpg'))
 
         TP = conf_mat[1 , 1]
         FP = conf_mat[0 , 1]
@@ -982,9 +989,6 @@ def Metrics_For_Test(hit_map,
         np.save(os.path.join(save_path,'Precission'), PRECISSION)
         np.save(os.path.join(save_path,'Confusion_matrix'), CONFUSION_MATRIX)
         np.save(os.path.join(save_path,'Alert_area'), ALERT_AREA)
-
-    plt.imshow(Classification_map)
-    plt.savefig(os.path.join(save_path,'Classification_map.jpg'))
 
     print('Accuracy')
     print(ACCURACY)

@@ -18,8 +18,11 @@ result_path.append(main_path + 'results_tr_Amazon_PA_classification_S_Amazon_PA_
 result_path.append(main_path + 'results_tr_Cerrado_MA_to_Amazon_PA_domain_adaptation_DR_single_Amazon_PA/')
 
 #Multi
-#X = PA->MA, Y = PA
+#X = MA->RO,PA, Y = PA
 result_path.append(main_path + 'results_tr_Cerrado_MA_to_Amazon_RO_Amazon_PA_domain_adaptation_DR_multi_Amazon_PA/')
+
+#X = MA->RO,PA, Y = PA
+result_path.append(main_path + 'results_tr_Cerrado_MA_to_Amazon_RO_Amazon_PA_domain_adaptation_DR_multi_Cerrado_MA/')
 
 #X = MA, Y = PA
 result_path.append(main_path + 'results_tr_Cerrado_MA_classification_S_Cerrado_MA_T_Amazon_PA/')
@@ -29,7 +32,8 @@ labels = []
 labels.append('1-Tr: PA,Ts: PA (Source only training)')
 labels.append('2-Tr: MA->PA, Ts: PA (domain adaptation single-target)')
 labels.append('3-Tr: MA->RO,PA, Ts: PA (domain adaptation multi-target)')
-labels.append('4-Tr: MA,Ts: PA (Source only training)')
+labels.append('4-Tr: MA->RO,PA, Ts: MA (domain adaptation multi-target)')
+labels.append('5-Tr: MA,Ts: PA (Source only training)')
 
 
 colors = Charts.colors.copy()

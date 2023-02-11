@@ -3,19 +3,19 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from Tools import *
-from Models_FC114 import *
+from Models_FC114 import Metrics_For_Test
 from Amazonia_Legal_RO import AMAZON_RO
 from Amazonia_Legal_PA import AMAZON_PA
 from Cerrado_Biome_MA import CERRADO_MA
 import SharedParameters
 
 colors = []
-colors.append('#1724BD')
-colors.append('#0EB7C2')
-colors.append('#BF114B')
-colors.append('#E98E2C')
-colors.append('#008f39')
-colors.append('#663300')
+colors.append('#1767BD')
+colors.append('#FA7703')
+colors.append('#1AB023')
+colors.append('#7D8080')
+colors.append('#E7E424')
+colors.append('#7125B0')
 
 def get_metrics(args):
     Thresholds = np.array([0.5])
@@ -74,11 +74,14 @@ def get_metrics(args):
             args.save_checkpoint_path = args.checkpoint_dir + '/' + checkpoint_name + '/'
             #need to put the path of the checkpoint to recover if needed the original train, validation, and test tiles.
             dataset.Tiles_Configuration(args, i)
+
+            args.create_classification_map = False
+            
             ACCURACY, FSCORE, RECALL, PRECISION, _, _ = Metrics_For_Test(hit_map, dataset.references[0], dataset.references[1], dataset.Train_tiles, dataset.Valid_tiles, dataset.Undesired_tiles,Thresholds,args)
             ACCURACY_.append(ACCURACY[0,0])
             FSCORE_.append(FSCORE[0,0])
             RECALL_.append(RECALL[0,0])
-            PRECISION_.append(PRECISION[0,0])           
+            PRECISION_.append(PRECISION[0,0])             
 
             counter += 1
     
@@ -93,7 +96,7 @@ def create_chart(args,experiments, target_list, result_list,checkpoint_list, pat
     if not (len(target_list) == len(result_list) and len(target_list) == len(checkpoint_list)):
         raise Exception("Lists are not the same length. Please verify.")
     
-    debugMode = args.debugMode
+    _length = len(result_list)    
 
     _experiments = []
     accuracy_list = []
@@ -102,79 +105,66 @@ def create_chart(args,experiments, target_list, result_list,checkpoint_list, pat
     precision_list = []
 
     args.save_result_text = True
-    example_metrics = os.path.join(path_to_export_chart,'examples')
+    temp_metrics = os.path.join(path_to_export_chart,'temp')
 
-    if not os.path.exists(example_metrics) or debugMode == False:
-        for i in range(0,len(result_list)):
-            args.target_dataset = target_list[i]
-            args.checkpoint_dir = checkpoint_list[i]
-            args.results_dir = result_list[i]
-            try:
-                accuracy,fscore,recall,precision = get_metrics(args)
-            except Exception as e: 
-                print(e)
-                continue
-            accuracy_list.append("%.2f"%(accuracy))
-            fscore_list.append("%.2f%%"%(fscore))
-            recall_list.append("%.2f"%(recall))
-            precision_list.append("%.2f"%(precision))
-            _experiments.append(experiments[i])
+    if not os.path.exists(temp_metrics):
+        os.makedirs(temp_metrics)
+        
+    for i in range(0,len(result_list)):
+        args.target_dataset = target_list[i]
+        args.checkpoint_dir = checkpoint_list[i]
+        args.results_dir = result_list[i]
+        try:
+            accuracy,fscore,recall,precision = get_metrics(args)            
+        except Exception as e:
+            print("Error:") 
+            print(e)
+            continue
+        
+        accuracy_list.append(round(float(accuracy), 1))
+        fscore_list.append(round(float(fscore), 1))
+        recall_list.append(round(float(recall), 1))
+        precision_list.append(round(float(precision), 1))
+        _experiments.append(experiments[i])    
 
-        accuracy_list = np.array(accuracy_list)
-        fscore_list = np.array(fscore_list)
-        recall_list = np.array(recall_list)
-        precision_list = np.array(precision_list)
+    x = np.arange(len(_experiments))   
 
-        if not os.path.exists(example_metrics):
-            os.makedirs(example_metrics)
+    plt.clf()
 
-            with open(os.path.join(example_metrics,'accuracy.npy'), 'wb') as f:
-                np.save(f, accuracy_list)
-            with open(os.path.join(example_metrics,'fscore.npy'), 'wb') as f:
-                np.save(f, fscore_list)
-            with open(os.path.join(example_metrics,'recall.npy'), 'wb') as f:
-                np.save(f, recall_list)
-            with open(os.path.join(example_metrics,'precision.npy'), 'wb') as f:
-                np.save(f, precision_list)
-
-    if debugMode:
-        with open(os.path.join(example_metrics,'accuracy.npy'), 'rb') as f:
-            accuracy_list = np.load(f)
-        with open(os.path.join(example_metrics,'fscore.npy'), 'rb') as f:
-            fscore_list = np.load(f)
-        with open(os.path.join(example_metrics,'recall.npy'), 'rb') as f:
-            recall_list = np.load(f)
-        with open(os.path.join(example_metrics,'precision.npy'), 'rb') as f:
-            precision_list = np.load(f)
-
-    x = np.arange(len(_experiments))
+    plt.figure(figsize=(10,8))
         
     bars_Accuracy = accuracy_list
     bars_F1 = fscore_list
     bars_Recall = recall_list
     bars_Precision = precision_list
 
-    width = 0.35  
+    width = 0.23    
        
-    plt.bar(x + width, bars_Accuracy, width, label='Accuracy',color=colors[0])
-    plt.bar(x + width*2, bars_F1, width, label='F1-Score',color=colors[1])
-    plt.bar(x + width*3, bars_Recall, width, label='Recall',color=colors[2])
-    plt.bar(x + width*4, bars_Precision, width, label='Precision',color=colors[3])
+    align = 'edge'    
+    
+    bar1 = plt.bar(x - (width*2), bars_Accuracy, width, label='Accuracy', color=colors[0], align=align)
+    bar2 = plt.bar(x - (width*1), bars_F1, width, label='F1-Score', color=colors[1],align=align)
+    bar3 = plt.bar(x + (width*0), bars_Recall,width, label='Recall', color=colors[2],align=align)
+    bar4 = plt.bar(x + (width*1), bars_Precision,width, label='Precision', color=colors[3],align=align)
 
     # Add some text for labels, title and custom x-axis tick labels, etc.
     plt.ylabel('Scores %')
     plt.xlabel('Experiments') 
     plt.title(title)   
     plt.xticks(x, _experiments)
+
+    plt.bar_label(bar1, padding=3)
+    plt.bar_label(bar2, padding=3)
+    plt.bar_label(bar3, padding=3)
+    plt.bar_label(bar4, padding=3)
+
     plt.legend()
 
     plt.ylim(0,100)
 
-    plt.show()  
-
     full_chart_path = path_to_export_chart + title + '.png'
 
-    plt.savefig(full_chart_path)
+    plt.savefig(full_chart_path)   
 
     print(f"Done! {full_chart_path} has been saved.")
 

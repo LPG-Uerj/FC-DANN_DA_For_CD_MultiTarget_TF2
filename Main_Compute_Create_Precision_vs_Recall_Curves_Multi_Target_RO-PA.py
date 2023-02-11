@@ -21,7 +21,6 @@ result_path.append(main_path + 'results_tr_Amazon_RO_to_Amazon_PA_domain_adaptat
 #X = RO->PA,MA Y = PA
 result_path.append(main_path + 'results_tr_Amazon_RO_to_Amazon_PA_Cerrado_MA_domain_adaptation_DR_multi_Amazon_PA/')
 
-#Multi
 #X = RO->PA,MA Y = RO
 result_path.append(main_path + 'results_tr_Amazon_RO_to_Amazon_PA_Cerrado_MA_domain_adaptation_DR_multi_Amazon_RO/')
 

@@ -93,6 +93,8 @@ def Main():
                     PRECISION_ = []
                     ALERT_AREA_ = []
 
+            args.create_classification_map = True
+
             ACCURACY, FSCORE, RECALL, PRECISION, CONFUSION_MATRIX, ALERT_AREA = Metrics_For_Test(hit_map,
                                                                                                  dataset.references[0], dataset.references[1],
                                                                                                  dataset.Train_tiles, dataset.Valid_tiles, dataset.Undesired_tiles,
