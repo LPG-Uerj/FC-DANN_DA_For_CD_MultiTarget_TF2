@@ -21,8 +21,14 @@ result_path.append(main_path + 'results_tr_Cerrado_MA_to_Amazon_PA_domain_adapta
 #X = MA->RO,PA, Y = PA
 result_path.append(main_path + 'results_tr_Cerrado_MA_to_Amazon_RO_Amazon_PA_domain_adaptation_DR_multi_Amazon_PA/')
 
-#X = MA->RO,PA, Y = PA
+#X = MA->RO,PA(blcd) Y = PA
+result_path.append(main_path + 'results_tr_Cerrado_MA_to_Amazon_RO_Amazon_PA_domain_adaptation_DR_multi_balanced_Amazon_PA/')
+
+#X = MA->RO,PA, Y = MA
 result_path.append(main_path + 'results_tr_Cerrado_MA_to_Amazon_RO_Amazon_PA_domain_adaptation_DR_multi_Cerrado_MA/')
+
+#X = MA->RO,PA, Y = MA
+result_path.append(main_path + 'results_tr_Cerrado_MA_to_Amazon_RO_Amazon_PA_domain_adaptation_DR_multi_balanced_Cerrado_MA/')
 
 #X = MA, Y = PA
 result_path.append(main_path + 'results_tr_Cerrado_MA_classification_S_Cerrado_MA_T_Amazon_PA/')
@@ -32,8 +38,10 @@ labels = []
 labels.append('1-Tr: PA,Ts: PA (Source only training)')
 labels.append('2-Tr: MA->PA, Ts: PA (domain adaptation single-target)')
 labels.append('3-Tr: MA->RO,PA, Ts: PA (domain adaptation multi-target)')
-labels.append('4-Tr: MA->RO,PA, Ts: MA (domain adaptation multi-target)')
-labels.append('5-Tr: MA,Ts: PA (Source only training)')
+labels.append('4-Tr: MA->RO,PA(blcd) Ts: PA (domain adaptation multi-target)')
+labels.append('5-Tr: MA->RO,PA Ts: MA (domain adaptation multi-target)')
+labels.append('6-Tr: MA->RO,PA(blcd) Ts: MA (domain adaptation multi-target)')
+labels.append('7-Tr: MA,Ts: PA (Source only training)')
 
 
 colors = Charts.colors.copy()
@@ -45,7 +53,7 @@ if __name__ == '__main__':
     #for i in range(0, len(result_path), 4):
     #    results_folders = result_path[i : i + 4]
     results_folders = result_path
-    fig = plt.figure()
+    fig = plt.figure(figsize=(12,6))
     ax = plt.subplot(111)
     Npoints = num_samples
     Interpolation = True

@@ -12,6 +12,7 @@ from contextlib import redirect_stdout
 from da_model import DomainAdaptationModel, MainNetwork, DomainRegressorNetwork
 from keras.optimizers import Adam
 from keras.losses import CategoricalCrossentropy
+from keras.metrics import CategoricalAccuracy
 from loss_functions import WeightedCrossEntropyC
 from keras.backend import clear_session
 from SharedParameters import TRAINING_TYPE_DOMAIN_ADAPTATION,TRAINING_TYPE_CLASSIFICATION
@@ -33,7 +34,9 @@ class Models():
         self.checkpoint_name = self.args.classifier_type        
 
         self.classifier_loss = WeightedCrossEntropyC()
-        self.domainregressor_loss = CategoricalCrossentropy(from_logits=True)        
+        self.domainregressor_loss = CategoricalCrossentropy(from_logits=True) 
+        self.acc_function_discriminator = CategoricalAccuracy()   
+        self.acc_function_discriminator_val = CategoricalAccuracy()               
 
         self.segmentation_history = {}
         self.discriminator_history = {}
@@ -141,15 +144,15 @@ class Models():
         
         with tf.GradientTape(persistent=True) as tape:
             y_pred_segmentation,_,logits_discriminator = self.model([x_input, l],training=True)
-            #y_pred_segmentation = self.model.main_network(x_input,training=True)
-            #_,logits_discriminator = self.model.domain_regressor_network(inputs,training=True)
+            
             loss_segmentation = self.classifier_loss(y_true_segmentation, y_pred_segmentation)            
             loss_discriminator = self.domainregressor_loss(y_true=y_true_discriminator, y_pred=logits_discriminator)            
             
             total_loss = loss_segmentation + loss_discriminator
     
         self.training_optimizer.minimize(total_loss, self.model.trainable_weights,tape=tape)
-        #self.discriminator_optimizer.minimize(loss_discriminator, self.model.domain_regressor_network.trainable_weights,tape=tape)      
+        
+        self.acc_function_discriminator.update_state(y_true_discriminator, logits_discriminator)
 
         return loss_segmentation, y_pred_segmentation, loss_discriminator
 		
@@ -166,6 +169,8 @@ class Models():
         
         loss_segmentation = self.classifier_loss(y_true_segmentation, y_pred_segmentation)
         loss_discriminator = self.domainregressor_loss(y_true=y_true_discriminator, y_pred=logits_discriminator)             
+
+        self.acc_function_discriminator_val.update_state(y_true_discriminator, logits_discriminator)
 
         return loss_segmentation, y_pred_segmentation, loss_discriminator
 
@@ -262,51 +267,59 @@ class Models():
                     corners_coordinates_tr_t[i] = Data_Augmentation_Definition(corners_coordinates_tr_t[i])
                     corners_coordinates_vl_t[i] = Data_Augmentation_Definition(corners_coordinates_vl_t[i])
                 
-        if self.args.training_type == TRAINING_TYPE_DOMAIN_ADAPTATION:
-            #Generating target labels before data shuffling and balancing
-            if 'DR' in self.args.da_type:
-                # Target Domain labels configuration
-                # Source: 0
-                # Target 1: 1
-                # Target 2: 2                
-                target_labels_tr = []                
-                target_labels_vl = []     
+        if self.args.training_type == TRAINING_TYPE_DOMAIN_ADAPTATION and 'DR' in self.args.da_type:
+            #Generating target labels before data shuffling and balancing            
+            # Target Domain labels configuration
+            # Source: 0
+            # Target 1: 1
+            # Target 2: 2                
+            target_labels_tr = []                
+            target_labels_vl = []     
 
-                domain_indexs_tr_t = []
-                domain_indexs_vl_t = []
+            domain_indexs_tr_t = []
+            domain_indexs_vl_t = []
 
-                #size_tr_t = []
-                #size_vl_t = []
+            #size_tr_t = []
+            #size_vl_t = []
+            
+            target_label_value = 1                    
+            for i in range(len(self.dataset_t)): 
+                print(f"Target Dataset {self.dataset_t[i].DATASET}")
+                print("Assigned label value: %d"%(target_label_value))
+
+                if len(self.D_out_shape) > 2:
+                    target_labels_tr.append(np.full((corners_coordinates_tr_t[i].shape[0], self.D_out_shape[0], self.D_out_shape[1],1),target_label_value))
+                    target_labels_vl.append(np.full((corners_coordinates_vl_t[i].shape[0], self.D_out_shape[0], self.D_out_shape[1],1),target_label_value))
+                else:
+                    target_labels_tr.append(np.full((corners_coordinates_tr_t[i].shape[0], 1), target_label_value))
+                    target_labels_vl.append(np.full((corners_coordinates_vl_t[i].shape[0], 1), target_label_value))
                 
-                target_label_value = 1                    
-                for i in range(len(self.dataset_t)): 
-                    print(f"Target Dataset {self.dataset_t[i].DATASET}")
-                    print("Assigned label value: %d"%(target_label_value))
+                # Target Domains indexes configuration                    
+                domain_indexs_tr_t.append(np.full((corners_coordinates_tr_t[i].shape[0], 1), target_label_value))
+                domain_indexs_vl_t.append(np.full((corners_coordinates_vl_t[i].shape[0], 1), target_label_value))
+                target_label_value += 1
 
-                    if len(self.D_out_shape) > 2:
-                        target_labels_tr.append(np.full((corners_coordinates_tr_t[i].shape[0], self.D_out_shape[0], self.D_out_shape[1],1),target_label_value))
-                        target_labels_vl.append(np.full((corners_coordinates_vl_t[i].shape[0], self.D_out_shape[0], self.D_out_shape[1],1),target_label_value))
-                    else:
-                        target_labels_tr.append(np.full((corners_coordinates_tr_t[i].shape[0], 1), target_label_value))
-                        target_labels_vl.append(np.full((corners_coordinates_vl_t[i].shape[0], 1), target_label_value))
-                    
-                    # Target Domains indexes configuration                    
-                    domain_indexs_tr_t.append(np.full((corners_coordinates_tr_t[i].shape[0], 1), target_label_value))
-                    domain_indexs_vl_t.append(np.full((corners_coordinates_vl_t[i].shape[0], 1), target_label_value))
-                    target_label_value += 1
+            #if self.args.source_targets_balanced == True:
+            size_tr_s = [np.shape(corners_coordinates_tr_s)[0]]
+            size_vl_s = [np.shape(corners_coordinates_vl_s)[0]]
 
-                target_labels_tr = np.concatenate(target_labels_tr,axis=0)
-                target_labels_vl = np.concatenate(target_labels_vl,axis=0)
-                
-                domain_indexs_tr_t = np.concatenate(domain_indexs_tr_t,axis=0)
-                domain_indexs_vl_t = np.concatenate(domain_indexs_vl_t,axis=0)                
+            size_tr_t = [x.shape[0] for x in corners_coordinates_tr_t]
+            size_vl_t = [x.shape[0] for x in corners_coordinates_vl_t]
 
-                if self.args.source_targets_balanced == True:
-                    size_tr_list = np.concatenate(([np.shape(corners_coordinates_tr_s)[0]],[x.shape[0] for x in corners_coordinates_tr_t]),axis=0)
-                    size_vl_list = np.concatenate(([np.shape(corners_coordinates_vl_s)[0]],[x.shape[0] for x in corners_coordinates_vl_t]),axis=0)
+            size_tr_list = np.concatenate((size_tr_s,size_tr_t),axis=0)
+            size_vl_list = np.concatenate((size_vl_s,size_vl_t),axis=0)
 
-                    index_min_size_tr = np.argmin(size_tr_list)
-                    index_min_size_vl = np.argmin(size_vl_list)
+            index_min_size_tr = np.argmin(size_tr_list)
+            index_min_size_vl = np.argmin(size_vl_list)
+
+            min_tr_size = size_tr_list[index_min_size_tr]
+            min_vl_size = size_vl_list[index_min_size_vl]  
+
+            print('size_tr_list:')
+            print(size_tr_list)
+
+            print('size_vl_list:')
+            print(size_vl_list)
 
 
             #Combines different targets into one dataset
@@ -314,55 +327,52 @@ class Models():
             #corners_coordinates_vl_t = np.concatenate(corners_coordinates_vl_t, axis=0)
 
             # Balancing the number of samples between source and target domain
-            size_tr_s = np.shape(corners_coordinates_tr_s)[0]
-            size_tr_t = np.shape(corners_coordinates_tr_t)[0]
-            size_vl_s = np.shape(corners_coordinates_vl_s)[0]
-            size_vl_t = np.shape(corners_coordinates_vl_t)[0]
-
-            #size_tr = np.concatenate(size_tr_s, np.array(size_tr_t), axis=0)
-            #size_vl = np.concatenate(size_vl_s, np.array(size_vl_t), axis=0)
-            #print("size_tr:")
-            #print(size_tr)
-            #print("size_vl:")
-            #print(size_vl)
+            #size_tr_s = np.shape(corners_coordinates_tr_s)[0]
+            #size_tr_t = np.shape(corners_coordinates_tr_t)[0]
+            #size_vl_s = np.shape(corners_coordinates_vl_s)[0]
+            #size_vl_t = np.shape(corners_coordinates_vl_t)[0]            
 
             #Shuffling the num_samples
-            index_tr_s = np.arange(size_tr_s)
-            index_tr_t = np.arange(size_tr_t)
-            index_vl_s = np.arange(size_vl_s)
-            index_vl_t = np.arange(size_vl_t)
+            index_tr_s = np.arange(size_tr_s[0])
+            index_vl_s = np.arange(size_vl_s[0])
 
-            np.random.shuffle(index_tr_s)
-            np.random.shuffle(index_tr_t)
-            np.random.shuffle(index_vl_s)
-            np.random.shuffle(index_vl_t)
+            np.random.shuffle(index_tr_s)            
+            np.random.shuffle(index_vl_s)            
 
             corners_coordinates_tr_s = corners_coordinates_tr_s[index_tr_s, :]
-            corners_coordinates_vl_s = corners_coordinates_vl_s[index_vl_s, :]
+            corners_coordinates_vl_s = corners_coordinates_vl_s[index_vl_s, :]    
 
-            corners_coordinates_tr_t = corners_coordinates_tr_t[index_tr_t, :]            
-            corners_coordinates_vl_t = corners_coordinates_vl_t[index_vl_t, :]
+            #RETIRA AMOSTRAS DO CONJUNTO MAIOR PARA SE IGUALAR AO MENOR            
+            corners_coordinates_tr_s = corners_coordinates_tr_s[:min_tr_size,:]    
+            corners_coordinates_vl_s = corners_coordinates_vl_s[:min_vl_size,:]        
+
+            index_tr_t = []
+            index_vl_t = []
             
-            target_labels_tr = target_labels_tr[index_tr_t, :]
-            target_labels_vl = target_labels_vl[index_vl_t, :]
+            for i in range(len(self.dataset_t)):
+                index_tr_t.append(np.arange(size_tr_t[i]))
+                index_vl_t.append(np.arange(size_vl_t[i]))
+                
+                np.random.shuffle(index_tr_t[i])
+                np.random.shuffle(index_vl_t[i])
 
-            domain_indexs_tr_t = domain_indexs_tr_t[index_tr_t, :]
-            domain_indexs_vl_t = domain_indexs_vl_t[index_vl_t, :]
+                corners_coordinates_tr_t[i] = corners_coordinates_tr_t[i][index_tr_t[i], :]            
+                corners_coordinates_vl_t[i] = corners_coordinates_vl_t[i][index_vl_t[i], :]
+            
+                target_labels_tr[i] = target_labels_tr[i][index_tr_t[i], :]
+                target_labels_vl[i] = target_labels_vl[i][index_vl_t[i], :]
 
-            #RETIRA AMOSTRAS DO CONJUNTO MAIOR PARA SE IGUALAR AO MENOR
-            if size_tr_s > size_tr_t:
-                corners_coordinates_tr_s = corners_coordinates_tr_s[:size_tr_t,:]
-            if size_tr_t > size_tr_s:
-                corners_coordinates_tr_t = corners_coordinates_tr_t[:size_tr_s,:]
-                target_labels_tr = target_labels_tr[:size_tr_s,:]
-                domain_indexs_tr_t = domain_indexs_tr_t[:size_tr_s,:]
+                domain_indexs_tr_t[i] = domain_indexs_tr_t[i][index_tr_t[i], :]
+                domain_indexs_vl_t[i] = domain_indexs_vl_t[i][index_vl_t[i], :]
 
-            if size_vl_s > size_vl_t:
-                corners_coordinates_vl_s = corners_coordinates_vl_s[:size_vl_t,:]
-            if size_vl_t > size_vl_s:
-                corners_coordinates_vl_t = corners_coordinates_vl_t[:size_vl_s,:]
-                target_labels_vl = target_labels_vl[:size_vl_s]
-                domain_indexs_vl_t = domain_indexs_vl_t[:size_vl_s]           
+                #RETIRA AMOSTRAS DO CONJUNTO MAIOR PARA SE IGUALAR AO MENOR      
+                corners_coordinates_tr_t[i] = corners_coordinates_tr_t[i][:min_tr_size,:]
+                target_labels_tr[i] = target_labels_tr[i][:min_tr_size, :]
+                domain_indexs_tr_t[i] = domain_indexs_tr_t[i][:min_tr_size, :]
+                    
+                corners_coordinates_vl_t[i] = corners_coordinates_vl_t[i][:min_vl_size,:]
+                target_labels_vl[i] = target_labels_vl[i][:min_vl_size,:]
+                domain_indexs_vl_t[i] = domain_indexs_vl_t[i][:min_vl_size,:]             
 
         data = []
         x_train_s = np.concatenate((self.dataset_s.images_norm_[0], self.dataset_s.images_norm_[1], reference_t1_s, reference_t2_s), axis = 2)
@@ -381,15 +391,25 @@ class Models():
                 x_train_t = np.concatenate((self.dataset_t[i].images_norm_[0], self.dataset_t[i].images_norm_[1], reference_t1_t[i], reference_t2_t[i]), axis = 2)
                 data.append(x_train_t)
                        
+            corners_coordinates_tr_t = np.concatenate(corners_coordinates_tr_t, axis=0)
+            corners_coordinates_vl_t = np.concatenate(corners_coordinates_vl_t, axis=0)
+
             corners_coordinates_tr = np.concatenate((corners_coordinates_tr_s, corners_coordinates_tr_t), axis = 0)
             corners_coordinates_vl = np.concatenate((corners_coordinates_vl_s, corners_coordinates_vl_t), axis = 0)
             
             # Source Domain indexs configuration
             domain_indexs_tr_s = np.zeros((np.shape(corners_coordinates_tr_s)[0], 1))            
-            domain_indexs_vl_s = np.zeros((np.shape(corners_coordinates_vl_s)[0], 1))            
+            domain_indexs_vl_s = np.zeros((np.shape(corners_coordinates_vl_s)[0], 1))     
+
+            domain_indexs_tr_t = np.concatenate(domain_indexs_tr_t,axis=0)
+            domain_indexs_vl_t = np.concatenate(domain_indexs_vl_t,axis=0)        
 
             domain_indexs_tr = np.concatenate((domain_indexs_tr_s, domain_indexs_tr_t), axis = 0)
             domain_indexs_vl = np.concatenate((domain_indexs_vl_s, domain_indexs_vl_t), axis = 0)
+
+            target_labels_tr = np.concatenate(target_labels_tr,axis=0)
+            target_labels_vl = np.concatenate(target_labels_vl,axis=0)
+
 
             if 'DR' in self.args.da_type:
                 # Source Domain labels configuration
@@ -415,7 +435,10 @@ class Models():
         #Training starts now:
         e = 0
         best_model_epoch = -1
-        while (e < self.args.epochs):        
+        while (e < self.args.epochs):     
+            self.acc_function_discriminator.reset_states()
+            self.acc_function_discriminator_val.reset_states()
+
             #Shuffling the data and the labels
             num_samples = corners_coordinates_tr.shape[0]
             index = np.arange(num_samples)
@@ -469,7 +492,7 @@ class Models():
                     warmup = self.args.warmup
                     print("Number of warm-up epochs: %d"%(warmup))
                     if e >= warmup:
-                        self.l = 2. / (1. + np.exp(-2.5 * self.p)) - 1                        
+                        self.l = 2. / (1. + np.exp(-10 * self.p)) - 1                        
                     else:
                         self.l = 0.
                     print("lambda_p: %.6f" %(self.l))
@@ -526,6 +549,8 @@ class Models():
                             c_batch_loss, batch_probs, d_batch_loss = self._training_step_domain_adaptation([data_batch,self.l], [y_train_c_hot_batch, y_train_d_hot_batch], Weights, classification_mask_batch)
 
                             loss_dr_tr[0 , 0] += d_batch_loss
+
+                            acc_discriminator_train = float(self.acc_function_discriminator.result())
                         else:
                             c_batch_loss, batch_probs = self._training_step(data_batch, y_train_c_hot_batch, Weights, classification_mask_batch)
                     
@@ -569,11 +594,11 @@ class Models():
                     loss_dr_tr = loss_dr_tr/batch_counter_cl
                     self.discriminator_history["loss"].append(loss_dr_tr[0,0])
 
-                    print ("%d [Training loss: %f, acc.: %.2f%%, precission: %.2f%%, recall: %.2f%%, f1: %.2f%%, Dr loss: %f]" % (e, loss_cl_tr[0,0], accuracy_tr, precission_tr, recall_tr, f1_score_tr, loss_dr_tr[0,0]))
-                    f.write("%d [Training loss: %f, acc.: %.2f%%, precission: %.2f%%, recall: %.2f%%, f1: %.2f%%, Dr loss: %f]\n" % (e, loss_cl_tr[0,0], accuracy_tr, precission_tr, recall_tr, f1_score_tr, loss_dr_tr[0,0]))
+                    print ("%d [Training loss: %f, acc.: %.2f%%, precision: %.2f%%, recall: %.2f%%, f1: %.2f%%, Dr loss: %f, Dr accuracy: %.2f]" % (e, loss_cl_tr[0,0], accuracy_tr, precission_tr, recall_tr, f1_score_tr, loss_dr_tr[0,0], acc_discriminator_train))
+                    f.write("%d [Training loss: %f, acc.: %.2f%%, precision: %.2f%%, recall: %.2f%%, f1: %.2f%%, Dr loss: %f, Dr accuracy: %.2f]\n" % (e, loss_cl_tr[0,0], accuracy_tr, precission_tr, recall_tr, f1_score_tr, loss_dr_tr[0,0], acc_discriminator_train))
                 else:
-                    print ("%d [Training loss: %f, acc.: %.2f%%, precission: %.2f%%, recall: %.2f%%, f1: %.2f%%]" % (e, loss_cl_tr[0,0], accuracy_tr, precission_tr, recall_tr, f1_score_tr))
-                    f.write("%d [Training loss: %f, acc.: %.2f%%, precission: %.2f%%, recall: %.2f%%, f1: %.2f%%]\n" % (e, loss_cl_tr[0,0], accuracy_tr, precission_tr, recall_tr, f1_score_tr))
+                    print ("%d [Training loss: %f, acc.: %.2f%%, precision: %.2f%%, recall: %.2f%%, f1: %.2f%%]" % (e, loss_cl_tr[0,0], accuracy_tr, precission_tr, recall_tr, f1_score_tr))
+                    f.write("%d [Training loss: %f, acc.: %.2f%%, precision: %.2f%%, recall: %.2f%%, f1: %.2f%%]\n" % (e, loss_cl_tr[0,0], accuracy_tr, precission_tr, recall_tr, f1_score_tr))
 
                 #Computing the validation loss
                 print('[*]Computing the validation loss...')
@@ -622,6 +647,8 @@ class Models():
                             c_batch_loss, batch_probs, d_batch_loss = self._test_step_domain_adaptation([data_batch,self.l], [y_valid_c_hot_batch, y_valid_d_hot_batch], Weights, classification_mask_batch)
 
                             loss_dr_vl[0 , 0] += d_batch_loss
+
+                            acc_discriminator_val = float(self.acc_function_discriminator_val.result())
                         else:
                             c_batch_loss, batch_probs = self._test_step(data_batch, y_valid_c_hot_batch, Weights, classification_mask_batch)                            
 
@@ -661,11 +688,11 @@ class Models():
                     loss_dr_vl = loss_dr_vl/batch_counter_cl
                     self.discriminator_history["val_loss"].append(loss_dr_vl[0,0])
 
-                    print ("%d [Validation loss: %f, acc.: %.2f%%,  precission: %.2f%%, recall: %.2f%%, f1: %.2f%%, DrV loss: %f]" % (e, loss_cl_vl[0,0], accuracy_vl, precission_vl, recall_vl, f1_score_vl, loss_dr_vl[0 , 0]))
-                    f.write("%d [Validation loss: %f, acc.: %.2f%%, precission: %.2f%%, recall: %.2f%%, f1: %.2f%%, DrV loss: %f]\n" % (e, loss_cl_vl[0,0], accuracy_vl, precission_vl, recall_vl, f1_score_vl, loss_dr_vl[0 , 0]))
+                    print ("%d [Validation loss: %f, acc.: %.2f%%,  precision: %.2f%%, recall: %.2f%%, f1: %.2f%%, DrV loss: %f, DrV accuracy: %.2f]" % (e, loss_cl_vl[0,0], accuracy_vl, precission_vl, recall_vl, f1_score_vl, loss_dr_vl[0 , 0], acc_discriminator_val))
+                    f.write("%d [Validation loss: %f, acc.: %.2f%%, precision: %.2f%%, recall: %.2f%%, f1: %.2f%%, DrV loss: %f, DrV accuracy: %.2f]\n" % (e, loss_cl_vl[0,0], accuracy_vl, precission_vl, recall_vl, f1_score_vl, loss_dr_vl[0 , 0], acc_discriminator_val))
                 else:
-                    print ("%d [Validation loss: %f, acc.: %.2f%%,  precission: %.2f%%, recall: %.2f%%, f1: %.2f%%]" % (e, loss_cl_vl[0,0], accuracy_vl, precission_vl, recall_vl, f1_score_vl))
-                    f.write("%d [Validation loss: %f, acc.: %.2f%%, precission: %.2f%%, recall: %.2f%%, f1: %.2f%%]\n" % (e, loss_cl_vl[0,0], accuracy_vl, precission_vl, recall_vl, f1_score_vl))
+                    print ("%d [Validation loss: %f, acc.: %.2f%%,  precision: %.2f%%, recall: %.2f%%, f1: %.2f%%]" % (e, loss_cl_vl[0,0], accuracy_vl, precission_vl, recall_vl, f1_score_vl))
+                    f.write("%d [Validation loss: %f, acc.: %.2f%%, precision: %.2f%%, recall: %.2f%%, f1: %.2f%%]\n" % (e, loss_cl_vl[0,0], accuracy_vl, precission_vl, recall_vl, f1_score_vl))
 
             if self.args.training_type == TRAINING_TYPE_DOMAIN_ADAPTATION:
                 with open(os.path.join(self.args.save_checkpoint_path,"Log.txt"),"a") as f:
@@ -673,6 +700,10 @@ class Models():
                         if np.isnan(loss_cl_tr[0,0]) or np.isnan(loss_cl_vl[0,0]):
                             print('Nan value detected!!!!')                            
                             if best_model_epoch != -1:
+                                pat += 1
+                                if pat > self.args.patience:
+                                    print("Patience limit reached. Exiting training...")
+                                    break
                                 print('[*]ReLoading the models weights...')
                                 try:                                   
                                     self.load_weights(self.args.save_checkpoint_path)                         
@@ -750,8 +781,7 @@ class Models():
                     pat += 1
                     if pat > self.args.patience:
                         print("Patience limit reachead. Exiting training...")
-                        break
-            #clear_session()        
+                        break             
             e += 1
 
         

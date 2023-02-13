@@ -16,6 +16,7 @@ colors.append('#1AB023')
 colors.append('#7D8080')
 colors.append('#E7E424')
 colors.append('#7125B0')
+colors.append('#2FE5EB')
 
 def get_metrics(args):
     Thresholds = np.array([0.5])
@@ -131,14 +132,14 @@ def create_chart(args,experiments, target_list, result_list,checkpoint_list, pat
 
     plt.clf()
 
-    plt.figure(figsize=(10,8))
+    plt.figure(figsize=(12,6))
         
     bars_Accuracy = accuracy_list
     bars_F1 = fscore_list
     bars_Recall = recall_list
     bars_Precision = precision_list
 
-    width = 0.23    
+    width = 0.22    
        
     align = 'edge'    
     
@@ -153,12 +154,13 @@ def create_chart(args,experiments, target_list, result_list,checkpoint_list, pat
     plt.title(title)   
     plt.xticks(x, _experiments)
 
-    plt.bar_label(bar1, padding=3)
-    plt.bar_label(bar2, padding=3)
-    plt.bar_label(bar3, padding=3)
-    plt.bar_label(bar4, padding=3)
+    plt.bar_label(bar1,fmt='%.1f%%', padding=3)
+    plt.bar_label(bar2,fmt='%.1f%%', padding=3)
+    plt.bar_label(bar3,fmt='%.1f%%', padding=3)
+    plt.bar_label(bar4,fmt='%.1f%%', padding=3)
 
-    plt.legend()
+    plt.legend(bbox_to_anchor=(1.1, 1.1), loc='upper right')
+    #plt.grid(True)
 
     plt.ylim(0,100)
 

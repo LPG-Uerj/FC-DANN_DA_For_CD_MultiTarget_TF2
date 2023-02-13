@@ -37,7 +37,7 @@ if __name__ == '__main__':
     #for i in range(0, len(result_path), 4):
     #    results_folders = result_path[i : i + 4]
     results_folders = result_path
-    fig = plt.figure()
+    fig = plt.figure(figsize=(12,6))
     ax = plt.subplot(111)
     Npoints = num_samples
     Interpolation = True

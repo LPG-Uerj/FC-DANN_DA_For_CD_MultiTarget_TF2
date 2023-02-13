@@ -16,6 +16,7 @@ def main():
         'Tr:MA-Ts:MA',                        
         'Tr:PA->MA-Ts:MA',        
         'Tr:PA->RO,MA-Ts:MA',
+        'Tr:PA->RO,MA(blcd)-Ts:MA',
         'Tr:PA-Ts:MA'
         ]
 
@@ -32,18 +33,21 @@ def main():
         'results_tr_Cerrado_MA_classification_S_Cerrado_MA_T_Cerrado_MA/',        
         'results_tr_Amazon_PA_to_Cerrado_MA_domain_adaptation_DR_single_Cerrado_MA/',
         'results_tr_Amazon_PA_to_Amazon_RO_Cerrado_MA_domain_adaptation_DR_multi_Cerrado_MA/',
+        'results_tr_Amazon_PA_to_Amazon_RO_Cerrado_MA_domain_adaptation_DR_multi_balanced_Cerrado_MA/',
         'results_tr_Amazon_PA_classification_S_Amazon_PA_T_Cerrado_MA/'      
         ]
     checkpoint_list = [
         'checkpoint_tr_Cerrado_MA_classification_Cerrado_MA/',        
         'checkpoint_tr_Amazon_PA_to_Cerrado_MA_domain_adaptation_DR_single_Cerrado_MA/',
         'checkpoint_tr_Amazon_PA_to_Amazon_RO_Cerrado_MA_domain_adaptation_DR_multi_Amazon_RO_Cerrado_MA/',
+        'checkpoint_tr_Amazon_PA_to_Amazon_RO_Cerrado_MA_domain_adaptation_DR_multi_balanced_Amazon_RO_Cerrado_MA/',
         'checkpoint_tr_Amazon_PA_classification_Amazon_PA/'
         ]
     target_list = [
         CERRADO_MA.DATASET,
         CERRADO_MA.DATASET,        
-        CERRADO_MA.DATASET,        
+        CERRADO_MA.DATASET, 
+        CERRADO_MA.DATASET,       
         CERRADO_MA.DATASET]
 
     Charts.create_chart(args,experiments,target_list,result_list,checkpoint_list,path_to_export_chart,title)

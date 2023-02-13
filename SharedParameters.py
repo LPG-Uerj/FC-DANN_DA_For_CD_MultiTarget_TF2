@@ -17,6 +17,7 @@ PHASE_TEST = "test"
 PHASE_METRICS = "compute_metrics"
 
 LR = str(0.00001)
+#LR = str(0.0001)
 
 Full_Path_Train_MAIN_COMMAND = "$HOME/workspace/FC-DANN_DA_For_CD_MultiTarget_TF2/"+Train_MAIN_COMMAND
 Full_Path_Test_MAIN_COMMAND = "$HOME/workspace/FC-DANN_DA_For_CD_MultiTarget_TF2/"+Test_MAIN_COMMAND

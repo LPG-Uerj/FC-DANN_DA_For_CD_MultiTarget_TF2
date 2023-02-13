@@ -102,7 +102,6 @@ def Main():
                                                                                                 args)
 
             if args.save_result_text:
-
                 ACCURACY_.append(ACCURACY[0,0])
                 FSCORE_.append(FSCORE[0,0])
                 RECALL_.append(RECALL[0,0])
@@ -115,8 +114,7 @@ def Main():
                 print('Coming up!')
                 #histories.sendLoss(loss = 0.0, epoch = i, total_epochs = len(files))
 
-            counter += 1
-    print(ACCURACY_)
+            counter += 1    
     if args.save_result_text:
         f = open(args.results_dir + "/Results.txt","a")
         ACCURACY_m = np.mean(ACCURACY_)

@@ -35,6 +35,8 @@ colors = Charts.colors.copy()
 
 title = 'Source_MA_Target_RO'
 
+plt.figure(figsize=(12,6))
+
 if __name__ == '__main__':
     init = 0
     #for i in range(0, len(result_path), 4):
