@@ -93,8 +93,8 @@ def get_metrics(args):
     
     return ACCURACY_m,FSCORE_m,RECALL_m,PRECISION_m
 
-def create_chart(args,experiments, target_list, result_list,checkpoint_list, path_to_export_chart, title):
-    if not (len(target_list) == len(result_list) and len(target_list) == len(checkpoint_list)):
+def create_chart(args, experiments, target_list, result_list,checkpoint_list, path_to_export_chart, title):
+    if not (len(target_list) == len(result_list) and len(target_list) == len(checkpoint_list) and len(target_list) == len(experiments)):
         raise Exception("Lists are not the same length. Please verify.")
     
     _length = len(result_list)    
@@ -111,7 +111,7 @@ def create_chart(args,experiments, target_list, result_list,checkpoint_list, pat
     if not os.path.exists(temp_metrics):
         os.makedirs(temp_metrics)
         
-    for i in range(0,len(result_list)):
+    for i in range(0,_length):
         args.target_dataset = target_list[i]
         args.checkpoint_dir = checkpoint_list[i]
         args.results_dir = result_list[i]

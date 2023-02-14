@@ -21,8 +21,14 @@ result_path.append(main_path + 'results_tr_Amazon_RO_to_Amazon_PA_domain_adaptat
 #X = RO->PA,MA Y = PA
 result_path.append(main_path + 'results_tr_Amazon_RO_to_Amazon_PA_Cerrado_MA_domain_adaptation_DR_multi_Amazon_PA/')
 
+#X = RO->PA,MA(blcd) Y = PA
+result_path.append(main_path + 'results_tr_Amazon_RO_to_Amazon_PA_Cerrado_MA_domain_adaptation_DR_multi_balanced_Amazon_PA/')
+
 #X = RO->PA,MA Y = RO
 result_path.append(main_path + 'results_tr_Amazon_RO_to_Amazon_PA_Cerrado_MA_domain_adaptation_DR_multi_Amazon_RO/')
+
+#X = RO->PA,MA(blcd) Y = RO
+result_path.append(main_path + 'results_tr_Amazon_RO_to_Amazon_PA_Cerrado_MA_domain_adaptation_DR_multi_balanced_Amazon_RO/')
 
 #X = RO, Y = PA
 result_path.append(main_path + 'results_tr_Amazon_RO_classification_S_Amazon_RO_T_Amazon_PA/')
@@ -31,8 +37,10 @@ labels = []
 labels.append('1-Tr: PA,Ts: PA (Source only training)')
 labels.append('2-Tr: RO->PA, Ts: PA (domain adaptation single-target)')
 labels.append('3-Tr: RO->PA,MA Ts: PA (domain adaptation multi-target)')
-labels.append('4-Tr: RO->PA,MA Ts: RO (domain adaptation multi-target)')
-labels.append('5-Tr: RO,Ts: PA (Source only training)')
+labels.append('4-Tr: RO->PA,MA(blcd) Ts: PA (domain adaptation multi-target)')
+labels.append('5-Tr: RO->PA,MA Ts: RO (domain adaptation multi-target)')
+labels.append('6-Tr: RO->PA,MA(blcd) Ts: RO (domain adaptation multi-target)')
+labels.append('7-Tr: RO,Ts: PA (Source only training)')
 
 colors = Charts.colors.copy()
 
