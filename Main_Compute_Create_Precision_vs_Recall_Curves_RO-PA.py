@@ -17,6 +17,9 @@ result_path.append(main_path + 'results_tr_Amazon_PA_classification_S_Amazon_PA_
 #X = RO->PA, Y = PA
 result_path.append(main_path + 'results_tr_Amazon_RO_to_Amazon_PA_domain_adaptation_DR_single_Amazon_PA/')
 
+#X = RO->PA, Y = PA
+result_path.append(main_path + 'results_tr_Amazon_RO_to_Amazon_PA_domain_adaptation_DR_single_Amazon_RO/')
+
 #X = PA->RO, Y = PA
 result_path.append(main_path + 'results_tr_Amazon_PA_to_Amazon_RO_domain_adaptation_DR_single_Amazon_PA/')
 
@@ -28,8 +31,9 @@ result_path.append(main_path + 'results_tr_Amazon_RO_classification_S_Amazon_RO_
 labels = []
 labels.append('1-Tr: PA,Ts: PA (Source only training)')
 labels.append('2-Tr: RO->PA, Ts: PA (domain adaptation single-target)')
-labels.append('3-Tr: PA->RO, Ts: PA (domain adaptation single-target)')
-labels.append('4-Tr: RO,Ts: PA (Source only training)')
+labels.append('3-Tr: RO->PA, Ts: RO (domain adaptation single-target)')
+labels.append('4-Tr: PA->RO, Ts: PA (domain adaptation single-target)')
+labels.append('5-Tr: RO,Ts: PA (Source only training)')
 
 colors = Charts.colors.copy()
 

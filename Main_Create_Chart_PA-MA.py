@@ -15,8 +15,9 @@ def main():
     experiments = [
         'Tr:MA-Ts:MA',                        
         'Tr:PA->MA-Ts:MA',        
+        'Tr:PA->RO,MA(blcd)-\nTs:MA(Upper)',
         'Tr:PA->RO,MA-Ts:MA',
-        'Tr:PA->RO,MA(blcd)-Ts:MA',
+        'Tr:PA->RO,MA(blcd)-\nTs:MA',
         'Tr:PA-Ts:MA'
         ]
 
@@ -32,6 +33,7 @@ def main():
     result_list = [
         'results_tr_Cerrado_MA_classification_S_Cerrado_MA_T_Cerrado_MA/',        
         'results_tr_Amazon_PA_to_Cerrado_MA_domain_adaptation_DR_single_Cerrado_MA/',
+        'results_tr_Amazon_PA_to_Amazon_RO_Cerrado_MA_domain_adaptation_DRCL_multi_balanced_Cerrado_MA/',
         'results_tr_Amazon_PA_to_Amazon_RO_Cerrado_MA_domain_adaptation_DR_multi_Cerrado_MA/',
         'results_tr_Amazon_PA_to_Amazon_RO_Cerrado_MA_domain_adaptation_DR_multi_balanced_Cerrado_MA/',
         'results_tr_Amazon_PA_classification_S_Amazon_PA_T_Cerrado_MA/'      
@@ -39,6 +41,7 @@ def main():
     checkpoint_list = [
         'checkpoint_tr_Cerrado_MA_classification_Cerrado_MA/',        
         'checkpoint_tr_Amazon_PA_to_Cerrado_MA_domain_adaptation_DR_single_Cerrado_MA/',
+        'checkpoint_tr_Amazon_PA_to_Amazon_RO_Cerrado_MA_domain_adaptation_DRCL_multi_balanced_Amazon_RO_Cerrado_MA/',
         'checkpoint_tr_Amazon_PA_to_Amazon_RO_Cerrado_MA_domain_adaptation_DR_multi_Amazon_RO_Cerrado_MA/',
         'checkpoint_tr_Amazon_PA_to_Amazon_RO_Cerrado_MA_domain_adaptation_DR_multi_balanced_Amazon_RO_Cerrado_MA/',
         'checkpoint_tr_Amazon_PA_classification_Amazon_PA/'
@@ -46,6 +49,7 @@ def main():
     target_list = [
         CERRADO_MA.DATASET,
         CERRADO_MA.DATASET,        
+        CERRADO_MA.DATASET, 
         CERRADO_MA.DATASET, 
         CERRADO_MA.DATASET,       
         CERRADO_MA.DATASET]

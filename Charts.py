@@ -17,6 +17,7 @@ colors.append('#7D8080')
 colors.append('#E7E424')
 colors.append('#7125B0')
 colors.append('#2FE5EB')
+colors.append('#FF0000')
 
 def get_metrics(args):
     Thresholds = np.array([0.5])
@@ -97,6 +98,12 @@ def create_chart(args, experiments, target_list, result_list,checkpoint_list, pa
     if not (len(target_list) == len(result_list) and len(target_list) == len(checkpoint_list) and len(target_list) == len(experiments)):
         raise Exception("Lists are not the same length. Please verify.")
     
+    if len(result_list) != len(set(result_list)):        
+        raise Exception("Duplicates found in the result list")
+    
+    if len(experiments) != len(set(experiments)):        
+        raise Exception("Duplicates found in the experiment list")
+    
     _length = len(result_list)    
 
     _experiments = []
@@ -132,7 +139,7 @@ def create_chart(args, experiments, target_list, result_list,checkpoint_list, pa
 
     plt.clf()
 
-    plt.figure(figsize=(12,6))
+    plt.figure(figsize=(14,6))
         
     bars_Accuracy = accuracy_list
     bars_F1 = fscore_list
@@ -199,3 +206,94 @@ def Area_under_the_curve(X, Y):
     area = 100 * np.inner(Y_[:-1], new_dx)
 
     return area
+
+def create_map_chart(result_path,labels,main_path,title,num_samples):
+    if len(result_path) != len(set(result_path)):        
+        raise Exception("Duplicates found in the result list")
+
+    init = 0    
+    results_folders = result_path
+    fig = plt.figure(figsize=(12,6))
+    ax = plt.subplot(111)
+    Npoints = num_samples
+    Interpolation = True
+    Correct = True
+    for rf in range(len(results_folders)):
+
+        if not os.path.exists(results_folders[rf]):
+            continue
+
+        recall = np.zeros((1 , num_samples))
+        precision = np.zeros((1 , num_samples))
+
+        MAP = 0
+
+        recall_i = np.zeros((1,num_samples))
+        precision_i = np.zeros((1,num_samples))
+
+        AP_i = []
+        AP_i_ = 0
+        folder_i = os.listdir(results_folders[rf])
+
+        for i in range(len(folder_i)):
+            result_folder_name = folder_i[i]
+            if result_folder_name != 'Results.txt':
+                #print(folder_i[i])
+                recall_path = results_folders[rf] + folder_i[i] + '/Recall.npy'
+                precision_path = results_folders[rf] + folder_i[i] + '/Precission.npy'
+                fscore_path = results_folders[rf] + folder_i[i] + '/Fscore.npy'
+
+                recall__ = np.load(recall_path)
+                precision__ = np.load(precision_path)
+                fscore__ = np.load(fscore_path)
+
+                print(precision__)
+
+                if np.size(recall__, 1) > Npoints:
+                    recall__ = recall__[:,:-1]
+                if np.size(precision__, 1) > Npoints:
+                    precision__ = precision__[:,:-1]
+
+                recall__ = recall__/100
+                precision__ = precision__/100
+
+                print()
+
+                if Correct:
+
+                    if precision__[0 , 0] == 0:
+                        precision__[0 , 0] = 2 * precision__[0 , 1] - precision__[0 , 2]
+
+                    if Interpolation:
+                        precision = precision__[0,:]
+                        precision__[0,:] = np.maximum.accumulate(precision[::-1])[::-1]
+
+
+                    if recall__[0 , 0] > 0:
+                        recall = np.zeros((1,num_samples + 1))
+                        precision = np.zeros((1,num_samples + 1))
+                        # Replicating precision value
+                        precision[0 , 0] = precision__[0 , 0]
+                        precision[0 , 1:] = precision__
+                        precision__ = precision
+                        # Attending recall
+                        recall[0 , 1:] = recall__
+                        recall__ = recall
+
+                recall_i = recall__
+                precision_i = precision__
+
+                mAP = Area_under_the_curve(recall__, precision__)
+                print(mAP)
+        ax.plot(recall_i[0,:], precision_i[0,:], color=colors[rf], label=labels[rf] + 'mAP:' + str(np.round(mAP,1)))
+
+    ax.legend()
+
+    plt.ylim([0, 1])
+    plt.xlim([0, 1])
+    plt.grid(True)
+    plt.title(title)
+    plt.ylabel('Precision')
+    plt.xlabel('Recall')
+    plt.savefig(main_path + 'Recall_vs_Precision_5_runs_' + title + '_DeepLab_Xception.png')
+    init += 1

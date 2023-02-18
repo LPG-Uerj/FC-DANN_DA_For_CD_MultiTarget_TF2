@@ -14,9 +14,10 @@ def main():
     
     experiments = [
         'Tr:RO-Ts:RO',
-        'Tr:PA->RO-Ts:RO',        
+        'Tr:PA->RO-Ts:RO',  
+        'Tr:PA->RO,MA(blcd)-\nTs:RO(Upper)',      
         'Tr:PA->RO,MA-Ts:RO',
-        'Tr:PA->RO,MA(blcd)-Ts:RO',
+        'Tr:PA->RO,MA(blcd)-\nTs:RO',
         'Tr:PA-Ts:RO'
         ]
 
@@ -32,6 +33,7 @@ def main():
     result_list = [
         'results_tr_Amazon_RO_classification_S_Amazon_RO_T_Amazon_RO/',        
         'results_tr_Amazon_PA_to_Amazon_RO_domain_adaptation_DR_single_Amazon_RO/',
+        'results_tr_Amazon_PA_to_Amazon_RO_Cerrado_MA_domain_adaptation_DRCL_multi_balanced_Amazon_RO/',
         'results_tr_Amazon_PA_to_Amazon_RO_Cerrado_MA_domain_adaptation_DR_multi_Amazon_RO/',
         'results_tr_Amazon_PA_to_Amazon_RO_Cerrado_MA_domain_adaptation_DR_multi_balanced_Amazon_RO/',
         'results_tr_Amazon_PA_classification_S_Amazon_PA_T_Amazon_RO/'      
@@ -39,6 +41,7 @@ def main():
     checkpoint_list = [
         'checkpoint_tr_Amazon_RO_classification_Amazon_RO/',        
         'checkpoint_tr_Amazon_PA_to_Amazon_RO_domain_adaptation_DR_single_Amazon_RO/',
+        'checkpoint_tr_Amazon_PA_to_Amazon_RO_Cerrado_MA_domain_adaptation_DRCL_multi_balanced_Amazon_RO_Cerrado_MA/',
         'checkpoint_tr_Amazon_PA_to_Amazon_RO_Cerrado_MA_domain_adaptation_DR_multi_Amazon_RO_Cerrado_MA/',
         'checkpoint_tr_Amazon_PA_to_Amazon_RO_Cerrado_MA_domain_adaptation_DR_multi_balanced_Amazon_RO_Cerrado_MA/',
         'checkpoint_tr_Amazon_PA_classification_Amazon_PA/'
@@ -46,6 +49,7 @@ def main():
     target_list = [
         AMAZON_RO.DATASET,
         AMAZON_RO.DATASET,        
+        AMAZON_RO.DATASET,  
         AMAZON_RO.DATASET,  
         AMAZON_RO.DATASET,        
         AMAZON_RO.DATASET]

@@ -39,7 +39,7 @@ training_type = SharedParameters.TRAINING_TYPE_DOMAIN_ADAPTATION
 #Deforastation / No Deforastation
 num_classes = "2"
 
-num_targets = "3" 
+discriminate_domain_targets = str(False)
 
 source_dataset = CERRADO_MA.DATASET
 target_dataset = AMAZON_RO.DATASET + "_" + AMAZON_PA.DATASET
@@ -59,7 +59,7 @@ for dr_localization in DR_LOCALIZATION:
     for method in METHODS:
         for da in DA_TYPES:
             
-            checkpoint_dir_param = checkpoint_dir + training_type + "_" + da + "_multi_balanced_" + target_dataset
+            checkpoint_dir_param = checkpoint_dir + training_type + "_" + da + "_multi_balanced_domain_labels_" + discriminate_domain_targets + "_" + target_dataset
 
             if args.train:
                 
@@ -86,7 +86,7 @@ for dr_localization in DR_LOCALIZATION:
                                 "--porcent_of_positive_pixels_in_actual_reference_s 2 "
                                 "--porcent_of_positive_pixels_in_actual_reference_t 2 "
                                 "--num_classes " + num_classes + " "
-                                "--num_targets " + num_targets + " "
+                                "--discriminate_domain_targets " + discriminate_domain_targets + " "
                                 "--phase train "
                                 "--training_type " + training_type + " "
                                 "--da_type " + da + " "
@@ -100,7 +100,7 @@ for dr_localization in DR_LOCALIZATION:
 
             for target_ds in TARGET_DATASETS:
                 
-                results_dir_param = results_dir + training_type + "_" + da + "_multi_balanced_" + target_ds
+                results_dir_param = results_dir + training_type + "_" + da + "_multi_balanced_domain_labels_" + discriminate_domain_targets + "_" + target_ds
 
                 if args.test:                    
                     Schedule.append("python " + Test_MAIN_COMMAND + " "
@@ -114,8 +114,7 @@ for dr_localization in DR_LOCALIZATION:
                                 "--beta1 0.9 "
                                 "--patches_dimension 64 "
                                 "--compute_ndvi False "
-                                "--num_classes " + num_classes + " "
-                                "--num_targets " + num_targets + " "
+                                "--num_classes " + num_classes + " "                                
                                 "--phase test "
                                 "--training_type " + training_type + " "
                                 "--da_type " + da + " "

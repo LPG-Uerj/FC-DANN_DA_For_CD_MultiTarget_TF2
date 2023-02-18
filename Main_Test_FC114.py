@@ -34,7 +34,7 @@ parser.add_argument('--patches_dimension', dest='patches_dimension', type=int, d
 parser.add_argument('--compute_ndvi', dest='compute_ndvi', type=eval, choices=[True, False], default=True, help='Cumpute and stack the ndvi index to the rest of bands')
 parser.add_argument('--buffer', dest='buffer', type=eval, choices=[True, False], default=False, help='Decide wether a buffer around deforestated regions will be performed')
 parser.add_argument('--num_classes', dest='num_classes', type=int, default=2, help='Number of classes comprised in both domains (classification)')
-parser.add_argument('--num_targets', dest='num_targets', type=int, default=2, help='Number of classes comprised in both domains (domain adaptation)')
+
 # Phase
 parser.add_argument('--phase', dest='phase', default='test', help='train, test, generate_image, create_dataset')
 parser.add_argument('--training_type', dest='training_type', type=str, default='classification', help='classification|domain_adaptation')

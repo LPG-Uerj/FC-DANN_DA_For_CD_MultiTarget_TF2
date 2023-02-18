@@ -15,6 +15,8 @@ main_path = "./results/results_avg/"
 result_path.append(main_path + 'results_tr_Cerrado_MA_classification_S_Cerrado_MA_T_Cerrado_MA/')
 #X = PA->MA, Y = MA
 result_path.append(main_path + 'results_tr_Amazon_PA_to_Cerrado_MA_domain_adaptation_DR_single_Cerrado_MA/')
+#X = PA->MA, Y = PA
+result_path.append(main_path + 'results_tr_Amazon_PA_to_Cerrado_MA_domain_adaptation_DR_single_Amazon_PA/')
 #X = MA->PA, Y = MA
 result_path.append(main_path + 'results_tr_Cerrado_MA_to_Amazon_PA_domain_adaptation_DR_single_Cerrado_MA/')
 #X = PA, Y = MA
@@ -24,8 +26,9 @@ result_path.append(main_path + 'results_tr_Amazon_PA_classification_S_Amazon_PA_
 labels = []
 labels.append('1-Tr: MA,Ts: MA (Source only training)')
 labels.append('2-Tr: PA->MA, Ts: MA (domain adaptation single-target)')
-labels.append('3-Tr: MA->PA, Ts: MA (domain adaptation single-target)')
-labels.append('4-Tr: PA,Ts: MA (Source only training)')
+labels.append('3-Tr: PA->MA, Ts: PA (domain adaptation single-target)')
+labels.append('4-Tr: MA->PA, Ts: MA (domain adaptation single-target)')
+labels.append('5-Tr: PA,Ts: MA (Source only training)')
 
 
 colors = Charts.colors.copy()

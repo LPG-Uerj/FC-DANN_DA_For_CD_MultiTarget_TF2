@@ -27,8 +27,12 @@ class Models():
         self.dataset_s = dataset_s
         self.dataset_t = dataset_t
 
-        self.num_targets = self.args.num_targets
+        if self.args.discriminate_domain_targets:
+            self.num_targets = len(self.dataset_t) + 1
+        else:
+            self.num_targets = 2
 
+        print("self.discriminate_domain_targets: " + str(self.args.discriminate_domain_targets))
         print("self.num_targets: " + str(self.num_targets))
 
         self.checkpoint_name = self.args.classifier_type        
@@ -46,8 +50,10 @@ class Models():
         self.segmentation_history["val_loss"] = []
         self.segmentation_history["val_f1"] = []
 
-        self.discriminator_history["loss"] = []        
-        self.discriminator_history["val_loss"] = []        
+        self.discriminator_history["loss"] = []
+        self.discriminator_history["val_loss"] = []
+        self.discriminator_history["accuracy"] = []
+        self.discriminator_history["val_accuracy"] = []
 
         if args.compute_ndvi:
             self.input_shape = (int(args.patches_dimension), int(args.patches_dimension), 2 * int(args.image_channels) + 2)
@@ -240,11 +246,11 @@ class Models():
             if 'CL' in self.args.da_type:
                 print("CL mode domain adaptation - Target domain will provide labels for training")
                 for i in range(len(self.dataset_t)):
-                    reference_t1_ = t.references_[0].copy()
-                    reference_t1_[t.references_[0] == 0] = 1
-                    reference_t1_[t.references_[0] == 1] = 0
-                    reference_t1_t[i,:,:,0] = reference_t1_.copy()
-                    reference_t2_t[i,:,:,0] = t.references_[1].copy()
+                    reference_t1_ = self.dataset_t[i].references_[0].copy()
+                    reference_t1_[self.dataset_t[i].references_[0] == 0] = 1
+                    reference_t1_[self.dataset_t[i].references_[0] == 1] = 0
+                    reference_t1_t[i][:,:,0] = reference_t1_.copy()
+                    reference_t2_t[i][:,:,0] = self.dataset_t[i].references_[1].copy()
 
 
         print('Sets dimensions before data augmentation')
@@ -285,18 +291,29 @@ class Models():
             target_label_value = 1                    
             for i in range(len(self.dataset_t)): 
                 print(f"Target Dataset {self.dataset_t[i].DATASET}")
-                print("Assigned label value: %d"%(target_label_value))
 
-                if len(self.D_out_shape) > 2:
-                    target_labels_tr.append(np.full((corners_coordinates_tr_t[i].shape[0], self.D_out_shape[0], self.D_out_shape[1],1),target_label_value))
-                    target_labels_vl.append(np.full((corners_coordinates_vl_t[i].shape[0], self.D_out_shape[0], self.D_out_shape[1],1),target_label_value))
+                if self.args.discriminate_domain_targets:
+                    print("Assigned label value: %d"%(target_label_value))
+                    if len(self.D_out_shape) > 2:
+                        target_labels_tr.append(np.full((corners_coordinates_tr_t[i].shape[0], self.D_out_shape[0], self.D_out_shape[1],1),target_label_value))
+                        target_labels_vl.append(np.full((corners_coordinates_vl_t[i].shape[0], self.D_out_shape[0], self.D_out_shape[1],1),target_label_value))
+                    else:
+                        target_labels_tr.append(np.full((corners_coordinates_tr_t[i].shape[0], 1), target_label_value))
+                        target_labels_vl.append(np.full((corners_coordinates_vl_t[i].shape[0], 1), target_label_value))
                 else:
-                    target_labels_tr.append(np.full((corners_coordinates_tr_t[i].shape[0], 1), target_label_value))
-                    target_labels_vl.append(np.full((corners_coordinates_vl_t[i].shape[0], 1), target_label_value))
+                    print("Assigned label value: 1")
+                    if len(self.D_out_shape) > 2:
+                        target_labels_tr.append(np.ones((corners_coordinates_tr_t[i].shape[0], self.D_out_shape[0], self.D_out_shape[1],1)))
+                        target_labels_vl.append(np.ones((corners_coordinates_vl_t[i].shape[0], self.D_out_shape[0], self.D_out_shape[1],1)))
+                    else:
+                        target_labels_tr.append(np.ones((corners_coordinates_tr_t[i].shape[0], 1)))
+                        target_labels_vl.append(np.ones((corners_coordinates_vl_t[i].shape[0], 1)))
                 
                 # Target Domains indexes configuration                    
                 domain_indexs_tr_t.append(np.full((corners_coordinates_tr_t[i].shape[0], 1), target_label_value))
                 domain_indexs_vl_t.append(np.full((corners_coordinates_vl_t[i].shape[0], 1), target_label_value))
+                
+                
                 target_label_value += 1
 
             #if self.args.source_targets_balanced == True:
@@ -593,6 +610,7 @@ class Models():
                 if self.args.training_type == TRAINING_TYPE_DOMAIN_ADAPTATION and 'DR' in self.args.da_type:                    
                     loss_dr_tr = loss_dr_tr/batch_counter_cl
                     self.discriminator_history["loss"].append(loss_dr_tr[0,0])
+                    self.discriminator_history["accuracy"].append(acc_discriminator_train)
 
                     print ("%d [Training loss: %f, acc.: %.2f%%, precision: %.2f%%, recall: %.2f%%, f1: %.2f%%, Dr loss: %f, Dr accuracy: %.2f]" % (e, loss_cl_tr[0,0], accuracy_tr, precission_tr, recall_tr, f1_score_tr, loss_dr_tr[0,0], acc_discriminator_train))
                     f.write("%d [Training loss: %f, acc.: %.2f%%, precision: %.2f%%, recall: %.2f%%, f1: %.2f%%, Dr loss: %f, Dr accuracy: %.2f]\n" % (e, loss_cl_tr[0,0], accuracy_tr, precission_tr, recall_tr, f1_score_tr, loss_dr_tr[0,0], acc_discriminator_train))
@@ -687,6 +705,7 @@ class Models():
                 if self.args.training_type == TRAINING_TYPE_DOMAIN_ADAPTATION and 'DR' in self.args.da_type:                    
                     loss_dr_vl = loss_dr_vl/batch_counter_cl
                     self.discriminator_history["val_loss"].append(loss_dr_vl[0,0])
+                    self.discriminator_history["val_accuracy"].append(acc_discriminator_val)
 
                     print ("%d [Validation loss: %f, acc.: %.2f%%,  precision: %.2f%%, recall: %.2f%%, f1: %.2f%%, DrV loss: %f, DrV accuracy: %.2f]" % (e, loss_cl_vl[0,0], accuracy_vl, precission_vl, recall_vl, f1_score_vl, loss_dr_vl[0 , 0], acc_discriminator_val))
                     f.write("%d [Validation loss: %f, acc.: %.2f%%, precision: %.2f%%, recall: %.2f%%, f1: %.2f%%, DrV loss: %f, DrV accuracy: %.2f]\n" % (e, loss_cl_vl[0,0], accuracy_vl, precission_vl, recall_vl, f1_score_vl, loss_dr_vl[0 , 0], acc_discriminator_val))
@@ -889,8 +908,10 @@ class Models():
         plt.plot(self.segmentation_history["loss"], label="decoder training loss")        
         plt.plot(self.segmentation_history["val_loss"], label="decoder validation loss")  
         plt.plot(self.discriminator_history["loss"], label="discriminator training loss")    
-        plt.plot(self.discriminator_history["val_loss"], label="discriminator validation loss")        
-        plt.title("Loss evolution")
+        plt.plot(self.discriminator_history["val_loss"], label="discriminator validation loss")   
+        plt.plot(self.discriminator_history["accuracy"], label="discriminator training accuracy")    
+        plt.plot(self.discriminator_history["val_accuracy"], label="discriminator validation accuracy")        
+        plt.title("Loss/Accuracy evolution")
         plt.xlabel("Epoch #")
         plt.ylabel("Loss")
         plt.ylim([0, 1])
@@ -901,23 +922,16 @@ class Models():
         plt.figure(figsize=(10, 10))        
         plt.plot(self.segmentation_history["f1"], label="training f1score")        
         plt.plot(self.segmentation_history["val_f1"], label="validation f1score")
-        plt.title("F1 evolution")
+        plt.plot(self.discriminator_history["accuracy"], label="discriminator training accuracy")    
+        plt.plot(self.discriminator_history["val_accuracy"], label="discriminator validation accuracy") 
+
+        plt.title("Segmentation F1 vs Discriminator Acc evolution")
         plt.xlabel("Epoch #")
         plt.ylabel("F1")
         plt.ylim([0, 100])
         plt.legend()
         plt.savefig(os.path.join(self.args.save_checkpoint_path,"segmentation_f1score.png"))
-
-    def plot_metrics_discriminator(self):
-        plt.figure(figsize=(10, 10))
-        plt.plot(self.discriminator_history["loss"], label="discriminator training loss")    
-        plt.plot(self.discriminator_history["val_loss"], label="discriminator validation loss")    
-        plt.title("Loss evolution")
-        plt.xlabel("Epoch #")
-        plt.ylabel("Loss")
-        plt.ylim([0, 1])
-        plt.legend()
-        plt.savefig(os.path.join(self.args.save_checkpoint_path,"discriminator_metrics.png"))
+    
 
 def Metrics_For_Test(hit_map,
                      reference_t1, reference_t2,

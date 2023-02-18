@@ -59,7 +59,7 @@ parser.add_argument('--porcent_of_last_reference_in_actual_reference', dest='por
 parser.add_argument('--porcent_of_positive_pixels_in_actual_reference_s', dest='porcent_of_positive_pixels_in_actual_reference_s', type=int, default=2, help='Porcent of number of pixels of last reference in the actual reference in source domain')
 parser.add_argument('--porcent_of_positive_pixels_in_actual_reference_t', dest='porcent_of_positive_pixels_in_actual_reference_t', type=int, default=2, help='Porcent of number of pixels of last reference in the actual reference in target domain')
 parser.add_argument('--num_classes', dest='num_classes', type=int, default=2, help='Number of classes comprised in both domains (classification)')
-parser.add_argument('--num_targets', dest='num_targets', type=int, default=2, help='Number of classes comprised in both domains (domain adaptation)')
+
 # Phase
 parser.add_argument('--phase', dest='phase', default='train', help='train, test, generate_image, create_dataset')
 parser.add_argument('--training_type', dest='training_type', type=str, default='classification', help='classification|domain_adaptation|domain_adaptation_check')
@@ -97,6 +97,8 @@ parser.add_argument('--checkpoint_results_main_path', dest='checkpoint_results_m
 parser.add_argument('--save_intermediate_model', dest='save_intermediate_model',type=eval, choices=[True, False], default=True, help='Save intermediate models or not')
 
 parser.add_argument('--source_targets_balanced', dest='source_targets_balanced', type=eval, choices=[True, False], default=True, help='Applies for Multi-target training. Decides whether each one of source and target datasets will correspont to 1/3 of training data. If not, source will correspond 50%% and both target datasets will share another 50%%.')
+
+parser.add_argument('--discriminate_domain_targets', dest='discriminate_domain_targets', type=eval, choices=[True, False], default=True, help='Applies for Multi-target training. Decides whether each target dataset will be assigned a different domain label or every target dataset will get the same label.')
 
 args = parser.parse_args()
 
