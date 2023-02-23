@@ -15,16 +15,17 @@ def main():
     experiments = [
         'Tr:MA-Ts:MA',
         'Tr:RO->MA-Ts:MA',
-        'Tr:RO->PA,MA(blcd)-\nTs:MA(Upper)',
-        'Tr:RO->PA,MA-Ts:MA',
-        'Tr:RO->PA,MA(blcd)-\nTs:MA',
-        'Tr:RO-Ts:MA'
+        'Tr:RO->PA,MA-\nTs:MA(Upper)',
+        'Tr:RO->PA,MA(unblcd)-Ts:MA',
+        'Tr:RO->PA,MA-\nTs:MA',
+        'Tr:RO-Ts:MA',
+        'Tr:RO->PA,MA-Ts:MA\n(2 neurons discriminator)',
         ]
 
     args.checkpoint_results_main_path = "./results/"
 
     #Accuracy, F1-Score, Recall, Precision
-    title = "Metrics_Tr_RO_Ts_MA"
+    
     
     path_to_export_chart = "./results/results/"
     #path_to_export_chart = "../"
@@ -36,7 +37,8 @@ def main():
         'results_tr_Amazon_RO_to_Amazon_PA_Cerrado_MA_domain_adaptation_DRCL_multi_balanced_Cerrado_MA/',
         'results_tr_Amazon_RO_to_Amazon_PA_Cerrado_MA_domain_adaptation_DR_multi_Cerrado_MA/',
         'results_tr_Amazon_RO_to_Amazon_PA_Cerrado_MA_domain_adaptation_DR_multi_balanced_Cerrado_MA/',
-        'results_tr_Amazon_RO_classification_S_Amazon_RO_T_Cerrado_MA/'      
+        'results_tr_Amazon_RO_classification_S_Amazon_RO_T_Cerrado_MA/',
+        'results_tr_Amazon_RO_to_Amazon_PA_Cerrado_MA_domain_adaptation_DR_multi_balanced_domain_labels_False_Cerrado_MA/'
         ]
     checkpoint_list = [
         'checkpoint_tr_Cerrado_MA_classification_Cerrado_MA/',        
@@ -44,17 +46,27 @@ def main():
         'checkpoint_tr_Amazon_RO_to_Amazon_PA_Cerrado_MA_domain_adaptation_DRCL_multi_balanced_Amazon_PA_Cerrado_MA/',
         'checkpoint_tr_Amazon_RO_to_Amazon_PA_Cerrado_MA_domain_adaptation_DR_multi_Amazon_PA_Cerrado_MA/',
         'checkpoint_tr_Amazon_RO_to_Amazon_PA_Cerrado_MA_domain_adaptation_DR_multi_balanced_Amazon_PA_Cerrado_MA/',
-        'checkpoint_tr_Amazon_RO_classification_Amazon_RO/'
+        'checkpoint_tr_Amazon_RO_classification_Amazon_RO/',
+        'checkpoint_tr_Amazon_RO_to_Amazon_PA_Cerrado_MA_domain_adaptation_DR_multi_balanced_domain_labels_False_Amazon_PA_Cerrado_MA/'
         ]
     target_list = [
         CERRADO_MA.DATASET,
         CERRADO_MA.DATASET,        
         CERRADO_MA.DATASET,
+        CERRADO_MA.DATASET,
         CERRADO_MA.DATASET,   
         CERRADO_MA.DATASET,        
         CERRADO_MA.DATASET]
 
-    Charts.create_chart(args,experiments,target_list,result_list,checkpoint_list,path_to_export_chart,title)
+    for i in range(0, len(result_list), 4):
+        result_list_ = result_list[i : i + 4]
+        checkpoint_list_ = checkpoint_list[i : i + 4]
+        target_list_ = target_list[i : i + 4]
+        experiments_ = experiments[i : i + 4]
+        
+        title = "Metrics_Tr_RO_Ts_MA"+str(i)
+
+        Charts.create_chart(args,experiments_,target_list_,result_list_,checkpoint_list_,path_to_export_chart,title)
 
 if __name__=='__main__':
     main()

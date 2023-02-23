@@ -1,47 +1,38 @@
 import Charts
 
 num_samples = 100
-result_path = []
 
 main_path = "./results/results_avg/"
 
-
-#X = PA, Y = PA
-result_path.append(main_path + 'results_tr_Amazon_PA_classification_S_Amazon_PA_T_Amazon_PA/')
-
-#X = MA->PA, Y = PA
-result_path.append(main_path + 'results_tr_Cerrado_MA_to_Amazon_PA_domain_adaptation_DR_single_Amazon_PA/')
-
-#Multi
-#X = MA->RO,PA, Y = PA
-result_path.append(main_path + 'results_tr_Cerrado_MA_to_Amazon_RO_Amazon_PA_domain_adaptation_DRCL_multi_balanced_Amazon_PA/')
-
-#X = MA->RO,PA, Y = PA
-result_path.append(main_path + 'results_tr_Cerrado_MA_to_Amazon_RO_Amazon_PA_domain_adaptation_DR_multi_Amazon_PA/')
-
-#X = MA->RO,PA(blcd) Y = PA
-result_path.append(main_path + 'results_tr_Cerrado_MA_to_Amazon_RO_Amazon_PA_domain_adaptation_DR_multi_balanced_Amazon_PA/')
-
-#X = MA->RO,PA, Y = MA
-result_path.append(main_path + 'results_tr_Cerrado_MA_to_Amazon_RO_Amazon_PA_domain_adaptation_DR_multi_Cerrado_MA/')
-
-#X = MA->RO,PA, Y = MA
-result_path.append(main_path + 'results_tr_Cerrado_MA_to_Amazon_RO_Amazon_PA_domain_adaptation_DR_multi_balanced_Cerrado_MA/')
-
-#X = MA, Y = PA
-result_path.append(main_path + 'results_tr_Cerrado_MA_classification_S_Cerrado_MA_T_Amazon_PA/')
+result_path = [
+            main_path + 'results_tr_Amazon_PA_classification_S_Amazon_PA_T_Amazon_PA/',
+            main_path + 'results_tr_Cerrado_MA_to_Amazon_PA_domain_adaptation_DR_single_Amazon_PA/',
+            main_path + 'results_tr_Cerrado_MA_to_Amazon_RO_Amazon_PA_domain_adaptation_DRCL_multi_balanced_Amazon_PA/',
+            main_path + 'results_tr_Cerrado_MA_to_Amazon_RO_Amazon_PA_domain_adaptation_DR_multi_Amazon_PA/',
+            main_path + 'results_tr_Cerrado_MA_to_Amazon_RO_Amazon_PA_domain_adaptation_DR_multi_balanced_Amazon_PA/',
+            main_path + 'results_tr_Cerrado_MA_to_Amazon_RO_Amazon_PA_domain_adaptation_DR_multi_Cerrado_MA/',
+            main_path + 'results_tr_Cerrado_MA_to_Amazon_RO_Amazon_PA_domain_adaptation_DR_multi_balanced_Cerrado_MA/',
+            main_path + 'results_tr_Cerrado_MA_classification_S_Cerrado_MA_T_Amazon_PA/',
+            main_path + 'results_tr_Cerrado_MA_to_Amazon_RO_Amazon_PA_domain_adaptation_DR_multi_balanced_domain_labels_False_Amazon_PA/',
+            main_path + 'results_tr_Cerrado_MA_to_Amazon_RO_Amazon_PA_domain_adaptation_DR_multi_balanced_domain_labels_False_Cerrado_MA/']
 
 
-labels = []
-labels.append('Tr: PA,Ts: PA (Source only training)')
-labels.append('Tr: MA->PA, Ts: PA (domain adaptation single-target)')
-labels.append('Tr: MA->RO,PA, Ts: PA (domain adaptation training on multi-target)')
-labels.append('Tr: MA->RO,PA, Ts: PA (domain adaptation multi-target)')
-labels.append('Tr: MA->RO,PA(blcd) Ts: PA (domain adaptation multi-target)')
-labels.append('Tr: MA->RO,PA Ts: MA (domain adaptation multi-target)')
-labels.append('Tr: MA->RO,PA(blcd) Ts: MA (domain adaptation multi-target)')
-labels.append('Tr: MA,Ts: PA (Source only training)')
+labels = [
+    'Tr: PA,Ts: PA (Source only training)',
+    'Tr: MA->PA, Ts: PA (domain adaptation single-target)',
+    'Tr: MA->RO,PA, Ts: PA (domain adaptation training on multi-target)',
+    'Tr: MA->RO,PA(unblcd) Ts: PA (domain adaptation multi-target)',
+    'Tr: MA->RO,PA Ts: PA (domain adaptation multi-target)',
+    'Tr: MA->RO,PA(unblcd) Ts: MA (domain adaptation multi-target)',
+    'Tr: MA->RO,PA Ts: MA (domain adaptation multi-target)',
+    'Tr: MA,Ts: PA (Source only training)',
+    'Tr: MA->RO,PA Ts: PA (domain adaptation multi-target 2 neurons discriminator)',    
+    'Tr: MA->RO,PA Ts: MA (domain adaptation multi-target 2 neurons discriminator)',
+]
 
-title = 'Multi_Target_Ts_MA_Eval_PA'
+for i in range(0, len(result_path), 5):
+        result_path_ = result_path[i : i + 5]
+        labels_ = labels[i : i + 5]
 
-Charts.create_map_chart(result_path,labels,main_path,title,num_samples)
+        title = 'Multi_Target_Ts_MA_Eval_PA_'+str(i)
+        Charts.create_map_chart(result_path_,labels_,main_path,title,num_samples)
