@@ -50,7 +50,7 @@ checkpoint_dir = "checkpoint_tr_"+source_to_target+"_"
 results_dir = "results_tr_"+source_to_target+"_"
 runs = "5"
 
-domain_regressor_type = "CONV"
+domain_regressor_type = "FC"
 warmup = "5"
 
 DR_LOCALIZATION = ['55']

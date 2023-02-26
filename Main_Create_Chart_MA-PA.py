@@ -20,6 +20,7 @@ def main():
         'Tr:MA->RO,PA-\nTs:PA',     
         'Tr:MA-Ts:PA',
         'Tr:MA->RO,PA-Ts:PA\n(2 neurons discriminator)',
+        'Tr:MA->RO,PA-Ts:PA\n(3 neurons conv discriminator)',
         ]
 
     args.checkpoint_results_main_path = "./results/"
@@ -38,6 +39,7 @@ def main():
         'results_tr_Cerrado_MA_to_Amazon_RO_Amazon_PA_domain_adaptation_DR_multi_balanced_Amazon_PA/',
         'results_tr_Cerrado_MA_classification_S_Cerrado_MA_T_Amazon_PA/',
         'results_tr_Cerrado_MA_to_Amazon_RO_Amazon_PA_domain_adaptation_DR_multi_balanced_domain_labels_False_Amazon_PA/'
+        'results_tr_Cerrado_MA_to_Amazon_RO_Amazon_PA_domain_adaptation_DR_CONV_multi_balanced_domain_labels_True_Amazon_PA/'
         ]
     checkpoint_list = [
         'checkpoint_tr_Amazon_PA_classification_Amazon_PA/',        
@@ -46,7 +48,8 @@ def main():
         'checkpoint_tr_Cerrado_MA_to_Amazon_RO_Amazon_PA_domain_adaptation_DR_multi_Amazon_RO_Amazon_PA/',
         'checkpoint_tr_Cerrado_MA_to_Amazon_RO_Amazon_PA_domain_adaptation_DR_multi_balanced_Amazon_RO_Amazon_PA/',
         'checkpoint_tr_Cerrado_MA_classification_Cerrado_MA/',
-        'checkpoint_tr_Cerrado_MA_to_Amazon_RO_Amazon_PA_domain_adaptation_DR_multi_balanced_domain_labels_False_Amazon_RO_Amazon_PA/'
+        'checkpoint_tr_Cerrado_MA_to_Amazon_RO_Amazon_PA_domain_adaptation_DR_multi_balanced_domain_labels_False_Amazon_RO_Amazon_PA/',
+        'checkpoint_tr_Cerrado_MA_to_Amazon_RO_Amazon_PA_domain_adaptation_DR_CONV_multi_balanced_domain_labels_True_Amazon_RO_Amazon_PA/'
         ]
     target_list = [
         AMAZON_PA.DATASET,
@@ -55,17 +58,20 @@ def main():
         AMAZON_PA.DATASET,
         AMAZON_PA.DATASET,
         AMAZON_PA.DATASET,
+        AMAZON_PA.DATASET,
         AMAZON_PA.DATASET]    
     
+    cont = 1
     for i in range(0, len(result_list), 4):
         result_list_ = result_list[i : i + 4]
         checkpoint_list_ = checkpoint_list[i : i + 4]
         target_list_ = target_list[i : i + 4]
         experiments_ = experiments[i : i + 4]
 
-        title = "Metrics_Tr_MA_Ts_PA"+str(i)
+        title = "Metrics_Tr_MA_Ts_PA"+str(cont)
 
         Charts.create_chart(args,experiments_,target_list_,result_list_,checkpoint_list_,path_to_export_chart,title)
+        cont += 1
 
 if __name__=='__main__':
     main()

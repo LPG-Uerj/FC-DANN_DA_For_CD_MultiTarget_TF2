@@ -5,9 +5,9 @@ warnings.filterwarnings("ignore")
 Schedule = []
 
 REFERENCES = [
-'Main_Script_Executor_Tr_MA_DA_Multi_Balanced.py --train False',
-'Main_Script_Executor_Tr_PA_DA_Multi_Balanced.py --train False',
-'Main_Script_Executor_Tr_RO_DA_Multi_Balanced.py --train False'
+'Main_Script_Executor_Tr_MA_DA_Multi_Balanced.py 2>&1 | tee Main_Script_Executor_Tr_MA_DA_Multi_Balanced.txt',
+'Main_Script_Executor_Tr_PA_DA_Multi_Balanced.py 2>&1 | tee Main_Script_Executor_Tr_PA_DA_Multi_Balanced.txt',
+'Main_Script_Executor_Tr_RO_DA_Multi_Balanced.py 2>&1 | tee Main_Script_Executor_Tr_RO_DA_Multi_Balanced.txt'
 ]
 
 for reference in REFERENCES:
