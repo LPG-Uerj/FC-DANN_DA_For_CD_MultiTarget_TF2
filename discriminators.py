@@ -13,7 +13,7 @@ def Domain_Regressor_FullyConnected(input_shape, units: int, num_targets: int):
     
 def Domain_Regressor_Convolutional(input_shape, num_targets: int):
     print("Domain_Regressor_Convolutional - input_shape: " + str(input_shape))
-    num_filters = input_shape[3]
+    num_filters = input_shape[2]
     inputs = tf.keras.Input(shape=input_shape)
     
     layers = inputs    
@@ -24,7 +24,7 @@ def Domain_Regressor_Convolutional(input_shape, num_targets: int):
     model = tf.keras.Model(inputs = inputs, outputs = [output, layers], name = 'Domain_Regressor_FullyConnected')
     return model
 
-def general_conv2d(self, input_data, filters,  kernel_size, strides=1, activation_function="relu", padding="valid", do_norm=True, relu_factor=0, name="conv2d"):        
+def general_conv2d(input_data, filters,  kernel_size, strides=1, activation_function="relu", padding="valid", do_norm=True, relu_factor=0, name="conv2d"):        
     conv = tf.keras.layers.Conv2D(filters, kernel_size, strides, padding, activation=None, kernel_initializer='glorot_uniform')(input_data)
     if do_norm:
         conv = tf.keras.layers.BatchNormalization(momentum=0.9)(conv)            

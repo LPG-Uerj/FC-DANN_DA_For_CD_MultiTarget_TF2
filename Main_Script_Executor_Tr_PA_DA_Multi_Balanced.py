@@ -39,7 +39,8 @@ training_type = SharedParameters.TRAINING_TYPE_DOMAIN_ADAPTATION
 #Deforastation / No Deforastation
 num_classes = "2"
 
-discriminate_domain_targets = str(False)
+discriminate_domain_targets = str(True)
+num_targets = "2"
 
 #TARGET: RO, MA
 source_dataset = AMAZON_PA.DATASET
@@ -49,6 +50,9 @@ source_to_target = source_dataset + "_to_" + target_dataset
 checkpoint_dir = "checkpoint_tr_"+source_to_target+"_"
 results_dir = "results_tr_"+source_to_target+"_"
 runs = "5"
+warmup = "5"
+
+domain_regressor_type = "CONV"
 
 DR_LOCALIZATION = ['55']
 METHODS  = [SharedParameters.METHOD]
@@ -60,13 +64,13 @@ for dr_localization in DR_LOCALIZATION:
     for method in METHODS:
         for da in DA_TYPES:
             
-            checkpoint_dir_param = checkpoint_dir + training_type + "_" + da + "_multi_balanced_domain_labels_" + discriminate_domain_targets + "_" + target_dataset
+            checkpoint_dir_param = checkpoint_dir + training_type + "_" + da + "_" + domain_regressor_type + "_multi_balanced_domain_labels_" + discriminate_domain_targets + "_" + target_dataset
 
             if args.train:
                 
                 Schedule.append("python " + Train_MAIN_COMMAND + " "
                                 "--classifier_type " + method + " "
-                                "--domain_regressor_type FC "
+                                "--domain_regressor_type " + domain_regressor_type + " "
                                 "--DR_Localization " + dr_localization + " "
                                 "--skip_connections False "
                                 "--epochs 100 "
@@ -88,11 +92,12 @@ for dr_localization in DR_LOCALIZATION:
                                 "--porcent_of_positive_pixels_in_actual_reference_t 2 "
                                 "--num_classes " + num_classes + " "
                                 "--discriminate_domain_targets " + discriminate_domain_targets + " "
+                                "--num_targets " + num_targets + " "
                                 "--phase train "
                                 "--training_type " + training_type + " "
                                 "--da_type " + da + " "
                                 "--runs " + runs + " "
-                                "--warmup 1 "
+                                "--warmup " + warmup + " "
                                 "--patience 10 "
                                 "--checkpoint_dir " + checkpoint_dir_param + " "
                                 "--source_dataset " + source_dataset + " "
@@ -101,12 +106,12 @@ for dr_localization in DR_LOCALIZATION:
 
             for target_ds in TARGET_DATASETS:
                 
-                results_dir_param = results_dir + training_type + "_" + da + "_multi_balanced_domain_labels_" + discriminate_domain_targets + "_" + target_ds
+                results_dir_param = results_dir + training_type + "_" + da + "_" + domain_regressor_type + "_multi_balanced_domain_labels_" + discriminate_domain_targets + "_" + target_ds
 
                 if args.test:                    
                     Schedule.append("python " + Test_MAIN_COMMAND + " "
                                 "--classifier_type " + method + " "
-                                "--domain_regressor_type FC "
+                                "--domain_regressor_type " + domain_regressor_type + " "
                                 "--DR_Localization " + dr_localization + " "
                                 "--skip_connections False "
                                 "--batch_size 500 "                                
@@ -115,7 +120,9 @@ for dr_localization in DR_LOCALIZATION:
                                 "--beta1 0.9 "
                                 "--patches_dimension 64 "
                                 "--compute_ndvi False "
-                                "--num_classes " + num_classes + " "                                
+                                "--num_classes " + num_classes + " "  
+                                "--discriminate_domain_targets " + discriminate_domain_targets + " "   
+                                "--num_targets " + num_targets + " "                           
                                 "--phase test "
                                 "--training_type " + training_type + " "
                                 "--da_type " + da + " "
@@ -127,7 +134,7 @@ for dr_localization in DR_LOCALIZATION:
                 if args.metrics:
                     Schedule.append("python " + Metrics_05_MAIN_COMMAND + " "
                                 "--classifier_type " + method + " "
-                                "--domain_regressor_type FC "
+                                "--domain_regressor_type " + domain_regressor_type + " "
                                 "--skip_connections False "                                
                                 "--patches_dimension 64 "
                                 "--fixed_tiles True "
@@ -146,7 +153,7 @@ for dr_localization in DR_LOCALIZATION:
 
                     Schedule.append("python " + Metrics_th_MAIN_COMMAND + " "
                                 "--classifier_type " + method + " "
-                                "--domain_regressor_type FC "
+                                "--domain_regressor_type " + domain_regressor_type + " "
                                 "--skip_connections False "                                
                                 "--patches_dimension 64 "
                                 "--fixed_tiles True "

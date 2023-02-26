@@ -28,7 +28,10 @@ class Models():
         self.dataset_t = dataset_t
 
         if self.args.discriminate_domain_targets:
-            self.num_targets = len(self.dataset_t) + 1
+            if self.args.num_targets is None:
+                raise Exception("Num_targets must have an integer positive value.")
+
+            self.num_targets = self.args.num_targets + 1
         else:
             self.num_targets = 2
 
@@ -95,9 +98,9 @@ class Models():
             decoder_model = tf.keras.Model(inputs = [Encoder_Outputs,low_Level_Features], outputs = Decoder_Outputs, name = 'deeplabv3plus_decoder')
 
             if self.args.training_type == TRAINING_TYPE_DOMAIN_ADAPTATION and 'DR' in self.args.da_type:
-                if self.args.domain_regressor_type == 'FC':
+                if self.args.domain_regressor_type.casefold() == 'fc':
                     discriminator_model = Domain_Regressor_FullyConnected(input_shape=Encoder_Outputs.shape[1:],units=1024, num_targets=self.num_targets)                    
-                if self.args.domain_regressor_type == 'Dense':
+                if self.args.domain_regressor_type.casefold() == 'conv':
                     discriminator_model = Domain_Regressor_Convolutional(input_shape=Encoder_Outputs.shape[1:], num_targets=self.num_targets)
 
                 self.D_out_shape = discriminator_model.layers[-2].output.shape[1:]
