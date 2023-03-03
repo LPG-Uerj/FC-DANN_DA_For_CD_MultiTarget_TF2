@@ -9,11 +9,11 @@ num_samples = 100
 main_path = "./results/results_avg/"
 
 result_path = [
-    main_path + 'results_tr_Amazon_RO_classification_S_Amazon_RO_T_Amazon_RO/',
-    main_path + 'results_tr_Cerrado_MA_to_Amazon_RO_domain_adaptation_DR_single_Amazon_RO/',
-    main_path + 'results_tr_Cerrado_MA_to_Amazon_RO_domain_adaptation_DR_single_Cerrado_MA/',
-    main_path + 'results_tr_Amazon_RO_to_Cerrado_MA_domain_adaptation_DR_single_Amazon_RO/',
-    main_path + 'results_tr_Cerrado_MA_classification_S_Cerrado_MA_T_Amazon_RO/']
+    'results_tr_Amazon_RO_classification_S_Amazon_RO_T_Amazon_RO/',
+    'results_tr_Cerrado_MA_to_Amazon_RO_domain_adaptation_DR_single_Amazon_RO/',
+    'results_tr_Cerrado_MA_to_Amazon_RO_domain_adaptation_DR_single_Cerrado_MA/',
+    'results_tr_Amazon_RO_to_Cerrado_MA_domain_adaptation_DR_single_Amazon_RO/',
+    'results_tr_Cerrado_MA_classification_S_Cerrado_MA_T_Amazon_RO/']
 
 
 labels = [

@@ -49,7 +49,7 @@ parser.add_argument('--overlap_t', dest='overlap_t', type=float, default= 0.75, 
 
 # compute ndvi refere-se a um indice. Era algum tipo de stack de bandas. compute_ndvi = False. Pode ignorar e manter assim.
 parser.add_argument('--compute_ndvi', dest='compute_ndvi', type=eval, choices=[True, False], default=False, help='Compute and stack the ndvi index to the rest of bands')
-parser.add_argument('--balanced_tr', dest='balanced_tr', type=eval, choices=[True, False], default=True, help='Decide wether a balanced training will be performed')
+parser.add_argument('--balanced_tr', dest='balanced_tr', type=eval, choices=[True, False], default=False, help='Decide wether a balanced training will be performed')
 #parser.add_argument('--balanced_vl', dest='balanced_vl', type=eval, choices=[True, False], default=True, help='Decide wether a balanced training will be performed')
 
 # TODO LUCAS:ParÃƒÂ¢metro buffer para quando for converter de imagem vetorial para pixel

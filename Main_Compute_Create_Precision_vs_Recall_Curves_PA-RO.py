@@ -10,11 +10,11 @@ num_samples = 100
 main_path = "./results/results_avg/"
 
 result_path = [
-    main_path + 'results_tr_Amazon_RO_classification_S_Amazon_RO_T_Amazon_RO/',
-    main_path + 'results_tr_Amazon_PA_to_Amazon_RO_domain_adaptation_DR_single_Amazon_RO/',
-    main_path + 'results_tr_Amazon_PA_to_Amazon_RO_domain_adaptation_DR_single_Amazon_PA/',
-    main_path + 'results_tr_Amazon_RO_to_Amazon_PA_domain_adaptation_DR_single_Amazon_RO/',
-    main_path + 'results_tr_Amazon_PA_classification_S_Amazon_PA_T_Amazon_RO/']
+    'results_tr_Amazon_RO_classification_S_Amazon_RO_T_Amazon_RO/',
+    'results_tr_Amazon_PA_to_Amazon_RO_domain_adaptation_DR_single_Amazon_RO/',
+    'results_tr_Amazon_PA_to_Amazon_RO_domain_adaptation_DR_single_Amazon_PA/',
+    'results_tr_Amazon_RO_to_Amazon_PA_domain_adaptation_DR_single_Amazon_RO/',
+    'results_tr_Amazon_PA_classification_S_Amazon_PA_T_Amazon_RO/']
 
 labels = [
     '1-Tr: RO,Ts: RO (Source only training)',

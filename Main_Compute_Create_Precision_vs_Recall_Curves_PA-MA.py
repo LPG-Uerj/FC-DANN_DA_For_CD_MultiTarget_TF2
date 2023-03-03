@@ -10,11 +10,11 @@ num_samples = 100
 main_path = "./results/results_avg/"
 
 result_path = [
-    main_path + 'results_tr_Cerrado_MA_classification_S_Cerrado_MA_T_Cerrado_MA/',
-    main_path + 'results_tr_Amazon_PA_to_Cerrado_MA_domain_adaptation_DR_single_Cerrado_MA/',
-    main_path + 'results_tr_Amazon_PA_to_Cerrado_MA_domain_adaptation_DR_single_Amazon_PA/',
-    main_path + 'results_tr_Cerrado_MA_to_Amazon_PA_domain_adaptation_DR_single_Cerrado_MA/',
-    main_path + 'results_tr_Amazon_PA_classification_S_Amazon_PA_T_Cerrado_MA/']
+    'results_tr_Cerrado_MA_classification_S_Cerrado_MA_T_Cerrado_MA/',
+    'results_tr_Amazon_PA_to_Cerrado_MA_domain_adaptation_DR_single_Cerrado_MA/',
+    'results_tr_Amazon_PA_to_Cerrado_MA_domain_adaptation_DR_single_Amazon_PA/',
+    'results_tr_Cerrado_MA_to_Amazon_PA_domain_adaptation_DR_single_Cerrado_MA/',
+    'results_tr_Amazon_PA_classification_S_Amazon_PA_T_Cerrado_MA/']
 
 labels = [
     '1-Tr: MA,Ts: MA (Source only training)',

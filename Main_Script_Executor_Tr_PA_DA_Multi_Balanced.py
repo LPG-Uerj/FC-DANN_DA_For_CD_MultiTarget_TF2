@@ -51,7 +51,7 @@ checkpoint_dir = "checkpoint_tr_"+source_to_target+"_"
 results_dir = "results_tr_"+source_to_target+"_"
 runs = "5"
 domain_regressor_type = "FC"
-warmup = "5"
+warmup = "2"
 
 DR_LOCALIZATION = ['55']
 METHODS  = [SharedParameters.METHOD]
@@ -84,7 +84,7 @@ for dr_localization in DR_LOCALIZATION:
                                 "--overlap_s 0.9 "
                                 "--overlap_t 0.9 "
                                 "--compute_ndvi False "
-                                "--balanced_tr True "
+                                "--balanced_tr False "
                                 "--buffer True "                                
                                 "--porcent_of_last_reference_in_actual_reference 100 "
                                 "--porcent_of_positive_pixels_in_actual_reference_s 2 "

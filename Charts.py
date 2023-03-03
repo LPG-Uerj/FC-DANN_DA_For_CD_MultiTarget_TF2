@@ -94,8 +94,8 @@ def get_metrics(args):
     
     return ACCURACY_m,FSCORE_m,RECALL_m,PRECISION_m
 
-def create_chart(args, experiments, target_list, result_list,checkpoint_list, path_to_export_chart, title):
-    if not (len(target_list) == len(result_list) and len(target_list) == len(checkpoint_list) and len(target_list) == len(experiments)):
+def create_chart(args, experiments, target, result_list,checkpoint_list, path_to_export_chart, title):
+    if not (len(result_list) == len(checkpoint_list) and len(checkpoint_list) == len(experiments)):
         raise Exception("Lists are not the same length. Please verify.")
     
     if len(result_list) != len(set(result_list)):        
@@ -119,7 +119,7 @@ def create_chart(args, experiments, target_list, result_list,checkpoint_list, pa
         os.makedirs(temp_metrics)
         
     for i in range(0,_length):
-        args.target_dataset = target_list[i]
+        args.target_dataset = target
         args.checkpoint_dir = checkpoint_list[i]
         args.results_dir = result_list[i]
         try:
@@ -207,7 +207,7 @@ def Area_under_the_curve(X, Y):
 
     return area
 
-def create_map_chart(result_path,labels,main_path,title,num_samples):
+def create_map_chart(result_path,labels,main_path,path_to_export_chart,title,num_samples):
     if len(result_path) != len(set(result_path)):        
         raise Exception("Duplicates found in the result list")
 
@@ -220,7 +220,9 @@ def create_map_chart(result_path,labels,main_path,title,num_samples):
     Correct = True
     for rf in range(len(results_folders)):
 
-        if not os.path.exists(results_folders[rf]):
+        result_folder = os.path.join(main_path,results_folders[rf])
+
+        if not os.path.exists(result_folder):
             continue
 
         recall = np.zeros((1 , num_samples))
@@ -233,15 +235,15 @@ def create_map_chart(result_path,labels,main_path,title,num_samples):
 
         AP_i = []
         AP_i_ = 0
-        folder_i = os.listdir(results_folders[rf])
+        folder_i = os.listdir(result_folder)
 
         for i in range(len(folder_i)):
             result_folder_name = folder_i[i]
             if result_folder_name != 'Results.txt':
                 #print(folder_i[i])
-                recall_path = results_folders[rf] + folder_i[i] + '/Recall.npy'
-                precision_path = results_folders[rf] + folder_i[i] + '/Precission.npy'
-                fscore_path = results_folders[rf] + folder_i[i] + '/Fscore.npy'
+                recall_path = result_folder + folder_i[i] + '/Recall.npy'
+                precision_path = result_folder + folder_i[i] + '/Precission.npy'
+                fscore_path = result_folder + folder_i[i] + '/Fscore.npy'
 
                 recall__ = np.load(recall_path)
                 precision__ = np.load(precision_path)
@@ -295,5 +297,5 @@ def create_map_chart(result_path,labels,main_path,title,num_samples):
     plt.title(title)
     plt.ylabel('Precision')
     plt.xlabel('Recall')
-    plt.savefig(main_path + 'Recall_vs_Precision_5_runs_' + title + '_DeepLab_Xception.png')
+    plt.savefig(path_to_export_chart + 'Recall_vs_Precision_5_runs_' + title + '_DeepLab_Xception.png')
     init += 1
