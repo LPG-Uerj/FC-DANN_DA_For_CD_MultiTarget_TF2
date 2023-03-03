@@ -205,6 +205,7 @@ class Models():
 
         best_val_fs = 0
         best_val_dr = 0
+        best_val_dr_acc = 1
         best_mod_fs = 0
         best_mod_dr = 0
         #best_f1score = 0
@@ -735,10 +736,11 @@ class Models():
                                     print(" [!] Load failed... Details: {0}".format(e))
                         elif self.l != 0:
                             FLAG = False
-                            if  best_val_dr < loss_dr_vl[0 , 0]:
+                            if  best_val_dr_acc > acc_discriminator_val:
                                 if best_val_fs < f1_score_vl:
                                     best_val_dr = loss_dr_vl[0 , 0]
                                     best_val_fs = f1_score_vl
+                                    best_val_dr_acc = acc_discriminator_val
                                     best_mod_fs = f1_score_vl
                                     best_mod_dr = loss_dr_vl[0 , 0]
                                     best_model_epoch = e
@@ -748,6 +750,7 @@ class Models():
                                     FLAG = True
                                 elif np.abs(best_val_fs - f1_score_vl) < 3:
                                     best_val_dr = loss_dr_vl[0 , 0]
+                                    best_val_dr_acc = acc_discriminator_val
                                     best_mod_fs = f1_score_vl
                                     best_mod_dr = loss_dr_vl[0 , 0]
                                     best_model_epoch = e
@@ -756,7 +759,7 @@ class Models():
                                     self.save_weights(self.args.save_checkpoint_path)
                                     FLAG = True
                             elif best_val_fs < f1_score_vl:
-                                if  np.abs(best_val_dr - loss_dr_vl[0 , 0]) < 0.2:
+                                if  np.abs(best_val_dr_acc - acc_discriminator_val) < 0.05:
                                     best_val_fs = f1_score_vl
                                     best_mod_fs = f1_score_vl
                                     best_mod_dr = loss_dr_vl[0 , 0]
