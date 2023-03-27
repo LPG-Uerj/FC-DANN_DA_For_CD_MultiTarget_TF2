@@ -17,29 +17,23 @@ result_path = []
 
 main_path = "./results/results_avg/"
 
-lower_bound_path = 'results_tr_Amazon_RO_classification_S_Amazon_RO_T_Amazon_PA/'
-lower_bound_checkpoint = 'checkpoint_tr_Amazon_RO_classification_Amazon_RO/'
+upper_bound_source_only_path = 'results_tr_Amazon_RO_classification_S_Amazon_RO_T_Amazon_RO/'
+upper_bound_source_only_checkpoint = 'checkpoint_tr_Amazon_RO_classification_Amazon_RO/'
 
-upper_bound_source_only_path = 'results_tr_Amazon_PA_classification_S_Amazon_PA_T_Amazon_PA/'
-upper_bound_source_only_checkpoint = 'checkpoint_tr_Amazon_PA_classification_Amazon_PA/'
-
-upper_bound_da_path = 'results_tr_Amazon_RO_to_Amazon_PA_Cerrado_MA_domain_adaptation_DRCL_multi_balanced_Amazon_PA/'
+upper_bound_da_path = 'results_tr_Amazon_RO_to_Amazon_PA_Cerrado_MA_domain_adaptation_DRCL_multi_balanced_Amazon_RO/'
 upper_bound_da_checkpoint = 'checkpoint_tr_Amazon_RO_to_Amazon_PA_Cerrado_MA_domain_adaptation_DRCL_multi_balanced_Amazon_PA_Cerrado_MA/'
 
-single_target_path = 'results_tr_Amazon_RO_to_Amazon_PA_domain_adaptation_DR_single_Amazon_PA/'
-single_target_checkpoint = 'checkpoint_tr_Amazon_RO_to_Amazon_PA_domain_adaptation_DR_single_Amazon_PA/'
-
 result_path = [    
-    'results_tr_Amazon_RO_to_Amazon_PA_Cerrado_MA_domain_adaptation_DR_multi_Amazon_PA/',
-    #'results_tr_Amazon_RO_to_Amazon_PA_Cerrado_MA_domain_adaptation_DR_multi_balanced_Amazon_PA/',        
-    'results_tr_Amazon_RO_to_Amazon_PA_Cerrado_MA_domain_adaptation_DR_multi_balanced_domain_labels_False_Amazon_PA/',    
-    'results_tr_Amazon_RO_to_Amazon_PA_Cerrado_MA_domain_adaptation_DR_CONV_multi_balanced_domain_labels_True_Amazon_PA/',
-    'results_tr_Amazon_RO_to_Amazon_PA_Cerrado_MA_domain_adaptation_DR_FC_multi_balanced_domain_labels_True_Amazon_PA/',
-    'results_tr_Amazon_RO_to_Amazon_PA_Cerrado_MA_domain_adaptation_DR_FC_multi_balanced_domain_labels_True_wrmp5_Amazon_PA/',
-    'results_tr_Amazon_RO_to_Amazon_PA_Cerrado_MA_domain_adaptation_DR_FC_multi_balanced_domain_labels_True_wrmp1_64_Amazon_PA/'
+    'results_tr_Amazon_RO_to_Amazon_PA_Cerrado_MA_domain_adaptation_DR_multi_Amazon_RO/',
+    #'results_tr_Amazon_RO_to_Amazon_PA_Cerrado_MA_domain_adaptation_DR_multi_balanced_Amazon_RO/',        
+    'results_tr_Amazon_RO_to_Amazon_PA_Cerrado_MA_domain_adaptation_DR_multi_balanced_domain_labels_False_Amazon_RO/',    
+    'results_tr_Amazon_RO_to_Amazon_PA_Cerrado_MA_domain_adaptation_DR_CONV_multi_balanced_domain_labels_True_Amazon_RO/',
+    'results_tr_Amazon_RO_to_Amazon_PA_Cerrado_MA_domain_adaptation_DR_FC_multi_balanced_domain_labels_True_Amazon_RO/',
+    'results_tr_Amazon_RO_to_Amazon_PA_Cerrado_MA_domain_adaptation_DR_FC_multi_balanced_domain_labels_True_wrmp5_Amazon_RO/',
+    'results_tr_Amazon_PA_to_Amazon_RO_Cerrado_MA_domain_adaptation_DR_FC_multi_balanced_domain_labels_True_wrmp1_64_Amazon_RO/'
 ]
 
-titles = 'X=RO, Y=PA(Y1=PA,Y2=MA)\n'
+titles = 'X=RO, Y=RO(Y1=PA,Y2=MA)\n'
 
 checkpoint_list = [    
     'checkpoint_tr_Amazon_RO_to_Amazon_PA_Cerrado_MA_domain_adaptation_DR_multi_Amazon_PA_Cerrado_MA/',
@@ -49,21 +43,21 @@ checkpoint_list = [
     'checkpoint_tr_Amazon_RO_to_Amazon_PA_Cerrado_MA_domain_adaptation_DR_FC_multi_balanced_domain_labels_True_Amazon_PA_Cerrado_MA/',
     'checkpoint_tr_Amazon_RO_to_Amazon_PA_Cerrado_MA_domain_adaptation_DR_FC_multi_balanced_domain_labels_True_wrmp5_Amazon_PA_Cerrado_MA/',
     'checkpoint_tr_Amazon_RO_to_Amazon_PA_Cerrado_MA_domain_adaptation_DR_FC_multi_balanced_domain_labels_True_wrmp1_64_Amazon_PA_Cerrado_MA/'
-] 
+]
 
 args.checkpoint_results_main_path = "./results/"
 path_to_export_chart = "./results/results/"
 
-map_file = 'Multi_Target_Ts_RO_Eval_PA_'
-metrics_file = 'Metrics_Multi_Target_Ts_RO_Eval_PA_'
+map_file = 'Multi_Target_Ts_RO_Eval_RO_'
+metrics_file = 'Metrics_Multi_Target_Ts_RO_Eval_RO_'
 
-target = AMAZON_PA.DATASET
+target = AMAZON_RO.DATASET
 
 cont = 1
 for i in range(0, len(result_path)):
-    result_path_ = [upper_bound_source_only_path,upper_bound_da_path,lower_bound_path,single_target_path,result_path[i]]
-    labels_ = [SharedParameters.UPPER_BOUND_SOURCE_ONLY_LABEL,SharedParameters.UPPER_BOUND_DA_LABEL,SharedParameters.LOWER_BOUND_LABEL,SharedParameters.SINGLE_TARGET_LABEL,SharedParameters.MULTI_TARGET_LABEL]
-    checkpoint_list_ = [upper_bound_source_only_checkpoint,upper_bound_da_checkpoint,lower_bound_checkpoint,single_target_checkpoint,checkpoint_list[i]]
+    result_path_ = [upper_bound_source_only_path,upper_bound_da_path,result_path[i]]
+    labels_ = [SharedParameters.UPPER_BOUND_SOURCE_ONLY_LABEL,SharedParameters.UPPER_BOUND_DA_LABEL,SharedParameters.EXPERIMENTS_LABELS_LB[i]]
+    checkpoint_list_ = [upper_bound_source_only_checkpoint,upper_bound_da_checkpoint,checkpoint_list[i]]
 
     title = titles + "DA multi-target " + SharedParameters.EXPERIMENTS_LABELS[i]
     if args.mapchart:   

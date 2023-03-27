@@ -1,6 +1,7 @@
 import os
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib import rcParams
 
 from Tools import *
 from Models_FC114 import Metrics_For_Test
@@ -9,15 +10,20 @@ from Amazonia_Legal_PA import AMAZON_PA
 from Cerrado_Biome_MA import CERRADO_MA
 import SharedParameters
 
-colors = []
-colors.append('#1767BD')
-colors.append('#FA7703')
-colors.append('#1AB023')
-colors.append('#7D8080')
-colors.append('#E7E424')
-colors.append('#7125B0')
-colors.append('#2FE5EB')
-colors.append('#FF0000')
+#colors = []
+#colors.append('#1767BD')
+#colors.append('#FA7703')
+#colors.append('#1AB023')
+#colors.append('#7D8080')
+#colors.append('#E7E424')
+#colors.append('#7125B0')
+#colors.append('#2FE5EB')
+#colors.append('#FF0000')
+
+colors = ["#e60049", "#0bb4ff", "#50e991", "#e6d800", "#9b19f5", "#ffa300", "#dc0ab4", "#b3d4ff", "#00bfa0"]
+
+
+
 
 def get_metrics(args):
     Thresholds = np.array([0.5])
@@ -94,8 +100,8 @@ def get_metrics(args):
     
     return ACCURACY_m,FSCORE_m,RECALL_m,PRECISION_m
 
-def create_chart(args, experiments, target, result_list,checkpoint_list, path_to_export_chart, title):
-    if not (len(result_list) == len(checkpoint_list) and len(checkpoint_list) == len(experiments)):
+def create_chart(args, experiments, target, result_list,checkpoint_list, mAP_list, path_to_export_chart, file_title, title):
+    if not (len(result_list) == len(checkpoint_list) and len(checkpoint_list) == len(experiments) and len(experiments)==len(mAP_list)):
         raise Exception("Lists are not the same length. Please verify.")
     
     if len(result_list) != len(set(result_list)):        
@@ -139,39 +145,45 @@ def create_chart(args, experiments, target, result_list,checkpoint_list, path_to
 
     plt.clf()
 
-    plt.figure(figsize=(14,6))
+    plt.figure(figsize=(14,7))
         
+    bars_mAP = mAP_list
     bars_Accuracy = accuracy_list
     bars_F1 = fscore_list
     bars_Recall = recall_list
     bars_Precision = precision_list
 
-    width = 0.22    
+    width = 0.17
        
     align = 'edge'    
     
-    bar1 = plt.bar(x - (width*2), bars_Accuracy, width, label='Accuracy', color=colors[0], align=align)
-    bar2 = plt.bar(x - (width*1), bars_F1, width, label='F1-Score', color=colors[1],align=align)
-    bar3 = plt.bar(x + (width*0), bars_Recall,width, label='Recall', color=colors[2],align=align)
-    bar4 = plt.bar(x + (width*1), bars_Precision,width, label='Precision', color=colors[3],align=align)
+    bar0 = plt.bar(x - (width*2), bars_mAP, width, label='mAP', color=colors[0], align=align)
+    bar1 = plt.bar(x - (width*1), bars_Accuracy, width, label='Accuracy', color=colors[1], align=align)
+    bar2 = plt.bar(x + (width*0), bars_F1, width, label='F1-Score', color=colors[2],align=align)
+    bar3 = plt.bar(x + (width*1), bars_Recall,width, label='Recall', color=colors[3],align=align)
+    bar4 = plt.bar(x + (width*2), bars_Precision,width, label='Precision', color=colors[4],align=align)
 
     # Add some text for labels, title and custom x-axis tick labels, etc.
     plt.ylabel('Scores %')
     plt.xlabel('Experiments') 
-    plt.title(title)   
+    plt.title(title,fontsize = 14)  
+    rcParams['axes.titlepad'] = 20 
     plt.xticks(x, _experiments)
 
+    plt.bar_label(bar0,fmt='%.1f%%', padding=3)
     plt.bar_label(bar1,fmt='%.1f%%', padding=3)
     plt.bar_label(bar2,fmt='%.1f%%', padding=3)
     plt.bar_label(bar3,fmt='%.1f%%', padding=3)
     plt.bar_label(bar4,fmt='%.1f%%', padding=3)
 
-    plt.legend(bbox_to_anchor=(1.1, 1.1), loc='upper right')
-    #plt.grid(True)
-
+    plt.legend(prop={'size': 14})
+    plt.legend(bbox_to_anchor=(1.05, 1.05), loc='upper right')
+    
     plt.ylim(0,100)
 
-    full_chart_path = path_to_export_chart + title + '.png'
+    full_chart_path = path_to_export_chart + file_title + '.png'
+
+    plt.tight_layout()
 
     plt.savefig(full_chart_path)   
 
@@ -207,14 +219,19 @@ def Area_under_the_curve(X, Y):
 
     return area
 
-def create_map_chart(result_path,labels,main_path,path_to_export_chart,title,num_samples):
+def create_map_chart(result_path,labels,main_path,path_to_export_chart,file_title,title,num_samples,chartsize=(7,7), displayChart = True):
     if len(result_path) != len(set(result_path)):        
         raise Exception("Duplicates found in the result list")
 
     init = 0    
     results_folders = result_path
-    fig = plt.figure(figsize=(12,6))
-    ax = plt.subplot(111)
+    
+    if displayChart:
+        plt.figure(figsize=chartsize)
+        ax = plt.subplot(111)
+    
+    map_list = []
+
     Npoints = num_samples
     Interpolation = True
     Correct = True
@@ -287,15 +304,23 @@ def create_map_chart(result_path,labels,main_path,path_to_export_chart,title,num
 
                 mAP = Area_under_the_curve(recall__, precision__)
                 print(mAP)
-        ax.plot(recall_i[0,:], precision_i[0,:], color=colors[rf], label=labels[rf] + 'mAP:' + str(np.round(mAP,1)))
+        map_list.append(np.round(mAP,1))
+        if displayChart:
+            ax.plot(recall_i[0,:], precision_i[0,:], color=colors[rf], label=labels[rf] + ' - mAP:' + str(np.round(mAP,1)))
 
-    ax.legend()
+    if displayChart:
+        ax.legend(prop={'size': 14})
 
-    plt.ylim([0, 1])
-    plt.xlim([0, 1])
-    plt.grid(True)
-    plt.title(title)
-    plt.ylabel('Precision')
-    plt.xlabel('Recall')
-    plt.savefig(path_to_export_chart + 'Recall_vs_Precision_5_runs_' + title + '_DeepLab_Xception.png')
-    init += 1
+        plt.ylim([0, 1])
+        plt.xlim([0, 1])
+        plt.grid(True)
+        plt.title(title,fontsize = 14)
+        plt.margins(0.2)
+        plt.tight_layout(pad=2.0)
+        ##rcParams['axes.titlepad'] = 10 
+        plt.ylabel('Precision')
+        plt.xlabel('Recall')
+        plt.savefig(path_to_export_chart + 'Recall_vs_Precision_5_runs_' + file_title + '_DeepLab_Xception.png', format="png")
+        init += 1
+    
+    return map_list
