@@ -1,11 +1,18 @@
 import tensorflow as tf
 
 def Domain_Regressor_FullyConnected(input_shape, units: int, num_targets: int):  
-    print("Domain_Regressor_FullyConnected - input_shape: " + str(input_shape))      
+    print("Domain_Regressor_FullyConnected - input_shape: " + str(input_shape) + " - output neurons: " + str(num_targets))
     inputs = tf.keras.Input(shape=input_shape)
-    x = tf.keras.layers.Flatten()(inputs)
-    x = tf.keras.layers.Dense(units=units, activation='relu')(x)
-    x = tf.keras.layers.Dense(units=units, activation='relu')(x)
+    x = tf.keras.layers.Flatten()(inputs)    
+
+    x = tf.keras.layers.Dense(units=units, activation=None)(x)
+    x = tf.keras.layers.BatchNormalization()(x)
+    x = tf.keras.layers.Activation(tf.nn.relu)(x)
+
+    x = tf.keras.layers.Dense(units=units, activation=None)(x)
+    x = tf.keras.layers.BatchNormalization()(x)
+    x = tf.keras.layers.Activation(tf.nn.relu)(x)
+
     x = tf.keras.layers.Dense(units=num_targets, activation=None)(x)    
     output = tf.keras.layers.Softmax()(x)
     model = tf.keras.Model(inputs = inputs, outputs = [output, x], name = 'Domain_Regressor_FullyConnected')

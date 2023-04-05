@@ -165,6 +165,8 @@ def main():
             args.save_checkpoint_path = os.path.join(args.checkpoint_dir, args.classifier_type + '_' + dt_string)
         elif args.training_type == TRAINING_TYPE_DOMAIN_ADAPTATION:
             args.save_checkpoint_path = os.path.join(args.checkpoint_dir, 'Tr_M_' + dt_string)
+
+        args.num_run = str(i)
         
         if not os.path.exists(args.save_checkpoint_path):
             os.makedirs(args.save_checkpoint_path)

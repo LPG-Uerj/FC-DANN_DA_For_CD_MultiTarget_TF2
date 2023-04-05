@@ -28,7 +28,7 @@ result_path= [
     'results_tr_Amazon_PA_to_Amazon_RO_Cerrado_MA_domain_adaptation_DR_CONV_multi_balanced_domain_labels_True_Amazon_PA/',
     'results_tr_Amazon_PA_to_Amazon_RO_Cerrado_MA_domain_adaptation_DR_FC_multi_balanced_domain_labels_True_Amazon_PA/',
     'results_tr_Amazon_PA_to_Amazon_RO_Cerrado_MA_domain_adaptation_DR_FC_multi_balanced_domain_labels_True_wrmp5_Amazon_PA/',
-    'results_tr_Amazon_PA_to_Amazon_RO_Cerrado_MA_domain_adaptation_DR_FC_multi_balanced_domain_labels_True_wrmp1_64_Amazon_PA/'
+    #'results_tr_Amazon_PA_to_Amazon_RO_Cerrado_MA_domain_adaptation_DR_FC_multi_balanced_domain_labels_True_wrmp1_64_Amazon_PA/'
 ]
 
 titles = 'X=PA, Y=PA(Y1=RO,Y2=MA)\n'
@@ -40,7 +40,7 @@ checkpoint_list = [
     'checkpoint_tr_Amazon_PA_to_Amazon_RO_Cerrado_MA_domain_adaptation_DR_CONV_multi_balanced_domain_labels_True_Amazon_RO_Cerrado_MA/',
     'checkpoint_tr_Amazon_PA_to_Amazon_RO_Cerrado_MA_domain_adaptation_DR_FC_multi_balanced_domain_labels_True_Amazon_RO_Cerrado_MA/',
     'checkpoint_tr_Amazon_PA_to_Amazon_RO_Cerrado_MA_domain_adaptation_DR_FC_multi_balanced_domain_labels_True_wrmp5_Amazon_RO_Cerrado_MA/',
-    'checkpoint_tr_Amazon_PA_to_Amazon_RO_Cerrado_MA_domain_adaptation_DR_FC_multi_balanced_domain_labels_True_wrmp1_64_Amazon_RO_Cerrado_MA/'
+    #'checkpoint_tr_Amazon_PA_to_Amazon_RO_Cerrado_MA_domain_adaptation_DR_FC_multi_balanced_domain_labels_True_wrmp1_64_Amazon_RO_Cerrado_MA/'
 ]
 
 args.checkpoint_results_main_path = "./results/"
@@ -53,9 +53,9 @@ target = AMAZON_PA.DATASET
 
 cont = 1
 for i in range(0, len(result_path)):
-    result_path_ = [upper_bound_source_only_path,upper_bound_da_path,result_path[i]]
-    labels_ = [SharedParameters.UPPER_BOUND_SOURCE_ONLY_LABEL,SharedParameters.UPPER_BOUND_DA_LABEL,SharedParameters.EXPERIMENTS_LABELS_LB[i]]
-    checkpoint_list_ = [upper_bound_source_only_checkpoint,upper_bound_da_checkpoint,checkpoint_list[i]]
+    result_path_ = [upper_bound_source_only_path,result_path[i]]
+    labels_ = [SharedParameters.UPPER_BOUND_SOURCE_ONLY_LABEL,SharedParameters.EXPERIMENTS_LABELS_LB[i]]
+    checkpoint_list_ = [upper_bound_source_only_checkpoint,checkpoint_list[i]]
 
     title = titles + "DA multi-target " + SharedParameters.EXPERIMENTS_LABELS[i]
     if args.mapchart:   

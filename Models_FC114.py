@@ -41,7 +41,8 @@ class Models():
         self.checkpoint_name = self.args.classifier_type        
 
         self.classifier_loss = WeightedCrossEntropyC()
-        self.domainregressor_loss = CategoricalCrossentropy(from_logits=True) 
+        self.domainregressor_loss = CategoricalCrossentropy(from_logits=True)        
+
         self.acc_function_discriminator = CategoricalAccuracy()   
         self.acc_function_discriminator_val = CategoricalAccuracy()               
 
@@ -156,7 +157,7 @@ class Models():
             
             loss_segmentation = self.classifier_loss(y_true_segmentation, y_pred_segmentation)            
             loss_discriminator = self.domainregressor_loss(y_true=y_true_discriminator, y_pred=logits_discriminator)            
-            
+
             total_loss = loss_segmentation + loss_discriminator
     
         self.training_optimizer.minimize(total_loss, self.model.trainable_weights,tape=tape)
@@ -177,7 +178,7 @@ class Models():
         y_pred_segmentation,_,logits_discriminator = self.model(inputs,training=False)
         
         loss_segmentation = self.classifier_loss(y_true_segmentation, y_pred_segmentation)
-        loss_discriminator = self.domainregressor_loss(y_true=y_true_discriminator, y_pred=logits_discriminator)             
+        loss_discriminator = self.domainregressor_loss(y_true=y_true_discriminator, y_pred=logits_discriminator)
 
         self.acc_function_discriminator_val.update_state(y_true_discriminator, logits_discriminator)
 
@@ -736,7 +737,7 @@ class Models():
                                     print(" [!] Load failed... Details: {0}".format(e))
                         elif self.l != 0:
                             FLAG = False
-                            if  best_val_dr_acc > acc_discriminator_val:
+                            if  best_val_dr < loss_dr_vl[0 , 0] and loss_dr_vl[0 , 0] < 1:                            
                                 if best_val_fs < f1_score_vl:
                                     best_val_dr = loss_dr_vl[0 , 0]
                                     best_val_fs = f1_score_vl
@@ -813,7 +814,6 @@ class Models():
         
         if self.args.training_type == TRAINING_TYPE_CLASSIFICATION:
             self.plot_metrics_segmentation()
-            self.plot_f1score_segmentation()
             with open(os.path.join(self.args.save_checkpoint_path,"Log.txt"),"a") as f:
                 print('Training ended')
                 f.write("Training ended\n")
@@ -822,8 +822,6 @@ class Models():
 
         elif self.args.training_type == TRAINING_TYPE_DOMAIN_ADAPTATION:
             self.plot_metrics_segmentation()
-            self.plot_f1score_segmentation()            
-
             with open(os.path.join(self.args.save_checkpoint_path,"Log.txt"),"a") as f:
                 if best_model_epoch != -1:
                     print("Training ended")
@@ -915,15 +913,13 @@ class Models():
         plt.plot(self.segmentation_history["loss"], label="decoder training loss")        
         plt.plot(self.segmentation_history["val_loss"], label="decoder validation loss")  
         plt.plot(self.discriminator_history["loss"], label="discriminator training loss")    
-        plt.plot(self.discriminator_history["val_loss"], label="discriminator validation loss")   
-        plt.plot(self.discriminator_history["accuracy"], label="discriminator training accuracy")    
-        plt.plot(self.discriminator_history["val_accuracy"], label="discriminator validation accuracy")        
-        plt.title("Loss/Accuracy evolution")
+        plt.plot(self.discriminator_history["val_loss"], label="discriminator validation loss")           
+        plt.title("Loss evolution")
         plt.xlabel("Epoch #")
         plt.ylabel("Loss")
         plt.ylim([0, 1])
         plt.legend()
-        plt.savefig(os.path.join(self.args.save_checkpoint_path,"segmentation_metrics.png"))
+        plt.savefig(os.path.join(self.args.save_checkpoint_path,"..","segmentation_metrics_run_"+self.args.num_run+".png"))
 
     def plot_f1score_segmentation(self):
         plt.figure(figsize=(10, 10))        

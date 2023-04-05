@@ -96,8 +96,13 @@ def main():
             ds.Tiles_Configuration(args, 0)
             ds.Coordinates_Creator(args, 0)
 
-        checkpoint_files = os.listdir(args.checkpoint_dir)
+        print("[*] Iterating over checkpoint_files...")        
+        
+        checkpoint_files = [item for item in os.listdir(args.checkpoint_dir) if os.path.isdir(os.path.join(args.checkpoint_dir,item))]
+
         for i in range(len(checkpoint_files)):
+
+            print(checkpoint_files[i])
 
             model_folder = checkpoint_files[i]            
 

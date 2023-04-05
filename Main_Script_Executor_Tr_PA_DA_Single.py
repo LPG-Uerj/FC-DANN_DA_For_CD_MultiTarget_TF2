@@ -164,7 +164,7 @@ for dr_localization in DR_LOCALIZATION:
                                 "--dataset " + target_ds + " "                                
                                 "--checkpoint_results_main_path " + Checkpoint_Results_MAIN_PATH + " ")
 
-
+'''
 #TARGET: MA
 target_dataset = CERRADO_MA.DATASET
 source_to_target = source_dataset + "_to_" + target_dataset
@@ -286,6 +286,7 @@ for dr_localization in DR_LOCALIZATION:
                                 "--dataset " + target_ds + " "                                
                                 "--checkpoint_results_main_path " + Checkpoint_Results_MAIN_PATH + " ")
 
+'''
 
 for i in range(len(Schedule)):
     if os.system(Schedule[i]) != 0:

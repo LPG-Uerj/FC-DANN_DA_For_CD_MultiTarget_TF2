@@ -185,7 +185,7 @@ def create_chart(args, experiments, target, result_list,checkpoint_list, mAP_lis
 
     plt.tight_layout()
 
-    plt.savefig(full_chart_path)   
+    plt.savefig(full_chart_path, format="png")
 
     print(f"Done! {full_chart_path} has been saved.")
 
