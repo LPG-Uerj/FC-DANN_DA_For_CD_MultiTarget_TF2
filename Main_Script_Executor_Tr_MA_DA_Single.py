@@ -48,7 +48,7 @@ source_to_target = source_dataset + "_to_" + target_dataset
 checkpoint_dir = "checkpoint_tr_"+source_to_target+"_"
 results_dir = "results_tr_"+source_to_target+"_"
 runs = "5"
-
+'''
 DR_LOCALIZATION = ['55']
 METHODS  = [SharedParameters.METHOD]
 DA_TYPES = ['DR']
@@ -161,7 +161,7 @@ for dr_localization in DR_LOCALIZATION:
                                 "--results_dir " + results_dir_param + " "
                                 "--dataset " + target_ds + " "                                
                                 "--checkpoint_results_main_path " + Checkpoint_Results_MAIN_PATH + " ")
-
+'''
 
 #TARGET: MA
 target_dataset = AMAZON_PA.DATASET

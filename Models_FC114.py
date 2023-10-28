@@ -132,7 +132,7 @@ class Models():
             y_pred = self.model(x_batch_train,training = True)            
             loss = self.classifier_loss(y_batch_train, y_pred)
               
-        self.training_optimizer.minimize(loss, self.model.trainable_weights,tape=tape)        
+        self.training_optimizer.minimize(loss, self.model.trainable_weights,tape=tape)
         return loss, y_pred
 
     @tf.function
@@ -144,38 +144,46 @@ class Models():
         return loss, y_pred
 
     @tf.function
-    def _training_step_domain_adaptation(self, inputs, outputs, class_weights, mask_c):
-
+    def _training_step_domain_adaptation(self, x_input, outputs, lambda_value, class_weights, mask_c):
         y_true_segmentation, y_true_discriminator = outputs
-        x_input, l = inputs
         
         self.classifier_loss.class_weights = class_weights
         self.classifier_loss.mask = mask_c        
         
         with tf.GradientTape(persistent=True) as tape:
-            y_pred_segmentation,_,logits_discriminator = self.model([x_input, l],training=True)
+            y_pred_segmentation,_,logits_discriminator = self.model(x_input,training=True)
             
             loss_segmentation = self.classifier_loss(y_true_segmentation, y_pred_segmentation)            
             loss_discriminator = self.domainregressor_loss(y_true=y_true_discriminator, y_pred=logits_discriminator)            
 
-            total_loss = loss_segmentation + loss_discriminator
+            total_loss = loss_segmentation - lambda_value * loss_discriminator
     
-        self.training_optimizer.minimize(total_loss, self.model.trainable_weights,tape=tape)
+        # update feature extractor
+        gradients_encoder = tape.gradient(total_loss, self.model.encoder_model.trainable_weights)
+        self.training_optimizer.apply_gradients(zip(gradients_encoder, self.model.encoder_model.trainable_weights))
         
+        # update label predictor
+        gradients_decoder = tape.gradient(loss_segmentation, self.model.decoder_model.trainable_weights)
+        self.training_optimizer.apply_gradients(zip(gradients_decoder, self.model.decoder_model.trainable_weights))
+
+        # update discriminator
+        gradients_discriminator = tape.gradient(loss_discriminator, self.model.domain_discriminator.trainable_weights)
+        self.discriminator_optimizer.apply_gradients(zip(gradients_discriminator, self.model.domain_discriminator.trainable_weights))
+
         self.acc_function_discriminator.update_state(y_true_discriminator, logits_discriminator)
 
         return loss_segmentation, y_pred_segmentation, loss_discriminator
 		
 		
     @tf.function
-    def _test_step_domain_adaptation(self, inputs, outputs, class_weights, mask_c):
-        x_input, _ = inputs
+    def _test_step_domain_adaptation(self, x_input, outputs, class_weights, mask_c):
+        
         y_true_segmentation, y_true_discriminator = outputs       
     
         self.classifier_loss.class_weights = class_weights
         self.classifier_loss.mask = mask_c
 
-        y_pred_segmentation,_,logits_discriminator = self.model(inputs,training=False)
+        y_pred_segmentation,_,logits_discriminator = self.model(x_input,training=False)
         
         loss_segmentation = self.classifier_loss(y_true_segmentation, y_pred_segmentation)
         loss_discriminator = self.domainregressor_loss(y_true=y_true_discriminator, y_pred=logits_discriminator)
@@ -273,11 +281,20 @@ class Models():
         if self.args.data_augmentation:
             corners_coordinates_tr_s = Data_Augmentation_Definition(corners_coordinates_tr_s)
             corners_coordinates_vl_s = Data_Augmentation_Definition(corners_coordinates_vl_s)
+
+            print('Sets dimensions after data augmentation')
+            print('Source dimensions: ')
+            print(np.shape(corners_coordinates_tr_s))
+            print(np.shape(corners_coordinates_vl_s))  
+
+            print('Target dimensions: ')
             if self.args.training_type == TRAINING_TYPE_DOMAIN_ADAPTATION:
                 for i in range(len(self.dataset_t)):
                     corners_coordinates_tr_t[i] = Data_Augmentation_Definition(corners_coordinates_tr_t[i])
                     corners_coordinates_vl_t[i] = Data_Augmentation_Definition(corners_coordinates_vl_t[i])
-                
+                    print(np.shape(corners_coordinates_tr_t[i]))
+                    print(np.shape(corners_coordinates_vl_t[i]))  
+
         if self.args.training_type == TRAINING_TYPE_DOMAIN_ADAPTATION and 'DR' in self.args.da_type:
             #Generating target labels before data shuffling and balancing            
             # Target Domain labels configuration
@@ -337,12 +354,11 @@ class Models():
             min_tr_size = size_tr_list[index_min_size_tr]
             min_vl_size = size_vl_list[index_min_size_vl]  
 
-            print('size_tr_list:')
-            print(size_tr_list)
+            print('min size_tr_list:')
+            print(min_tr_size)
 
-            print('size_vl_list:')
-            print(size_vl_list)
-
+            print('min size_vl_list:')
+            print(min_vl_size)
 
             #Combines different targets into one dataset
             #corners_coordinates_tr_t = np.concatenate(corners_coordinates_tr_t, axis=0)
@@ -452,7 +468,8 @@ class Models():
         num_batches_tr = corners_coordinates_tr.shape[0]//self.args.batch_size
         num_batches_vl = corners_coordinates_vl.shape[0]//self.args.batch_size        
 
-        self.training_optimizer = Adam(learning_rate=MyDecay(num_batches_tr, self.args.epochs, self.args.lr), beta_1=self.args.beta1)
+        self.training_optimizer = Adam(beta_1=self.args.beta1)
+        self.discriminator_optimizer = Adam(beta_1=self.args.beta1)
 
         #Training starts now:
         e = 0
@@ -514,13 +531,15 @@ class Models():
                     warmup = self.args.warmup
                     print("Number of warm-up epochs: %d"%(warmup))
                     if e >= warmup:
-                        self.l = 2. / (1. + np.exp(-2.5 * self.p)) - 1                        
-                        #self.l = 2. / (1. + np.exp(-10 * self.p)) - 1
+                        self.l = np.float32(2. / (1. + np.exp(-2.5 * self.p)) - 1)
                     else:
-                        self.l = 0.
+                        self.l = np.float32(0.)
                     print("lambda_p: %.6f" %(self.l))
 
                 lr = self.learning_rate_decay(self.args.lr)
+
+                self.training_optimizer.lr = lr
+                self.discriminator_optimizer.lr = lr
                 
                 print("Learning rate decay: %.6f"%(lr))                
 
@@ -569,7 +588,7 @@ class Models():
 
                             y_train_d_hot_batch = tf.keras.utils.to_categorical(y_train_d_batch, self.num_targets) 
 
-                            c_batch_loss, batch_probs, d_batch_loss = self._training_step_domain_adaptation([data_batch,self.l], [y_train_c_hot_batch, y_train_d_hot_batch], Weights, classification_mask_batch)
+                            c_batch_loss, batch_probs, d_batch_loss = self._training_step_domain_adaptation(data_batch, [y_train_c_hot_batch, y_train_d_hot_batch], self.l, Weights, classification_mask_batch)
 
                             loss_dr_tr[0 , 0] += d_batch_loss
 
@@ -668,7 +687,7 @@ class Models():
                             
                             y_valid_d_hot_batch = tf.keras.utils.to_categorical(y_valid_d_batch, self.num_targets)
 
-                            c_batch_loss, batch_probs, d_batch_loss = self._test_step_domain_adaptation([data_batch,self.l], [y_valid_c_hot_batch, y_valid_d_hot_batch], Weights, classification_mask_batch)
+                            c_batch_loss, batch_probs, d_batch_loss = self._test_step_domain_adaptation(data_batch, [y_valid_c_hot_batch, y_valid_d_hot_batch], Weights, classification_mask_batch)
 
                             loss_dr_vl[0 , 0] += d_batch_loss
 
@@ -865,8 +884,6 @@ class Models():
                 #self.x_test_batch = Patch_Extraction(x_test, self.central_pixels_coor_ts_batch, np.zeros((self.args.batch_size , 1)), self.args.patches_dimension, True, 'reflect')
                 self.x_test_batch = Patch_Extraction(x_test, self.corners_coordinates_ts_batch, np.zeros((self.args.batch_size , 1)), self.args.patches_dimension)
                 
-                #probs = self.sess.run(self.prediction_c,feed_dict={self.data: self.x_test_batch})
-
                 if self.args.training_type == TRAINING_TYPE_DOMAIN_ADAPTATION:
                     probs = self.model.main_network.predict(self.x_test_batch)
                 else:
@@ -880,8 +897,6 @@ class Models():
             if (num_batches_ts * self.args.batch_size) < ds.corners_coordinates_ts.shape[0]:
                 self.corners_coordinates_ts_batch = ds.corners_coordinates_ts[num_batches_ts * self.args.batch_size : , :]
                 self.x_test_batch = Patch_Extraction(x_test, self.corners_coordinates_ts_batch, np.zeros((self.corners_coordinates_ts_batch.shape[0] , 1)), self.args.patches_dimension)
-
-                #probs = self.sess.run(self.prediction_c,feed_dict={self.data: self.x_test_batch})
 
                 if self.args.training_type == TRAINING_TYPE_DOMAIN_ADAPTATION:
                     probs = self.model.main_network.predict(self.x_test_batch)

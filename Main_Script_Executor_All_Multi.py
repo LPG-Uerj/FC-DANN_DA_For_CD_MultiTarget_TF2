@@ -21,11 +21,17 @@ REFERENCES = [
     'Main_Script_Executor_Tr_PA_DA_Multi_Balanced.py 2>&1 | tee Main_Script_Executor_Tr_PA_DA_Multi_Balanced.txt',
     'Main_Script_Executor_Tr_RO_DA_Multi_Balanced.py 2>&1 | tee Main_Script_Executor_Tr_RO_DA_Multi_Balanced.txt'
 ]
+  
+REFERENCES = [
+    'Main_Script_Executor_Tr_MA_DA_Single.py --train False 2>&1 | tee Main_Script_Executor_Tr_MA_DA_Single_test.txt',
+    'Main_Script_Executor_Tr_PA_DA_Single.py --train False 2>&1 | tee Main_Script_Executor_Tr_PA_DA_Single_test.txt',
+    'Main_Script_Executor_Tr_RO_DA_Single.py --train False 2>&1 | tee Main_Script_Executor_Tr_RO_DA_Single_test.txt'
+]
 
 REFERENCES = [
-    #'Main_Script_Executor_Tr_MA_DA_Single.py 2>&1 | tee Main_Script_Executor_Tr_MA_DA_Single.txt',
+    'Main_Script_Executor_Tr_MA_DA_Single.py 2>&1 | tee Main_Script_Executor_Tr_MA_DA_Single.txt',
     'Main_Script_Executor_Tr_PA_DA_Single.py 2>&1 | tee Main_Script_Executor_Tr_PA_DA_Single.txt',
-    #'Main_Script_Executor_Tr_RO_DA_Single.py 2>&1 | tee Main_Script_Executor_Tr_RO_DA_Single.txt'
+    'Main_Script_Executor_Tr_RO_DA_Single.py 2>&1 | tee Main_Script_Executor_Tr_RO_DA_Single.txt'
 ]
 
 for reference in REFERENCES:

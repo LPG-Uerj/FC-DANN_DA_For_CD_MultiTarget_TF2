@@ -55,7 +55,7 @@ METHODS  = [SharedParameters.METHOD]
 DA_TYPES = ['DR']
 #DA_TYPES = ['DRCL']
 TARGET_DATASETS = [AMAZON_PA.DATASET, source_dataset]
-
+'''
 for dr_localization in DR_LOCALIZATION:
     for method in METHODS:
         for da in DA_TYPES:
@@ -163,6 +163,7 @@ for dr_localization in DR_LOCALIZATION:
                                 "--dataset " + target_ds + " "                                
                                 "--checkpoint_results_main_path " + Checkpoint_Results_MAIN_PATH + " ")
 
+'''
 
 #TARGET: MA
 target_dataset = CERRADO_MA.DATASET

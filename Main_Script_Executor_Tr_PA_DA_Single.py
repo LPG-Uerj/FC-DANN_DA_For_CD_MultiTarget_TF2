@@ -53,9 +53,14 @@ runs = "5"
 
 DR_LOCALIZATION = ['55']
 METHODS  = [SharedParameters.METHOD]
+
+
+
 DA_TYPES = ['DR']
 #DA_TYPES = ['DRCL']
 TARGET_DATASETS = [target_dataset,source_dataset]
+
+'''
 
 for dr_localization in DR_LOCALIZATION:
     for method in METHODS:
@@ -163,8 +168,8 @@ for dr_localization in DR_LOCALIZATION:
                                 "--results_dir " + results_dir_param + " "
                                 "--dataset " + target_ds + " "                                
                                 "--checkpoint_results_main_path " + Checkpoint_Results_MAIN_PATH + " ")
-
 '''
+
 #TARGET: MA
 target_dataset = CERRADO_MA.DATASET
 source_to_target = source_dataset + "_to_" + target_dataset
@@ -286,7 +291,7 @@ for dr_localization in DR_LOCALIZATION:
                                 "--dataset " + target_ds + " "                                
                                 "--checkpoint_results_main_path " + Checkpoint_Results_MAIN_PATH + " ")
 
-'''
+
 
 for i in range(len(Schedule)):
     if os.system(Schedule[i]) != 0:
