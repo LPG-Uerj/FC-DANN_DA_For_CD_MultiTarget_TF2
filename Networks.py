@@ -70,36 +70,48 @@ class DeepLabV3Plus():
         if self.args.backbone == 'xception':
             backbone = Xception(self.args)
             Encoder_Layers, low_layer = backbone.build_Encoder_Layers(input_block)
-            low_Level_Features =  tf.keras.layers.Conv2D(48, 1, 1, padding = 'SAME', activation=None, kernel_initializer='glorot_uniform')(low_layer)
+            #low_Level_Features =  tf.keras.layers.Conv2D(48, 1, 1, padding = 'SAME', activation=None, kernel_initializer='glorot_uniform')(low_layer)
             
             #Layer that feedforward domain regressor model
             Encoder_Layers = self.atrous_Spatial_Pyramid_Pooling(Encoder_Layers, self.args.aspp_rates, self.args.bn_decay, True)
 
             #model = tf.keras.Model(inputs = input_block, outputs = [Encoder_Layers, low_Level_Features], name = 'deeplabv3plus_encoder')
 
-            return Encoder_Layers, low_Level_Features
+            return Encoder_Layers, low_layer
         else:
             raise Exception(f'Backbone not implemented {self.args.backbone}')
 
-    def build_DeepLab_Decoder(self, inputs):        
-        encoder_layer, low_Level_Features = inputs
+    def build_DeepLab_Decoder(self, features_shape, skip_connect_shape):
+        #encoder_layer, low_Level_Features = inputs
 
-        layer = encoder_layer
+        encoder_layer = tf.keras.layers.Input(shape = features_shape)
+        low_Level_Features = tf.keras.layers.Input(shape = skip_connect_shape)
 
-        if low_Level_Features is not None:                
-            low_level_features_size = low_Level_Features.shape[1:3]
-            layer = ReshapeTensor(low_level_features_size)(layer)
-            layer = tf.keras.layers.Concatenate(axis=3)([layer,low_Level_Features]) 
+        if self.args.skip_connections:
+            print('Skip_connections enabled')
+            skip_connection = tf.keras.layers.Conv2D(48, 1, 1, padding = 'SAME', activation=None, kernel_initializer='glorot_uniform')(low_Level_Features)
+            low_level_features_size = skip_connection.shape[1:3]
+            layer = ReshapeTensor(low_level_features_size)(encoder_layer)
 
-        layer = tf.keras.layers.Conv2D(256, 1, strides = 1)(layer)
-        layer = tf.keras.layers.Conv2D(256, 1, strides = 1)(layer)
+            print(tf.shape(layer))
+            print(tf.shape(skip_connection))
 
-        layer = tf.keras.layers.Conv2D(int(self.args.num_classes),1)(layer)
+            layer = tf.keras.layers.Concatenate(axis=3)([layer,skip_connection])
+            layer = tf.keras.layers.Conv2D(256, 1, strides = 1, padding='same', activation='relu')(layer)
+        else:
+            print('Skip_connections disabled')
+            layer = tf.keras.layers.Conv2D(256, 1, strides = 1, padding='same', activation='relu')(encoder_layer)
+        
+        layer = tf.keras.layers.Conv2D(256, 1, strides = 1, padding='same', activation='relu')(layer)
+
+        layer = tf.keras.layers.Conv2D(int(self.args.num_classes), 1, padding='same')(layer)
         inputs_size = [self.args.patches_dimension, self.args.patches_dimension]
         logits = ReshapeTensor(inputs_size)(layer)
         layer = tf.keras.layers.Softmax()(logits)
         
-        return layer
+        decoder_model = tf.keras.Model(inputs = [encoder_layer,low_Level_Features], outputs = layer, name = 'deeplabv3plus_decoder')
+
+        return decoder_model
 
     def atrous_Spatial_Pyramid_Pooling(self, inputs, aspp_rates, batch_norm_decay, is_training, depth=256):
         """Atrous Spatial Pyramid Pooling.
@@ -126,24 +138,19 @@ class DeepLabV3Plus():
 
         depth_padding = 'same'
 
-        conv_1x1 = tf.keras.layers.Conv2D(depth, 1, strides=1, padding=depth_padding, dilation_rate=1, use_bias = False)(inputs)
-        conv_3x3_1 = tf.keras.layers.Conv2D(depth, 3, strides=1, padding=depth_padding, dilation_rate=atrous_rates[0], use_bias = False)(inputs)
-        conv_3x3_2 = tf.keras.layers.Conv2D(depth, 3, strides=1, padding=depth_padding, dilation_rate=atrous_rates[1], use_bias = False)(inputs)
-        conv_3x3_3 = tf.keras.layers.Conv2D(depth, 3, strides=1, padding=depth_padding, dilation_rate=atrous_rates[2], use_bias = False)(inputs)
-
-        #print("conv_1x1:" + str(conv_1x1.shape))
-        #print("conv_3x3_1:" + str(conv_3x3_1.shape))
-        #print("conv_3x3_2:" + str(conv_3x3_2.shape))
-        #print("conv_3x3_3:" + str(conv_3x3_3.shape))        
+        conv_1x1 = tf.keras.layers.Conv2D(depth, 1, strides=1, padding=depth_padding, dilation_rate=1, use_bias = True, activation='relu')(inputs)
+        conv_3x3_1 = tf.keras.layers.Conv2D(depth, 3, strides=1, padding=depth_padding, dilation_rate=atrous_rates[0], use_bias = True, activation='relu')(inputs)
+        conv_3x3_2 = tf.keras.layers.Conv2D(depth, 3, strides=1, padding=depth_padding, dilation_rate=atrous_rates[1], use_bias = True, activation='relu')(inputs)
+        conv_3x3_3 = tf.keras.layers.Conv2D(depth, 3, strides=1, padding=depth_padding, dilation_rate=atrous_rates[2], use_bias = True, activation='relu')(inputs)
 
         image_level_features = tf.keras.layers.GlobalAveragePooling2D(keepdims=True)(inputs)
 
-        image_level_features = tf.keras.layers.Conv2D(depth, 1, strides=1)(image_level_features)
+        image_level_features = tf.keras.layers.Conv2D(depth, 1, strides=1, padding=depth_padding, activation='relu')(image_level_features)
         
         #bilinearly upsample features
         image_level_features = ReshapeTensor(inputs_size)(image_level_features)
 
         net = tf.keras.layers.Concatenate(axis=3)([conv_1x1, conv_3x3_1, conv_3x3_2, conv_3x3_3, image_level_features])        
-        net = tf.keras.layers.Conv2D(depth, 1, strides=1)(net)
+        net = tf.keras.layers.Conv2D(depth, 1, strides=1, padding=depth_padding, activation='relu')(net)
 
         return net

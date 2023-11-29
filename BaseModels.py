@@ -59,11 +59,11 @@ class Xception():
 
         return conv, low_layer
 
-    def general_conv2d(self, input_data, filters=64,  kernel_size=7, strides=1, conv_type = 'conv', stddev=0.02, activation_function="relu", padding="VALID", do_norm=True, relu_factor=0, name="conv2d"):
+    def general_conv2d(self, input_data, filters=64,  kernel_size=7, strides=1, conv_type = 'conv', stddev=0.02, activation_function='relu', padding='valid', do_norm=True, relu_factor=0, name="conv2d"):
         if conv_type == 'conv':                
             conv = tf.keras.layers.Conv2D(filters, kernel_size, strides, padding, activation=None, kernel_initializer='glorot_uniform')(input_data)
         elif conv_type == 'dep_conv':                
-            conv = tf.keras.layers.SeparableConv2D(filters, kernel_size, strides, padding, activation = None, depthwise_initializer = 'glorot_uniform')(input_data)
+            conv = tf.keras.layers.SeparableConv2D(filters, kernel_size, strides, padding, activation = None, depthwise_initializer = 'glorot_uniform', pointwise_initializer = 'glorot_uniform')(input_data)
         if do_norm:                
             conv = tf.keras.layers.BatchNormalization(momentum=0.9)(conv)
         if activation_function.casefold() == "leakyrelu":                

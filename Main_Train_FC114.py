@@ -28,6 +28,7 @@ parser.add_argument('--epochs', dest='epochs', type=int, default=100, help='numb
 parser.add_argument('--batch_size', dest='batch_size', type=int, default=32, help='number images in batch')
 # Optimizer hyperparameters
 parser.add_argument('--lr', dest='lr', type=float, default=0.01, help='initial learning rate for adam')
+parser.add_argument('--gamma', dest='gamma', type=float, default=2.5, help='parameter for lambda computation')
 parser.add_argument('--beta1', dest='beta1', type=float, default=0.9, help='momentum term of adam')
 # Image_processing hyperparameters
 parser.add_argument('--data_augmentation', dest='data_augmentation', type=eval, choices=[True, False], default=True, help='if data argumentation is applied to the data')

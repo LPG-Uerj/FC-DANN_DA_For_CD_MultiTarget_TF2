@@ -41,6 +41,8 @@ num_classes = "2"
 
 num_targets = "2" 
 
+warmup = "1"
+
 source_dataset = AMAZON_RO.DATASET
 target_dataset = AMAZON_PA.DATASET
 source_to_target = source_dataset + "_to_" + target_dataset
@@ -49,18 +51,17 @@ checkpoint_dir = "checkpoint_tr_"+source_to_target+"_"
 results_dir = "results_tr_"+source_to_target+"_"
 runs = "5"
 
-
 DR_LOCALIZATION = ['55']
 METHODS  = [SharedParameters.METHOD]
 DA_TYPES = ['DR']
 #DA_TYPES = ['DRCL']
 TARGET_DATASETS = [AMAZON_PA.DATASET, source_dataset]
-'''
+
 for dr_localization in DR_LOCALIZATION:
     for method in METHODS:
         for da in DA_TYPES:
             
-            checkpoint_dir_param = checkpoint_dir + training_type + "_" + da + "_single_" + target_dataset
+            checkpoint_dir_param = checkpoint_dir + training_type + "_" + da + "_single_" + target_dataset + "_gamma_" + SharedParameters.GAMMA + "_skipconn_" + SharedParameters.SKIP_CONNECTIONS
 
             if args.train:
                 
@@ -68,10 +69,11 @@ for dr_localization in DR_LOCALIZATION:
                                 "--classifier_type " + method + " "
                                 "--domain_regressor_type FC "
                                 "--DR_Localization " + dr_localization + " "
-                                "--skip_connections False "
+                                "--skip_connections " + SharedParameters.SKIP_CONNECTIONS + " "
                                 "--epochs 100 "
                                 "--batch_size " + SharedParameters.TRAINING_BATCH_SIZE + " "
                                 "--lr " + SharedParameters.LR + " "
+                                "--gamma " + SharedParameters.GAMMA + " "
                                 "--beta1 0.9 "
                                 "--data_augmentation True "                                                              
                                 "--fixed_tiles True "
@@ -91,7 +93,7 @@ for dr_localization in DR_LOCALIZATION:
                                 "--training_type " + training_type + " "
                                 "--da_type " + da + " "
                                 "--runs " + runs + " "
-                                "--warmup 1 "
+                                "--warmup " + warmup + " "
                                 "--patience 10 "
                                 "--checkpoint_dir " + checkpoint_dir_param + " "
                                 "--source_dataset " + source_dataset + " "
@@ -100,14 +102,14 @@ for dr_localization in DR_LOCALIZATION:
 
             for target_ds in TARGET_DATASETS:
                 
-                results_dir_param = results_dir + training_type + "_" + da + "_single_" + target_ds
+                results_dir_param = results_dir + training_type + "_" + da + "_single_" + target_ds + "_wrmp" + warmup + "_gamma_" + SharedParameters.GAMMA + "_skipconn_" + SharedParameters.SKIP_CONNECTIONS
 
                 if args.test:                    
                     Schedule.append("python " + Test_MAIN_COMMAND + " "
                                 "--classifier_type " + method + " "
                                 "--domain_regressor_type FC "
                                 "--DR_Localization " + dr_localization + " "
-                                "--skip_connections False "
+                                "--skip_connections " + SharedParameters.SKIP_CONNECTIONS + " "
                                 "--batch_size " + SharedParameters.TESTING_BATCH_SIZE + " "                                
                                 "--overlap 0.75 "
                                 "--image_channels 7 "
@@ -127,7 +129,7 @@ for dr_localization in DR_LOCALIZATION:
                     Schedule.append("python " + Metrics_05_MAIN_COMMAND + " "
                                 "--classifier_type " + method + " "
                                 "--domain_regressor_type FC "
-                                "--skip_connections False "                                
+                                "--skip_connections " + SharedParameters.SKIP_CONNECTIONS + " "                                
                                 "--patches_dimension 64 "
                                 "--fixed_tiles True "
                                 "--overlap 0.75 "
@@ -146,7 +148,7 @@ for dr_localization in DR_LOCALIZATION:
                     Schedule.append("python " + Metrics_th_MAIN_COMMAND + " "
                                 "--classifier_type " + method + " "
                                 "--domain_regressor_type FC "
-                                "--skip_connections False "                                
+                                "--skip_connections " + SharedParameters.SKIP_CONNECTIONS + " "                                
                                 "--patches_dimension 64 "
                                 "--fixed_tiles True "
                                 "--overlap 0.75 "
@@ -163,8 +165,8 @@ for dr_localization in DR_LOCALIZATION:
                                 "--dataset " + target_ds + " "                                
                                 "--checkpoint_results_main_path " + Checkpoint_Results_MAIN_PATH + " ")
 
-'''
 
+                                
 #TARGET: MA
 target_dataset = CERRADO_MA.DATASET
 source_to_target = source_dataset + "_to_" + target_dataset
@@ -183,7 +185,7 @@ for dr_localization in DR_LOCALIZATION:
     for method in METHODS:
         for da in DA_TYPES:
             
-            checkpoint_dir_param = checkpoint_dir + training_type + "_" + da + "_single_" + target_dataset
+            checkpoint_dir_param = checkpoint_dir + training_type + "_" + da + "_single_" + target_dataset + "_gamma_" + SharedParameters.GAMMA + "_skipconn_" + SharedParameters.SKIP_CONNECTIONS
 
             if args.train:
                 
@@ -191,10 +193,11 @@ for dr_localization in DR_LOCALIZATION:
                                 "--classifier_type " + method + " "
                                 "--domain_regressor_type FC "
                                 "--DR_Localization " + dr_localization + " "
-                                "--skip_connections False "
+                                "--skip_connections " + SharedParameters.SKIP_CONNECTIONS + " "
                                 "--epochs 100 "
                                 "--batch_size " + SharedParameters.TRAINING_BATCH_SIZE + " "
                                 "--lr " + SharedParameters.LR + " "
+                                "--gamma " + SharedParameters.GAMMA + " "
                                 "--beta1 0.9 "
                                 "--data_augmentation True "                                                              
                                 "--fixed_tiles True "
@@ -214,7 +217,7 @@ for dr_localization in DR_LOCALIZATION:
                                 "--training_type " + training_type + " "
                                 "--da_type " + da + " "
                                 "--runs " + runs + " "
-                                "--warmup 1 "
+                                "--warmup " + warmup + " "
                                 "--patience 10 "
                                 "--checkpoint_dir " + checkpoint_dir_param + " "
                                 "--source_dataset " + source_dataset + " "
@@ -223,14 +226,14 @@ for dr_localization in DR_LOCALIZATION:
 
             for target_ds in TARGET_DATASETS:
                 
-                results_dir_param = results_dir + training_type + "_" + da + "_single_" + target_ds
+                results_dir_param = results_dir + training_type + "_" + da + "_single_" + target_ds + "_wrmp" + warmup + "_gamma_" + SharedParameters.GAMMA + "_skipconn_" + SharedParameters.SKIP_CONNECTIONS
 
                 if args.test:                    
                     Schedule.append("python " + Test_MAIN_COMMAND + " "
                                 "--classifier_type " + method + " "
                                 "--domain_regressor_type FC "
                                 "--DR_Localization " + dr_localization + " "
-                                "--skip_connections False "
+                                "--skip_connections " + SharedParameters.SKIP_CONNECTIONS + " "
                                 "--batch_size " + SharedParameters.TESTING_BATCH_SIZE + " "                                
                                 "--overlap 0.75 "
                                 "--image_channels 7 "
@@ -250,7 +253,7 @@ for dr_localization in DR_LOCALIZATION:
                     Schedule.append("python " + Metrics_05_MAIN_COMMAND + " "
                                 "--classifier_type " + method + " "
                                 "--domain_regressor_type FC "
-                                "--skip_connections False "                                
+                                "--skip_connections " + SharedParameters.SKIP_CONNECTIONS + " "                                
                                 "--patches_dimension 64 "
                                 "--fixed_tiles True "
                                 "--overlap 0.75 "
@@ -269,7 +272,7 @@ for dr_localization in DR_LOCALIZATION:
                     Schedule.append("python " + Metrics_th_MAIN_COMMAND + " "
                                 "--classifier_type " + method + " "
                                 "--domain_regressor_type FC "
-                                "--skip_connections False "                                
+                                "--skip_connections " + SharedParameters.SKIP_CONNECTIONS + " "                                
                                 "--patches_dimension 64 "
                                 "--fixed_tiles True "
                                 "--overlap 0.75 "

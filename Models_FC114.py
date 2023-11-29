@@ -9,11 +9,11 @@ from tensorflow import keras
 import matplotlib.pyplot as plt
 from sklearn.utils import shuffle
 from contextlib import redirect_stdout
-from da_model import DomainAdaptationModel, MainNetwork, DomainRegressorNetwork
+from da_model import DomainAdaptationModel
 from keras.optimizers import Adam
 from keras.losses import CategoricalCrossentropy
 from keras.metrics import CategoricalAccuracy
-from loss_functions import WeightedCrossEntropyC
+from loss_functions import WeightedCrossEntropyC, DiscriminatorCrossEntropy
 from keras.backend import clear_session
 from SharedParameters import TRAINING_TYPE_DOMAIN_ADAPTATION,TRAINING_TYPE_CLASSIFICATION
 from Tools import Data_Augmentation_Definition, Patch_Extraction, Data_Augmentation_Execution, Classification_Maps, compute_metrics, mask_creation
@@ -41,7 +41,8 @@ class Models():
         self.checkpoint_name = self.args.classifier_type        
 
         self.classifier_loss = WeightedCrossEntropyC()
-        self.domainregressor_loss = CategoricalCrossentropy(from_logits=True)        
+        #self.domainregressor_loss = CategoricalCrossentropy(from_logits=True)     
+        self.domainregressor_loss = CategoricalCrossentropy()
 
         self.acc_function_discriminator = CategoricalAccuracy()   
         self.acc_function_discriminator_val = CategoricalAccuracy()               
@@ -95,20 +96,21 @@ class Models():
             encoder_model = tf.keras.Model(inputs = input_block, outputs = [Encoder_Outputs, low_Level_Features], name = 'deeplabv3plus_encoder')
  
             #Building Decoder
-            Decoder_Outputs = deepLab.build_DeepLab_Decoder([Encoder_Outputs, low_Level_Features])            
-            decoder_model = tf.keras.Model(inputs = [Encoder_Outputs,low_Level_Features], outputs = Decoder_Outputs, name = 'deeplabv3plus_decoder')
+            decoder_model = deepLab.build_DeepLab_Decoder(Encoder_Outputs.shape[1:], low_Level_Features.shape[1:])            
+            #decoder_model = tf.keras.Model(inputs = [Encoder_Outputs,low_Level_Features], outputs = Decoder_Outputs, name = 'deeplabv3plus_decoder')
 
             if self.args.training_type == TRAINING_TYPE_DOMAIN_ADAPTATION and 'DR' in self.args.da_type:
                 if self.args.domain_regressor_type.casefold() == 'fc':
-                    discriminator_model = Domain_Regressor_FullyConnected(input_shape=Encoder_Outputs.shape[1:],units=1024, num_targets=self.num_targets)                    
+                   discriminator_model = Domain_Regressor_FullyConnected(input_shape=Encoder_Outputs.shape[1:], units=1024, num_targets=self.num_targets)                    
                 if self.args.domain_regressor_type.casefold() == 'conv':
-                    discriminator_model = Domain_Regressor_Convolutional(input_shape=Encoder_Outputs.shape[1:], num_targets=self.num_targets)
-
+                    d_conv_model = Domain_Regressor_Convolutional(input_shape=Encoder_Outputs.shape[1:], num_targets=self.num_targets)
+                
+                #self.D_out_shape = [self.num_targets]
                 self.D_out_shape = discriminator_model.layers[-2].output.shape[1:]
 
                 print(f'D_out_shape: {self.D_out_shape}')
 
-                empty_model = DomainAdaptationModel(self.input_shape, encoder_model,decoder_model, discriminator_model)                
+                empty_model = DomainAdaptationModel(encoder_model,decoder_model, discriminator_model)                
 
                 if showSummary:
                     self.summary(empty_model.encoder_model, "Encoder: ")
@@ -129,10 +131,10 @@ class Models():
         with tf.GradientTape() as tape:
             self.classifier_loss.class_weights = class_weights
             self.classifier_loss.mask = mask_c
-            y_pred = self.model(x_batch_train,training = True)            
+            y_pred = self.model.main_network(x_batch_train,training = True)            
             loss = self.classifier_loss(y_batch_train, y_pred)
               
-        self.training_optimizer.minimize(loss, self.model.trainable_weights,tape=tape)
+        self.training_optimizer.minimize(loss, self.model.main_network.trainable_weights,tape=tape)
         return loss, y_pred
 
     @tf.function
@@ -148,47 +150,35 @@ class Models():
         y_true_segmentation, y_true_discriminator = outputs
         
         self.classifier_loss.class_weights = class_weights
-        self.classifier_loss.mask = mask_c        
-        
-        with tf.GradientTape(persistent=True) as tape:
-            y_pred_segmentation,_,logits_discriminator = self.model(x_input,training=True)
-            
-            loss_segmentation = self.classifier_loss(y_true_segmentation, y_pred_segmentation)            
-            loss_discriminator = self.domainregressor_loss(y_true=y_true_discriminator, y_pred=logits_discriminator)            
+        self.classifier_loss.mask = mask_c
 
-            total_loss = loss_segmentation - lambda_value * loss_discriminator
-    
-        # update feature extractor
-        gradients_encoder = tape.gradient(total_loss, self.model.encoder_model.trainable_weights)
-        self.training_optimizer.apply_gradients(zip(gradients_encoder, self.model.encoder_model.trainable_weights))
-        
-        # update label predictor
-        gradients_decoder = tape.gradient(loss_segmentation, self.model.decoder_model.trainable_weights)
-        self.training_optimizer.apply_gradients(zip(gradients_decoder, self.model.decoder_model.trainable_weights))
+        with tf.GradientTape(persistent = True) as tape:
+            y_pred_segmentation,discriminator_output, _ = self.model([x_input,lambda_value],training=True)
+            loss_segmentation = self.classifier_loss(y_true_segmentation, y_pred_segmentation)         
+            loss_discriminator = self.domainregressor_loss(y_true=y_true_discriminator, y_pred=discriminator_output)   
+            total_loss = loss_segmentation + loss_discriminator
+        self.training_optimizer.minimize(total_loss, self.model.trainable_weights,tape=tape)
+        del tape
 
-        # update discriminator
-        gradients_discriminator = tape.gradient(loss_discriminator, self.model.domain_discriminator.trainable_weights)
-        self.discriminator_optimizer.apply_gradients(zip(gradients_discriminator, self.model.domain_discriminator.trainable_weights))
-
-        self.acc_function_discriminator.update_state(y_true_discriminator, logits_discriminator)
+        self.acc_function_discriminator.update_state(y_true_discriminator, discriminator_output)
 
         return loss_segmentation, y_pred_segmentation, loss_discriminator
 		
 		
     @tf.function
-    def _test_step_domain_adaptation(self, x_input, outputs, class_weights, mask_c):
+    def _test_step_domain_adaptation(self, x_input, outputs, lambda_value, class_weights, mask_c):
         
         y_true_segmentation, y_true_discriminator = outputs       
     
         self.classifier_loss.class_weights = class_weights
         self.classifier_loss.mask = mask_c
 
-        y_pred_segmentation,_,logits_discriminator = self.model(x_input,training=False)
+        y_pred_segmentation,discriminator_output,logits_discriminator = self.model([x_input,lambda_value],training=False)
         
         loss_segmentation = self.classifier_loss(y_true_segmentation, y_pred_segmentation)
-        loss_discriminator = self.domainregressor_loss(y_true=y_true_discriminator, y_pred=logits_discriminator)
+        loss_discriminator = self.domainregressor_loss(y_true=y_true_discriminator, y_pred=discriminator_output)
 
-        self.acc_function_discriminator_val.update_state(y_true_discriminator, logits_discriminator)
+        self.acc_function_discriminator_val.update_state(y_true_discriminator, discriminator_output)
 
         return loss_segmentation, y_pred_segmentation, loss_discriminator
 
@@ -466,10 +456,14 @@ class Models():
 
         #Computing the number of batches
         num_batches_tr = corners_coordinates_tr.shape[0]//self.args.batch_size
-        num_batches_vl = corners_coordinates_vl.shape[0]//self.args.batch_size        
+        num_batches_vl = corners_coordinates_vl.shape[0]//self.args.batch_size      
+
+        print(f'Num samples for training: {corners_coordinates_tr.shape[0]}')
+        print(f'Num samples for validation: {corners_coordinates_vl.shape[0]}')  
 
         self.training_optimizer = Adam(beta_1=self.args.beta1)
-        self.discriminator_optimizer = Adam(beta_1=self.args.beta1)
+        #self.feature_extractor_optimizer = Adam(beta_1=self.args.beta1)
+        #self.discriminator_optimizer = Adam(beta_1=self.args.beta1)
 
         #Training starts now:
         e = 0
@@ -487,9 +481,9 @@ class Models():
             if self.args.training_type == TRAINING_TYPE_DOMAIN_ADAPTATION:
                 if 'DR' in self.args.da_type:
                     if len(self.D_out_shape) > 2:
-                        y_train_d = y_train_d[index, :, :, :]
+                        _y_train_d = y_train_d[index, :, :, :]
                     else:
-                        y_train_d = y_train_d[index, :]
+                        _y_train_d = y_train_d[index, :]
 
             #Shuffling the data and the labels for validation samples
             num_samples = corners_coordinates_vl.shape[0]
@@ -500,17 +494,17 @@ class Models():
             if self.args.training_type == TRAINING_TYPE_DOMAIN_ADAPTATION:
                 if 'DR' in self.args.da_type:
                     if len(self.D_out_shape) > 2:
-                        y_valid_d = y_valid_d[index, :, :, :]
+                        _y_valid_d = y_valid_d[index, :, :, :]
                     else:
-                        y_valid_d = y_valid_d[index, :]
+                        _y_valid_d = y_valid_d[index, :]
 
             # Open a file in order to save the training history
             with open(os.path.join(self.args.save_checkpoint_path,"Log.txt"),"a") as f:
                 #Initializing loss metrics
-                loss_cl_tr = np.zeros((1 , 2))
-                loss_cl_vl = np.zeros((1 , 2))
-                loss_dr_tr = np.zeros((1 , 2))
-                loss_dr_vl = np.zeros((1 , 2))
+                loss_cl_tr = 0.
+                loss_cl_vl = 0.
+                loss_dr_tr = 0.
+                loss_dr_vl = 0.
 
                 accuracy_tr = 0
                 f1_score_tr = 0
@@ -525,21 +519,26 @@ class Models():
                 print("----------------------------------------------------------")
                 #Computing some parameters
                 self.p = float(e) / self.args.epochs
+
                 print("Current Epoch: {0}/{1}".format(str(e),str(self.args.epochs)))
 
                 if self.args.training_type == TRAINING_TYPE_DOMAIN_ADAPTATION:
                     warmup = self.args.warmup
+                    relative_progress = (float(e) - warmup + 1) / self.args.epochs
                     print("Number of warm-up epochs: %d"%(warmup))
                     if e >= warmup:
-                        self.l = np.float32(2. / (1. + np.exp(-2.5 * self.p)) - 1)
+                        self.l = np.float32(2. / (1. + np.exp(-self.args.gamma * relative_progress)) - 1)
                     else:
                         self.l = np.float32(0.)
+                    print("Gamma parameter: %.1f"%(self.args.gamma))         
                     print("lambda_p: %.6f" %(self.l))
 
                 lr = self.learning_rate_decay(self.args.lr)
+                #lr_d = self.learning_rate_decay(self.args.lr*0.9)
 
                 self.training_optimizer.lr = lr
-                self.discriminator_optimizer.lr = lr
+                #self.feature_extractor_optimizer.lr = lr
+                #self.discriminator_optimizer.lr = lr
                 
                 print("Learning rate decay: %.6f"%(lr))                
 
@@ -582,21 +581,21 @@ class Models():
                     elif self.args.training_type == TRAINING_TYPE_DOMAIN_ADAPTATION:
                         if 'DR' in self.args.da_type:
                             if len(self.D_out_shape) > 2:
-                                y_train_d_batch = y_train_d[b * self.args.batch_size : (b + 1) * self.args.batch_size, :, :,:]
+                                y_train_d_batch = _y_train_d[b * self.args.batch_size : (b + 1) * self.args.batch_size, :, :,:]
                             else:
-                                y_train_d_batch = y_train_d[b * self.args.batch_size : (b + 1) * self.args.batch_size, :]
+                                y_train_d_batch = _y_train_d[b * self.args.batch_size : (b + 1) * self.args.batch_size, :]
 
                             y_train_d_hot_batch = tf.keras.utils.to_categorical(y_train_d_batch, self.num_targets) 
 
                             c_batch_loss, batch_probs, d_batch_loss = self._training_step_domain_adaptation(data_batch, [y_train_c_hot_batch, y_train_d_hot_batch], self.l, Weights, classification_mask_batch)
 
-                            loss_dr_tr[0 , 0] += d_batch_loss
+                            loss_dr_tr += d_batch_loss
 
-                            acc_discriminator_train = float(self.acc_function_discriminator.result())
+                            acc_discriminator_train = float(self.acc_function_discriminator.result().numpy())
                         else:
                             c_batch_loss, batch_probs = self._training_step(data_batch, y_train_c_hot_batch, Weights, classification_mask_batch)
                     
-                    loss_cl_tr[0 , 0] += c_batch_loss
+                    loss_cl_tr += c_batch_loss
                     # print(loss_cl_tr)
                     y_train_predict_batch = np.argmax(batch_probs, axis = 3)
                     y_train_batch = np.argmax(y_train_c_hot_batch, axis = 3)
@@ -625,23 +624,24 @@ class Models():
                 f1_score_tr = f1_score_tr/batch_counter_cl
                 recall_tr = recall_tr/batch_counter_cl
                 precission_tr = precission_tr/batch_counter_cl
+                loss_dr_tr = loss_dr_tr/batch_counter_cl
 
-                self.segmentation_history["loss"].append(loss_cl_tr[0,0])       
+                self.segmentation_history["loss"].append(loss_cl_tr)       
                 self.segmentation_history["f1"].append(f1_score_tr)
 
                 print("batch_counter_cl:")
                 print(batch_counter_cl)
 
                 if self.args.training_type == TRAINING_TYPE_DOMAIN_ADAPTATION and 'DR' in self.args.da_type:                    
-                    loss_dr_tr = loss_dr_tr/batch_counter_cl
-                    self.discriminator_history["loss"].append(loss_dr_tr[0,0])
+                    
+                    self.discriminator_history["loss"].append(loss_dr_tr)
                     self.discriminator_history["accuracy"].append(acc_discriminator_train)
 
-                    print ("%d [Training loss: %f, acc.: %.2f%%, precision: %.2f%%, recall: %.2f%%, f1: %.2f%%, Dr loss: %f, Dr accuracy: %.2f]" % (e, loss_cl_tr[0,0], accuracy_tr, precission_tr, recall_tr, f1_score_tr, loss_dr_tr[0,0], acc_discriminator_train))
-                    f.write("%d [Training loss: %f, acc.: %.2f%%, precision: %.2f%%, recall: %.2f%%, f1: %.2f%%, Dr loss: %f, Dr accuracy: %.2f]\n" % (e, loss_cl_tr[0,0], accuracy_tr, precission_tr, recall_tr, f1_score_tr, loss_dr_tr[0,0], acc_discriminator_train))
+                    print ("%d [Training loss: %f, acc.: %.2f%%, precision: %.2f%%, recall: %.2f%%, f1: %.2f%%, Dr loss: %f, Dr accuracy: %.2f]" % (e, loss_cl_tr, accuracy_tr, precission_tr, recall_tr, f1_score_tr, loss_dr_tr, acc_discriminator_train))
+                    f.write("%d [Training loss: %f, acc.: %.2f%%, precision: %.2f%%, recall: %.2f%%, f1: %.2f%%, Dr loss: %f, Dr accuracy: %.2f]\n" % (e, loss_cl_tr, accuracy_tr, precission_tr, recall_tr, f1_score_tr, loss_dr_tr, acc_discriminator_train))
                 else:
-                    print ("%d [Training loss: %f, acc.: %.2f%%, precision: %.2f%%, recall: %.2f%%, f1: %.2f%%]" % (e, loss_cl_tr[0,0], accuracy_tr, precission_tr, recall_tr, f1_score_tr))
-                    f.write("%d [Training loss: %f, acc.: %.2f%%, precision: %.2f%%, recall: %.2f%%, f1: %.2f%%]\n" % (e, loss_cl_tr[0,0], accuracy_tr, precission_tr, recall_tr, f1_score_tr))
+                    print ("%d [Training loss: %f, acc.: %.2f%%, precision: %.2f%%, recall: %.2f%%, f1: %.2f%%]" % (e, loss_cl_tr, accuracy_tr, precission_tr, recall_tr, f1_score_tr))
+                    f.write("%d [Training loss: %f, acc.: %.2f%%, precision: %.2f%%, recall: %.2f%%, f1: %.2f%%]\n" % (e, loss_cl_tr, accuracy_tr, precission_tr, recall_tr, f1_score_tr))
 
                 #Computing the validation loss
                 print('[*]Computing the validation loss...')
@@ -681,21 +681,21 @@ class Models():
                     if self.args.training_type == TRAINING_TYPE_DOMAIN_ADAPTATION:
                         if 'DR' in self.args.da_type:
                             if len(self.D_out_shape) > 2:
-                                y_valid_d_batch = y_valid_d[b * self.args.batch_size : (b + 1) * self.args.batch_size, :, :,:]
+                                y_valid_d_batch = _y_valid_d[b * self.args.batch_size : (b + 1) * self.args.batch_size, :, :,:]
                             else:
-                                y_valid_d_batch = y_valid_d[b * self.args.batch_size : (b + 1) * self.args.batch_size, :]
+                                y_valid_d_batch = _y_valid_d[b * self.args.batch_size : (b + 1) * self.args.batch_size, :]
                             
                             y_valid_d_hot_batch = tf.keras.utils.to_categorical(y_valid_d_batch, self.num_targets)
 
-                            c_batch_loss, batch_probs, d_batch_loss = self._test_step_domain_adaptation(data_batch, [y_valid_c_hot_batch, y_valid_d_hot_batch], Weights, classification_mask_batch)
+                            c_batch_loss, batch_probs, d_batch_loss = self._test_step_domain_adaptation(data_batch, [y_valid_c_hot_batch, y_valid_d_hot_batch], self.l, Weights, classification_mask_batch)
 
-                            loss_dr_vl[0 , 0] += d_batch_loss
+                            loss_dr_vl += d_batch_loss
 
-                            acc_discriminator_val = float(self.acc_function_discriminator_val.result())
+                            acc_discriminator_val = float(self.acc_function_discriminator_val.result().numpy())
                         else:
                             c_batch_loss, batch_probs = self._test_step(data_batch, y_valid_c_hot_batch, Weights, classification_mask_batch)                            
 
-                    loss_cl_vl[0 , 0] += c_batch_loss
+                    loss_cl_vl += c_batch_loss
 
                     y_valid_batch = np.argmax(y_valid_c_hot_batch, axis = 3)
                     y_valid_predict_batch = np.argmax(batch_probs, axis = 3)
@@ -723,25 +723,26 @@ class Models():
                 f1_score_vl = f1_score_vl/(batch_counter_cl)
                 recall_vl = recall_vl/(batch_counter_cl)
                 precission_vl = precission_vl/(batch_counter_cl)
+                loss_dr_vl = loss_dr_vl/batch_counter_cl
 
-                self.segmentation_history["val_loss"].append(loss_cl_vl[0,0])      
+                self.segmentation_history["val_loss"].append(loss_cl_vl)      
                 self.segmentation_history["val_f1"].append(f1_score_vl)
 
                 if self.args.training_type == TRAINING_TYPE_DOMAIN_ADAPTATION and 'DR' in self.args.da_type:                    
-                    loss_dr_vl = loss_dr_vl/batch_counter_cl
-                    self.discriminator_history["val_loss"].append(loss_dr_vl[0,0])
+                    
+                    self.discriminator_history["val_loss"].append(loss_dr_vl)
                     self.discriminator_history["val_accuracy"].append(acc_discriminator_val)
 
-                    print ("%d [Validation loss: %f, acc.: %.2f%%,  precision: %.2f%%, recall: %.2f%%, f1: %.2f%%, DrV loss: %f, DrV accuracy: %.2f]" % (e, loss_cl_vl[0,0], accuracy_vl, precission_vl, recall_vl, f1_score_vl, loss_dr_vl[0 , 0], acc_discriminator_val))
-                    f.write("%d [Validation loss: %f, acc.: %.2f%%, precision: %.2f%%, recall: %.2f%%, f1: %.2f%%, DrV loss: %f, DrV accuracy: %.2f]\n" % (e, loss_cl_vl[0,0], accuracy_vl, precission_vl, recall_vl, f1_score_vl, loss_dr_vl[0 , 0], acc_discriminator_val))
+                    print ("%d [Validation loss: %f, acc.: %.2f%%,  precision: %.2f%%, recall: %.2f%%, f1: %.2f%%, DrV loss: %f, DrV accuracy: %.2f]" % (e, loss_cl_vl, accuracy_vl, precission_vl, recall_vl, f1_score_vl, loss_dr_vl, acc_discriminator_val))
+                    f.write("%d [Validation loss: %f, acc.: %.2f%%, precision: %.2f%%, recall: %.2f%%, f1: %.2f%%, DrV loss: %f, DrV accuracy: %.2f]\n" % (e, loss_cl_vl, accuracy_vl, precission_vl, recall_vl, f1_score_vl, loss_dr_vl, acc_discriminator_val))
                 else:
-                    print ("%d [Validation loss: %f, acc.: %.2f%%,  precision: %.2f%%, recall: %.2f%%, f1: %.2f%%]" % (e, loss_cl_vl[0,0], accuracy_vl, precission_vl, recall_vl, f1_score_vl))
-                    f.write("%d [Validation loss: %f, acc.: %.2f%%, precision: %.2f%%, recall: %.2f%%, f1: %.2f%%]\n" % (e, loss_cl_vl[0,0], accuracy_vl, precission_vl, recall_vl, f1_score_vl))
+                    print ("%d [Validation loss: %f, acc.: %.2f%%,  precision: %.2f%%, recall: %.2f%%, f1: %.2f%%]" % (e, loss_cl_vl, accuracy_vl, precission_vl, recall_vl, f1_score_vl))
+                    f.write("%d [Validation loss: %f, acc.: %.2f%%, precision: %.2f%%, recall: %.2f%%, f1: %.2f%%]\n" % (e, loss_cl_vl, accuracy_vl, precission_vl, recall_vl, f1_score_vl))
 
             if self.args.training_type == TRAINING_TYPE_DOMAIN_ADAPTATION:
                 with open(os.path.join(self.args.save_checkpoint_path,"Log.txt"),"a") as f:
                     if 'DR' in self.args.da_type:
-                        if np.isnan(loss_cl_tr[0,0]) or np.isnan(loss_cl_vl[0,0]):
+                        if np.isnan(loss_cl_tr) or np.isnan(loss_cl_vl):
                             print('Nan value detected!!!!')                            
                             if best_model_epoch != -1:
                                 pat += 1
@@ -756,23 +757,23 @@ class Models():
                                     print(" [!] Load failed... Details: {0}".format(e))
                         elif self.l != 0:
                             FLAG = False
-                            if  best_val_dr < loss_dr_vl[0 , 0] and loss_dr_vl[0 , 0] < 1:                            
+                            if  best_val_dr < loss_dr_vl and loss_dr_vl < 1:                            
                                 if best_val_fs < f1_score_vl:
-                                    best_val_dr = loss_dr_vl[0 , 0]
+                                    best_val_dr = loss_dr_vl
                                     best_val_fs = f1_score_vl
                                     best_val_dr_acc = acc_discriminator_val
                                     best_mod_fs = f1_score_vl
-                                    best_mod_dr = loss_dr_vl[0 , 0]
+                                    best_mod_dr = loss_dr_vl
                                     best_model_epoch = e
                                     print('[!]Saving best ideal model at epoch: ' + str(e))
                                     f.write("[!]Ideal best ideal model\n")                                    
                                     self.save_weights(self.args.save_checkpoint_path)
                                     FLAG = True
                                 elif np.abs(best_val_fs - f1_score_vl) < 3:
-                                    best_val_dr = loss_dr_vl[0 , 0]
+                                    best_val_dr = loss_dr_vl
                                     best_val_dr_acc = acc_discriminator_val
                                     best_mod_fs = f1_score_vl
-                                    best_mod_dr = loss_dr_vl[0 , 0]
+                                    best_mod_dr = loss_dr_vl
                                     best_model_epoch = e
                                     print('[!]Saving best model attending best Dr_loss at epoch: ' + str(e))
                                     f.write("[!]Best model attending best Dr_loss\n")                                    
@@ -782,7 +783,7 @@ class Models():
                                 if  np.abs(best_val_dr_acc - acc_discriminator_val) < 0.05:
                                     best_val_fs = f1_score_vl
                                     best_mod_fs = f1_score_vl
-                                    best_mod_dr = loss_dr_vl[0 , 0]
+                                    best_mod_dr = loss_dr_vl
                                     best_model_epoch = e
                                     print('[!]Saving best model attending best f1-score at epoch: ' + str(e))
                                     f.write("[!]Best model attending best f1-score \n")                                    
@@ -856,12 +857,12 @@ class Models():
                 else:
                     print("Training ended")
                     print("[!] [!] No Model has been selected.")
-                    print("loss_dr_vl: %.3f"%(loss_dr_vl[0 , 0]))                    
+                    print("loss_dr_vl: %.3f"%(loss_dr_vl))                    
                     print("f1_score_vl: %.3f"%(f1_score_vl))                    
 
                     f.write("Training ended")
                     f.write("[!] [!] No Model has been selected.")
-                    f.write("loss_dr_vl: %.3f \n"%(loss_dr_vl[0 , 0]))                    
+                    f.write("loss_dr_vl: %.3f \n"%(loss_dr_vl))                    
                     f.write("f1_score_vl: %.3f \n"%(f1_score_vl))
         
 

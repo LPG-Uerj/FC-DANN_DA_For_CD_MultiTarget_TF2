@@ -63,7 +63,7 @@ for dr_localization in DR_LOCALIZATION:
     for method in METHODS:
         for da in DA_TYPES:
             
-            checkpoint_dir_param = checkpoint_dir + training_type + "_" + da + "_" + domain_regressor_type + "_multi_balanced_domain_labels_" + discriminate_domain_targets + "_wrmp" + warmup + "_" + SharedParameters.TRAINING_BATCH_SIZE + "_" + target_dataset
+            checkpoint_dir_param = checkpoint_dir + training_type + "_" + da + "_" + domain_regressor_type + "_multi_discriminate_target_" + discriminate_domain_targets + "_wrmp_" + warmup + "_" + target_dataset
 
             if args.train:
                 
@@ -71,10 +71,11 @@ for dr_localization in DR_LOCALIZATION:
                                 "--classifier_type " + method + " "
                                 "--domain_regressor_type " + domain_regressor_type + " "
                                 "--DR_Localization " + dr_localization + " "
-                                "--skip_connections False "
+                                "--skip_connections " + SharedParameters.SKIP_CONNECTIONS + " "
                                 "--epochs 100 "
                                 "--batch_size " + SharedParameters.TRAINING_BATCH_SIZE + " "
                                 "--lr " + SharedParameters.LR + " "
+                                "--gamma " + SharedParameters.GAMMA + " "
                                 "--beta1 0.9 "
                                 "--data_augmentation True "                                                              
                                 "--fixed_tiles True "
@@ -105,14 +106,14 @@ for dr_localization in DR_LOCALIZATION:
 
             for target_ds in TARGET_DATASETS:
                 
-                results_dir_param = results_dir + training_type + "_" + da + "_" + domain_regressor_type + "_multi_balanced_domain_labels_" + discriminate_domain_targets + "_wrmp" + warmup + "_" + SharedParameters.TRAINING_BATCH_SIZE + "_" + target_ds
+                results_dir_param = results_dir + training_type + "_" + da + "_" + domain_regressor_type + "_multi_discriminate_target_" + discriminate_domain_targets + "_wrmp_" + warmup + "_"  + target_ds
 
                 if args.test:                    
                     Schedule.append("python " + Test_MAIN_COMMAND + " "
                                 "--classifier_type " + method + " "
                                 "--domain_regressor_type " + domain_regressor_type + " "
                                 "--DR_Localization " + dr_localization + " "
-                                "--skip_connections False "
+                                "--skip_connections " + SharedParameters.SKIP_CONNECTIONS + " "
                                 "--batch_size " + SharedParameters.TESTING_BATCH_SIZE + " "                                
                                 "--overlap 0.75 "
                                 "--image_channels 7 "
@@ -134,7 +135,7 @@ for dr_localization in DR_LOCALIZATION:
                     Schedule.append("python " + Metrics_05_MAIN_COMMAND + " "
                                 "--classifier_type " + method + " "
                                 "--domain_regressor_type " + domain_regressor_type + " "
-                                "--skip_connections False "                                
+                                "--skip_connections " + SharedParameters.SKIP_CONNECTIONS + " "                                
                                 "--patches_dimension 64 "
                                 "--fixed_tiles True "
                                 "--overlap 0.75 "
@@ -153,7 +154,7 @@ for dr_localization in DR_LOCALIZATION:
                     Schedule.append("python " + Metrics_th_MAIN_COMMAND + " "
                                 "--classifier_type " + method + " "
                                 "--domain_regressor_type " + domain_regressor_type + " "
-                                "--skip_connections False "                                
+                                "--skip_connections " + SharedParameters.SKIP_CONNECTIONS + " "                                
                                 "--patches_dimension 64 "
                                 "--fixed_tiles True "
                                 "--overlap 0.75 "

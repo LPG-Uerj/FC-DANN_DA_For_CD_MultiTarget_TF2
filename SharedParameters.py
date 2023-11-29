@@ -18,6 +18,7 @@ PHASE_METRICS = "compute_metrics"
 
 #LR = str(0.00001)
 LR = str(0.0001)
+GAMMA = str(2.5)
 
 TRAINING_BATCH_SIZE = "32"
 TESTING_BATCH_SIZE = "500"
@@ -36,6 +37,8 @@ DATA_TYPE = ".npy"
 BUFFER_DIMENSION_IN = 0
 BUFFER_DIMENSION_OUT = 2
 
+SKIP_CONNECTIONS = str(True)
+
 TRAINING_TYPE_CLASSIFICATION = "classification"
 TRAINING_TYPE_DOMAIN_ADAPTATION = "domain_adaptation"
 
@@ -48,6 +51,7 @@ SINGLE_TARGET_LABEL = 'Train X |Test(Y → X)\n(DA single-target)'
 MULTI_TARGET_LABEL = 'Train X |Test((Y)Y1,Y2 → X)\n(DA multi-target)'
 
 EXPERIMENTS_LABELS = [    
+    '3 neurons fc discr.',
     '3 neurons fc discr. unblcd mixed datasets',
     #'3 neurons fc discr.',
     '2 neurons fc discr.',    
@@ -58,6 +62,7 @@ EXPERIMENTS_LABELS = [
 ]
 
 EXPERIMENTS_LABELS_LB = [    
+    '3 neurons fc discr.',
     '3 neurons fc discr.\nunblcd mixed datasets',
     #'3 neurons fc discr.',
     '2 neurons fc discr.',    
@@ -66,3 +71,5 @@ EXPERIMENTS_LABELS_LB = [
     '3 neurons fc discr.\n5 runs warmup',
     #'3 neurons fc discr.\n1 run warmup\n64 batch size'
 ]
+
+INCLUDE_DA_RESULTS = True

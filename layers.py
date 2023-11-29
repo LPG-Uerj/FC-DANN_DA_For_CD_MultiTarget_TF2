@@ -3,22 +3,19 @@ from tensorflow import keras
 from keras.layers import Layer
 
 @tf.custom_gradient
-def GradientReversalOperator(x, l):
-    def grad(dy):        
-        return tf.negative(dy) * l, 0. * dy
-    return x, grad
+def GradientReversalOperator(x,l):
+	def grad(dy):
+		return tf.negative(dy) * l, 0. * dy
+	return x, grad
 
-class GradientReversalLayer(Layer):
+class GradientReversalLayer(tf.keras.layers.Layer):
     def __init__(self):
-        super(GradientReversalLayer, self).__init__()        
-        self.num_calls = 0
-    
+        super(GradientReversalLayer, self).__init__()
+
     def call(self, inputs):
-        x, l = inputs
-        self.num_calls += 1        
-        y = GradientReversalOperator(x, l)
-        return y
-    
+        input,l = inputs
+        return GradientReversalOperator(input,l)
+
 class ReshapeTensor(Layer):
 
     def __init__(self, shape, **kwargs):

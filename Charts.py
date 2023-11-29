@@ -221,7 +221,10 @@ def Area_under_the_curve(X, Y):
 
 def create_map_chart(result_path,labels,main_path,path_to_export_chart,file_title,title,num_samples,chartsize=(7,7), displayChart = True):
     if len(result_path) != len(set(result_path)):        
-        raise Exception("Duplicates found in the result list")
+        raise Exception("Duplicates found in the result list.")
+    
+    if len(result_path) != len(labels):
+        raise Exception("Lists are not the same length. Please verify.")
 
     init = 0    
     results_folders = result_path
