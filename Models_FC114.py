@@ -757,7 +757,29 @@ class Models():
                                     print(" [!] Load failed... Details: {0}".format(e))
                         elif self.l != 0:
                             FLAG = False
-                            if  best_val_dr < loss_dr_vl and loss_dr_vl < 1:                            
+                            if  best_val_dr < loss_dr_vl and loss_dr_vl < 1 and self.num_targets <=2:                            
+                                if best_val_fs < f1_score_vl:
+                                    best_val_dr = loss_dr_vl
+                                    best_val_fs = f1_score_vl
+                                    best_val_dr_acc = acc_discriminator_val
+                                    best_mod_fs = f1_score_vl
+                                    best_mod_dr = loss_dr_vl
+                                    best_model_epoch = e
+                                    print('[!]Saving best ideal model at epoch: ' + str(e))
+                                    f.write("[!]Ideal best ideal model\n")                                    
+                                    self.save_weights(self.args.save_checkpoint_path)
+                                    FLAG = True
+                                elif np.abs(best_val_fs - f1_score_vl) < 3:
+                                    best_val_dr = loss_dr_vl
+                                    best_val_dr_acc = acc_discriminator_val
+                                    best_mod_fs = f1_score_vl
+                                    best_mod_dr = loss_dr_vl
+                                    best_model_epoch = e
+                                    print('[!]Saving best model attending best Dr_loss at epoch: ' + str(e))
+                                    f.write("[!]Best model attending best Dr_loss\n")                                    
+                                    self.save_weights(self.args.save_checkpoint_path)
+                                    FLAG = True
+                            elif  best_val_dr < loss_dr_vl and loss_dr_vl < 2 and self.num_targets > 2:                            
                                 if best_val_fs < f1_score_vl:
                                     best_val_dr = loss_dr_vl
                                     best_val_fs = f1_score_vl
@@ -780,13 +802,13 @@ class Models():
                                     self.save_weights(self.args.save_checkpoint_path)
                                     FLAG = True
                             elif best_val_fs < f1_score_vl:
-                                if  np.abs(best_val_dr_acc - acc_discriminator_val) < 0.05:
+                                if  np.abs(best_val_dr - loss_dr_vl) < 0.2:
                                     best_val_fs = f1_score_vl
                                     best_mod_fs = f1_score_vl
                                     best_mod_dr = loss_dr_vl
                                     best_model_epoch = e
                                     print('[!]Saving best model attending best f1-score at epoch: ' + str(e))
-                                    f.write("[!]Best model attending best f1-score \n")                                    
+                                    f.write("[!]Best model attending best f1-score \n")
                                     self.save_weights(self.args.save_checkpoint_path)
                                     FLAG = True
 
@@ -933,7 +955,7 @@ class Models():
         plt.title("Loss evolution")
         plt.xlabel("Epoch #")
         plt.ylabel("Loss")
-        plt.ylim([0, 1])
+        plt.ylim(0, 2)
         plt.legend()
         plt.savefig(os.path.join(self.args.save_checkpoint_path,"..","segmentation_metrics_run_"+self.args.num_run+".png"))
 

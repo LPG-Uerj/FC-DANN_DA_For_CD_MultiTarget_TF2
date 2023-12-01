@@ -34,7 +34,7 @@ single_target_checkpoint = 'checkpoint_tr_Amazon_PA_to_Cerrado_MA_domain_adaptat
 
 
 result_path = [    
-    #'results_tr_Amazon_PA_to_Amazon_RO_Cerrado_MA_domain_adaptation_DR_multi_Cerrado_MA/',
+    'results_tr_Amazon_PA_to_Amazon_RO_Cerrado_MA_domain_adaptation_DR_FC_multi_discriminate_target_True_wrmp_1_Cerrado_MA/'
     #'results_tr_Amazon_PA_to_Amazon_RO_Cerrado_MA_domain_adaptation_DR_multi_balanced_domain_labels_False_Cerrado_MA/',    
     #'results_tr_Amazon_PA_to_Amazon_RO_Cerrado_MA_domain_adaptation_DR_CONV_multi_balanced_domain_labels_True_Cerrado_MA/',
     #'results_tr_Amazon_PA_to_Amazon_RO_Cerrado_MA_domain_adaptation_DR_FC_multi_balanced_domain_labels_True_Cerrado_MA/',
@@ -44,7 +44,7 @@ result_path = [
 ]
 
 checkpoint_list = [
-    #'checkpoint_tr_Amazon_PA_to_Amazon_RO_Cerrado_MA_domain_adaptation_DR_multi_Amazon_RO_Cerrado_MA/',
+    'checkpoint_tr_Amazon_PA_to_Amazon_RO_Cerrado_MA_domain_adaptation_DR_FC_multi_discriminate_target_True_wrmp_1_Amazon_RO_Cerrado_MA/'
     #'checkpoint_tr_Amazon_PA_to_Amazon_RO_Cerrado_MA_domain_adaptation_DR_multi_balanced_domain_labels_False_Amazon_RO_Cerrado_MA/',
     #'checkpoint_tr_Amazon_PA_to_Amazon_RO_Cerrado_MA_domain_adaptation_DR_CONV_multi_balanced_domain_labels_True_Amazon_RO_Cerrado_MA/',
     #'checkpoint_tr_Amazon_PA_to_Amazon_RO_Cerrado_MA_domain_adaptation_DR_FC_multi_balanced_domain_labels_True_Amazon_RO_Cerrado_MA/',
