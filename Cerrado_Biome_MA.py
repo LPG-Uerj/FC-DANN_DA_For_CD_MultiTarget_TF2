@@ -21,7 +21,9 @@ class CERRADO_MA():
     REFERENCE_T1 = "PAST_REFERENCE_FOR_2018_EPSG4674_R220_63_MA"
     DATA_T2 = "21_08_2018_image_R220_63_MA"
     REFERENCE_T2 = "REFERENCE_2018_EPSG4674_R220_63_MA"
-    PSEUDO_REFERENCE = "REFERENCE_2018_EPSG4674_R220_63_CVA_OTSU_COS_SIM_Mrg_0_Nsy_0_PRef_0_Met_P-83R-65F1-73"
+    PSEUDO_REFERENCE_T1 = "PAST_REFERENCE_FOR_2018_EPSG4674_R220_63_CVA_OTSU_COS_SIM_Mrg_0_Nsy_1_PRef_0_HConf_1_Met_P-83R-65F1-73"
+    PSEUDO_REFERENCE_T2 = "REFERENCE_2018_EPSG4674_R220_63_CVA_OTSU_PRIOR_0_COS_SIM_Mrg_0_Nsy_1_PRef_0_HConf_1_Met_P-83R-65F1-73"
+    #PSEUDO_REFERENCE_T2 = "REFERENCE_2018_EPSG4674_R220_63_CVA_OTSU_COS_SIM_Mrg_0_Nsy_0_PRef_0_Met_P-83R-65F1-73"
 
     def __init__(self, args):
 
@@ -32,21 +34,13 @@ class CERRADO_MA():
 
         Image_t1_path = SharedParameters.Dataset_MAIN_PATH + self.DATASET_REGION + SharedParameters.IMAGES_SECTION + self.DATA_T1 + SharedParameters.DATA_TYPE
         Image_t2_path = SharedParameters.Dataset_MAIN_PATH + self.DATASET_REGION + SharedParameters.IMAGES_SECTION + self.DATA_T2 + SharedParameters.DATA_TYPE
-        Reference_t1_path = SharedParameters.Dataset_MAIN_PATH + self.DATASET_REGION + SharedParameters.REFERENCE_SECTION + self.REFERENCE_T1 + SharedParameters.DATA_TYPE
         
         if args.compute_ndvi:
             self.shape = (int(args.patches_dimension), int(args.patches_dimension), 2 * int(args.image_channels) + 2)
         else:
             self.shape = (int(args.patches_dimension), int(args.patches_dimension), 2 * int(args.image_channels))
 
-        if not os.path.exists(Image_t1_path):
-            raise Exception("Invalid Image_t1_path: " + Image_t1_path)
-
-        if not os.path.exists(Image_t2_path):
-            raise Exception("Invalid Image_t2_path: " + Image_t2_path)
-        
-        if not os.path.exists(Reference_t1_path):
-            raise Exception("Invalid Reference_t1_path: " + Reference_t1_path)      
+        reference_t1_name = self.REFERENCE_T1
 
         if args.reference_t2_name is not None:
             reference_t2_name = args.reference_t2_name  
@@ -56,11 +50,23 @@ class CERRADO_MA():
             reference_t2_name = self.REFERENCE_T2
         elif args.training_type == SharedParameters.TRAINING_TYPE_CLASSIFICATION:
             reference_t2_name = self.REFERENCE_T2
-        elif 'CL' in args.da_type:
-            reference_t2_name = self.REFERENCE_T2 
+        #elif 'CL' in args.da_type:
+        #    reference_t2_name = self.REFERENCE_T2 
         else:
             #PSEUDO_REFERENCE USED ONLY IF: ROLE == TARGET, TRAINING TYPE == DOMAIN_ADAPTATION, PHASE == TRAIN:
-            reference_t2_name = self.PSEUDO_REFERENCE
+            reference_t1_name = self.PSEUDO_REFERENCE_T1
+            reference_t2_name = self.PSEUDO_REFERENCE_T2
+
+        Reference_t1_path = SharedParameters.Dataset_MAIN_PATH + self.DATASET_REGION + SharedParameters.REFERENCE_SECTION + reference_t1_name + SharedParameters.DATA_TYPE
+
+        if not os.path.exists(Image_t1_path):
+            raise Exception("Invalid Image_t1_path: " + Image_t1_path)
+
+        if not os.path.exists(Image_t2_path):
+            raise Exception("Invalid Image_t2_path: " + Image_t2_path)
+        
+        if not os.path.exists(Reference_t1_path):
+            raise Exception("Invalid Reference_t1_path: " + Reference_t1_path)      
 
         print("Phase " + args.phase)        
         print("Reference t2: " + reference_t2_name)

@@ -9,7 +9,7 @@ from tensorflow import keras
 import matplotlib.pyplot as plt
 from sklearn.utils import shuffle
 from contextlib import redirect_stdout
-from da_model import DomainAdaptationModel
+from da_model import DomainAdaptationModel, MainNetwork
 from keras.optimizers import Adam
 from keras.losses import CategoricalCrossentropy
 from keras.metrics import CategoricalAccuracy
@@ -19,7 +19,7 @@ from SharedParameters import TRAINING_TYPE_DOMAIN_ADAPTATION,TRAINING_TYPE_CLASS
 from Tools import Data_Augmentation_Definition, Patch_Extraction, Data_Augmentation_Execution, Classification_Maps, compute_metrics, mask_creation
 from Networks import *
 from discriminators import *
-from tensorflow.keras.optimizers.schedules import LearningRateSchedule
+
 
 class Models():
     def __init__(self, args, dataset_s, dataset_t):
@@ -41,8 +41,8 @@ class Models():
         self.checkpoint_name = self.args.classifier_type        
 
         self.classifier_loss = WeightedCrossEntropyC()
-        #self.domainregressor_loss = CategoricalCrossentropy(from_logits=True)     
-        self.domainregressor_loss = CategoricalCrossentropy()
+        self.domainregressor_loss = CategoricalCrossentropy(from_logits=True)
+        #self.domainregressor_loss = DiscriminatorCrossEntropy()
 
         self.acc_function_discriminator = CategoricalAccuracy()   
         self.acc_function_discriminator_val = CategoricalAccuracy()               
@@ -75,7 +75,7 @@ class Models():
                 self.load_weights(self.args.trained_model_path)            
                 print('[*] Weights loaded successfuly.')
             except Exception as e:
-                raise Exception('[!] Load failed... Details: {0}'.format(e))                
+                raise Exception('[!] Load failed... Details: {0}'.format(e))               
 
     def assembly_empty_model(self, showSummary: bool = False):
         if self.args.classifier_type == 'DeepLab':
@@ -106,11 +106,11 @@ class Models():
                     d_conv_model = Domain_Regressor_Convolutional(input_shape=Encoder_Outputs.shape[1:], num_targets=self.num_targets)
                 
                 #self.D_out_shape = [self.num_targets]
-                self.D_out_shape = discriminator_model.layers[-2].output.shape[1:]
+                self.D_out_shape = discriminator_model.layers[-1].output.shape[1:]
 
                 print(f'D_out_shape: {self.D_out_shape}')
 
-                empty_model = DomainAdaptationModel(encoder_model,decoder_model, discriminator_model)                
+                empty_model = DomainAdaptationModel(self.input_shape, encoder_model, decoder_model, discriminator_model)                
 
                 if showSummary:
                     self.summary(empty_model.encoder_model, "Encoder: ")
@@ -118,7 +118,7 @@ class Models():
                     self.summary(empty_model.domain_discriminator, "Domain_Regressor: ")
 
             else:
-                empty_model = tf.keras.Model(inputs = input_block, outputs = Decoder_Outputs, name = 'deeplabv3plus')
+                empty_model = MainNetwork(encoder_model,decoder_model)
                 if showSummary:
                     self.summary(empty_model, "Encoder/Decoder: ")                      
         else:
@@ -131,7 +131,7 @@ class Models():
         with tf.GradientTape() as tape:
             self.classifier_loss.class_weights = class_weights
             self.classifier_loss.mask = mask_c
-            y_pred = self.model.main_network(x_batch_train,training = True)            
+            y_pred = self.model(x_batch_train,training = True)            
             loss = self.classifier_loss(y_batch_train, y_pred)
               
         self.training_optimizer.minimize(loss, self.model.main_network.trainable_weights,tape=tape)
@@ -153,14 +153,18 @@ class Models():
         self.classifier_loss.mask = mask_c
 
         with tf.GradientTape(persistent = True) as tape:
-            y_pred_segmentation,discriminator_output, _ = self.model([x_input,lambda_value],training=True)
+            y_pred_segmentation, discriminator_logits = self.model([x_input,lambda_value],training=True)
+
             loss_segmentation = self.classifier_loss(y_true_segmentation, y_pred_segmentation)         
-            loss_discriminator = self.domainregressor_loss(y_true=y_true_discriminator, y_pred=discriminator_output)   
+            loss_discriminator = self.domainregressor_loss(y_true=y_true_discriminator, y_pred=discriminator_logits)
+
             total_loss = loss_segmentation + loss_discriminator
+        
         self.training_optimizer.minimize(total_loss, self.model.trainable_weights,tape=tape)
+        
         del tape
 
-        self.acc_function_discriminator.update_state(y_true_discriminator, discriminator_output)
+        self.acc_function_discriminator.update_state(y_true_discriminator, discriminator_logits)
 
         return loss_segmentation, y_pred_segmentation, loss_discriminator
 		
@@ -173,12 +177,13 @@ class Models():
         self.classifier_loss.class_weights = class_weights
         self.classifier_loss.mask = mask_c
 
-        y_pred_segmentation,discriminator_output,logits_discriminator = self.model([x_input,lambda_value],training=False)
+        y_pred_segmentation, logits_discriminator = self.model([x_input,lambda_value],training=False)
         
         loss_segmentation = self.classifier_loss(y_true_segmentation, y_pred_segmentation)
-        loss_discriminator = self.domainregressor_loss(y_true=y_true_discriminator, y_pred=discriminator_output)
+        
+        loss_discriminator = self.domainregressor_loss(y_true=y_true_discriminator, y_pred=logits_discriminator)
 
-        self.acc_function_discriminator_val.update_state(y_true_discriminator, discriminator_output)
+        self.acc_function_discriminator_val.update_state(y_true_discriminator, logits_discriminator)
 
         return loss_segmentation, y_pred_segmentation, loss_discriminator
 
@@ -349,17 +354,7 @@ class Models():
 
             print('min size_vl_list:')
             print(min_vl_size)
-
-            #Combines different targets into one dataset
-            #corners_coordinates_tr_t = np.concatenate(corners_coordinates_tr_t, axis=0)
-            #corners_coordinates_vl_t = np.concatenate(corners_coordinates_vl_t, axis=0)
-
-            # Balancing the number of samples between source and target domain
-            #size_tr_s = np.shape(corners_coordinates_tr_s)[0]
-            #size_tr_t = np.shape(corners_coordinates_tr_t)[0]
-            #size_vl_s = np.shape(corners_coordinates_vl_s)[0]
-            #size_vl_t = np.shape(corners_coordinates_vl_t)[0]            
-
+           
             #Shuffling the num_samples
             index_tr_s = np.arange(size_tr_s[0])
             index_vl_s = np.arange(size_vl_s[0])
@@ -463,7 +458,7 @@ class Models():
 
         self.training_optimizer = Adam(beta_1=self.args.beta1)
         #self.feature_extractor_optimizer = Adam(beta_1=self.args.beta1)
-        #self.discriminator_optimizer = Adam(beta_1=self.args.beta1)
+        self.discriminator_optimizer = Adam(beta_1=self.args.beta1)
 
         #Training starts now:
         e = 0
@@ -478,6 +473,7 @@ class Models():
             np.random.shuffle(index)
             corners_coordinates_tr = corners_coordinates_tr[index, :]
             domain_indexs_tr = domain_indexs_tr[index, :]
+
             if self.args.training_type == TRAINING_TYPE_DOMAIN_ADAPTATION:
                 if 'DR' in self.args.da_type:
                     if len(self.D_out_shape) > 2:
@@ -491,6 +487,7 @@ class Models():
             np.random.shuffle(index)
             corners_coordinates_vl = corners_coordinates_vl[index, :]
             domain_indexs_vl = domain_indexs_vl[index, :]
+
             if self.args.training_type == TRAINING_TYPE_DOMAIN_ADAPTATION:
                 if 'DR' in self.args.da_type:
                     if len(self.D_out_shape) > 2:
@@ -527,20 +524,19 @@ class Models():
                     relative_progress = (float(e) - warmup + 1) / self.args.epochs
                     print("Number of warm-up epochs: %d"%(warmup))
                     if e >= warmup:
-                        self.l = np.float32(2. / (1. + np.exp(-self.args.gamma * relative_progress)) - 1)
+                        self.l = np.float32(2. / (1. + np.exp(-self.args.gamma * relative_progress)) - 1) * 0.1
                     else:
                         self.l = np.float32(0.)
-                    print("Gamma parameter: %.1f"%(self.args.gamma))         
-                    print("lambda_p: %.6f" %(self.l))
+                    print("Gamma parameter: %.6f"%(self.args.gamma))
+                    print("lambda_p: %.7f" %(self.l))
 
                 lr = self.learning_rate_decay(self.args.lr)
-                #lr_d = self.learning_rate_decay(self.args.lr*0.9)
 
                 self.training_optimizer.lr = lr
-                #self.feature_extractor_optimizer.lr = lr
-                #self.discriminator_optimizer.lr = lr
+                self.discriminator_optimizer.lr = lr
+
                 
-                print("Learning rate decay: %.6f"%(lr))                
+                print("Learning rate decay: %.7f"%(self.training_optimizer.lr))                
 
                 batch_counter_cl = 0
                 batchs = trange(num_batches_tr)
@@ -548,6 +544,10 @@ class Models():
                 for b in batchs:
                     corners_coordinates_tr_batch = corners_coordinates_tr[b * self.args.batch_size : (b + 1) * self.args.batch_size , :]
                     domain_index_batch = domain_indexs_tr[b * self.args.batch_size : (b + 1) * self.args.batch_size, :]
+
+                    #Domain mask: Source samples = 1 and Target samples = 0
+                    domain_mask_segmentation_tr = np.zeros((self.args.batch_size, self.args.patches_dimension, self.args.patches_dimension, self.args.num_classes),dtype=np.float32)
+                    domain_mask_segmentation_tr[:,:,:,:] = np.where(domain_index_batch != 0, 0., 1.).astype(np.float32)[:, np.newaxis, np.newaxis, :]
 
                     if self.args.data_augmentation:
                         transformation_indexs_batch = corners_coordinates_tr[b * self.args.batch_size : (b + 1) * self.args.batch_size , 4]
@@ -563,10 +563,14 @@ class Models():
                     # Recovering past reference
                     reference_t1_ = data_batch_[:,:,:, 2 * self.args.image_channels]
                     reference_t2_ = data_batch_[:,:,:, 2 * self.args.image_channels + 1]
-                    # plt.imshow(reference_t1_[0,:,:])
-                    # plt.show()
-                    # plt.imshow(reference_t2_[0,:,:])
-                    # plt.show()
+                    
+                    
+                    #plt.imshow(reference_t1_[0,:,:])
+                    #plt.show()
+                    #plt.imshow(reference_t2_[0,:,:])
+                    #plt.show()
+                    
+                    
                     # Hot encoding the reference_t2_
                     y_train_c_hot_batch = tf.keras.utils.to_categorical(reference_t2_, self.args.num_classes)
                     classification_mask_batch = reference_t1_.copy()
@@ -675,6 +679,11 @@ class Models():
                     Weights = np.ones((corners_coordinates_vl_batch.shape[0], self.args.patches_dimension, self.args.patches_dimension, self.args.num_classes),dtype=np.float32)
                     Weights[:,:,:,0] = class_weights[0] * Weights[:,:,:,0]
                     Weights[:,:,:,1] = class_weights[1] * Weights[:,:,:,1]
+
+                    #Domain mask: Source samples = 1 and Target samples = 0
+                    domain_mask_segmentation_vl = np.zeros((self.args.batch_size, self.args.patches_dimension, self.args.patches_dimension, self.args.num_classes),dtype=np.float32)
+                    domain_mask_segmentation_vl[:,:,:,:] = np.where(domain_index_batch != 0, 0., 1.).astype(np.float32)[:, np.newaxis, np.newaxis, :]
+
                     
                     if self.args.training_type == TRAINING_TYPE_CLASSIFICATION:
                         c_batch_loss, batch_probs = self._test_step(data_batch, y_valid_c_hot_batch, Weights, classification_mask_batch)
@@ -742,7 +751,7 @@ class Models():
             if self.args.training_type == TRAINING_TYPE_DOMAIN_ADAPTATION:
                 with open(os.path.join(self.args.save_checkpoint_path,"Log.txt"),"a") as f:
                     if 'DR' in self.args.da_type:
-                        if np.isnan(loss_cl_tr) or np.isnan(loss_cl_vl):
+                        if np.isnan(loss_cl_tr) or np.isnan(loss_cl_vl) or np.isnan(loss_dr_tr) or np.isnan(loss_dr_vl):
                             print('Nan value detected!!!!')                            
                             if best_model_epoch != -1:
                                 pat += 1
@@ -755,31 +764,12 @@ class Models():
                                     print(" [*] Load successfuly")
                                 except Exception as e:                                 
                                     print(" [!] Load failed... Details: {0}".format(e))
+                            else:
+                                print('There is no model to be loaded. Exiting training...')
+                                sys.exit(1)
                         elif self.l != 0:
                             FLAG = False
-                            if  best_val_dr < loss_dr_vl and loss_dr_vl < 1 and self.num_targets <=2:                            
-                                if best_val_fs < f1_score_vl:
-                                    best_val_dr = loss_dr_vl
-                                    best_val_fs = f1_score_vl
-                                    best_val_dr_acc = acc_discriminator_val
-                                    best_mod_fs = f1_score_vl
-                                    best_mod_dr = loss_dr_vl
-                                    best_model_epoch = e
-                                    print('[!]Saving best ideal model at epoch: ' + str(e))
-                                    f.write("[!]Ideal best ideal model\n")                                    
-                                    self.save_weights(self.args.save_checkpoint_path)
-                                    FLAG = True
-                                elif np.abs(best_val_fs - f1_score_vl) < 3:
-                                    best_val_dr = loss_dr_vl
-                                    best_val_dr_acc = acc_discriminator_val
-                                    best_mod_fs = f1_score_vl
-                                    best_mod_dr = loss_dr_vl
-                                    best_model_epoch = e
-                                    print('[!]Saving best model attending best Dr_loss at epoch: ' + str(e))
-                                    f.write("[!]Best model attending best Dr_loss\n")                                    
-                                    self.save_weights(self.args.save_checkpoint_path)
-                                    FLAG = True
-                            elif  best_val_dr < loss_dr_vl and loss_dr_vl < 2 and self.num_targets > 2:                            
+                            if  best_val_dr < loss_dr_vl and loss_dr_vl < 1:
                                 if best_val_fs < f1_score_vl:
                                     best_val_dr = loss_dr_vl
                                     best_val_fs = f1_score_vl
@@ -820,6 +810,7 @@ class Models():
                                 if best_model_epoch != -1:
                                     pat += 1
                                     if pat > self.args.patience:
+                                        print("Patience limit reached. Exiting training...")
                                         break
                         else:
                             print("Warming up!")
@@ -1223,19 +1214,3 @@ def Metrics_For_Test_M(hit_map,
     print(ALERT_AREA)
 
     return ACCURACY, FSCORE, RECALL, PRECISSION, CONFUSION_MATRIX, ALERT_AREA
-
-
-class MyDecay(LearningRateSchedule):
-
-    def __init__(self, batch_size, max_steps=100., mu_0=0.01, alpha=10, beta=0.75):
-        self.batch_size = batch_size
-        self.max_steps = max_steps        
-        self.mu_0 = mu_0
-        self.alpha = alpha
-        self.beta = beta        
-
-    def __call__(self, step):        
-        step = tf.cast(step, dtype=tf.float32)
-        _step = step // self.batch_size
-        p = _step / self.max_steps
-        return self.mu_0 / (1 + self.alpha * p)**self.beta

@@ -6,23 +6,21 @@ class WeightedCrossEntropyC(Loss):
     def __init__(self, class_weights=None, mask=None):
         super(WeightedCrossEntropyC, self).__init__()
         self.class_weights = class_weights
-        self.mask = mask        
+        self.mask = mask
 
-    def call(self, y_true, y_pred):        
+    def call(self, y_true, y_pred):
         temp = -y_true * tf.math.log(y_pred + 1e-3)
-        temp_weighted = tf.math.multiply(self.class_weights,temp)
+        temp_weighted = tf.math.multiply(self.class_weights, temp)
         loss = tf.math.reduce_sum(temp_weighted, 3)
-        #classifier_loss = tf.reduce_sum(self.mask * loss) / tf.reduce_sum(self.mask)
         classifier_loss = tf.math.divide_no_nan(tf.reduce_sum(self.mask * loss), tf.reduce_sum(self.mask))
         return classifier_loss
-
 
 class DiscriminatorCrossEntropy(Loss):
     def __init__(self):
         super(DiscriminatorCrossEntropy, self).__init__()
 
     def call(self, y_true, y_pred):
-        return tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits_v2(logits = y_pred, labels = y_true))
+        return tf.reduce_mean(tf.compat.v1.nn.softmax_cross_entropy_with_logits(logits = y_pred, labels = y_true))
 
 
 class BinaryCrossentropy(Loss):

@@ -31,7 +31,7 @@ parser.add_argument('--overlap', dest='overlap', type=float, default= 0.75, help
 parser.add_argument('--image_channels', dest='image_channels', type=int, default=7, help='number of image channels')
 parser.add_argument('--beta1', dest='beta1', type=float, default=0.9, help='momentum term of adam')
 parser.add_argument('--patches_dimension', dest='patches_dimension', type=int, default=64, help= 'dimension of the extracted patches')
-parser.add_argument('--compute_ndvi', dest='compute_ndvi', type=eval, choices=[True, False], default=True, help='Cumpute and stack the ndvi index to the rest of bands')
+parser.add_argument('--compute_ndvi', dest='compute_ndvi', type=eval, choices=[True, False], default=False, help='Compute and stack the ndvi index to the rest of bands')
 parser.add_argument('--buffer', dest='buffer', type=eval, choices=[True, False], default=False, help='Decide wether a buffer around deforestated regions will be performed')
 parser.add_argument('--num_classes', dest='num_classes', type=int, default=2, help='Number of classes comprised in both domains (classification)')
 

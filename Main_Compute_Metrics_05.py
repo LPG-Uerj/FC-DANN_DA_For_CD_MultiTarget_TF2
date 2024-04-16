@@ -27,7 +27,7 @@ parser.add_argument('--image_channels', dest='image_channels', type=int, default
 parser.add_argument('--buffer', dest='buffer', type=eval, choices=[True, False], default=True, help='Decide wether a buffer around deforestated regions will be performed')
 parser.add_argument('--eliminate_regions', dest='eliminate_regions', type=eval, choices=[True, False], default=True, help='Decide if small regions will be taken into account')
 parser.add_argument('--area_avoided', dest='area_avoided', type=int, default=69, help='area threshold that will be avoided')
-parser.add_argument('--compute_ndvi', dest='compute_ndvi', type=eval, choices=[True, False], default=True, help='Cumpute and stack the ndvi index to the rest of bands')
+parser.add_argument('--compute_ndvi', dest='compute_ndvi', type=eval, choices=[True, False], default=False, help='Cumpute and stack the ndvi index to the rest of bands')
 parser.add_argument('--phase', dest='phase', default='compute_metrics', help='train, test, compute_metrics')
 parser.add_argument('--training_type', dest='training_type', type=str, default='classification', help='classification|domain_adaptation')
 parser.add_argument('--save_result_text', dest='save_result_text', type=eval, choices=[True, False], default = True, help='decide if a text file results is saved')

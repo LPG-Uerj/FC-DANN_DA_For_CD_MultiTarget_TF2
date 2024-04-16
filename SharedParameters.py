@@ -16,8 +16,10 @@ PHASE_TRAIN = "train"
 PHASE_TEST = "test"
 PHASE_METRICS = "compute_metrics"
 
-#LR = str(0.00001)
 LR = str(0.0001)
+
+
+#2.5
 GAMMA = str(2.5)
 
 TRAINING_BATCH_SIZE = "32"
