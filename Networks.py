@@ -88,7 +88,7 @@ class DeepLabV3Plus():
 
             if self.args.skip_connections:
                 print('Skip_connections enabled')
-                skip_connection = self.general_conv2d(low_Level_Features, filters=48, kernel_size=1, strides=1, padding = 'same',activation_function="none")
+                skip_connection = self.general_conv2d(low_Level_Features, filters=48, kernel_size=1, strides=1, padding = 'same', do_norm=False, activation_function="none")
                 
                 low_level_features_size = skip_connection.shape[1:3]
                 layer = ReshapeTensor(low_level_features_size)(encoder_layer)
