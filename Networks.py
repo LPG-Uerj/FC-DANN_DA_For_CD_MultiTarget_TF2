@@ -95,12 +95,12 @@ class DeepLabV3Plus():
 
                 layer = tf.keras.layers.Concatenate(axis=3)([layer,skip_connection])
                 
-                layer = self.general_conv2d(layer, filters=256, kernel_size=1, strides = 1, padding='same', do_norm=False, activation_function="relu")
+                layer = self.general_conv2d(layer, filters=256, kernel_size=1, strides = 1, padding='same', do_norm=True, activation_function="relu")
             else:
                 print('Skip_connections disabled')
-                layer = self.general_conv2d(encoder_layer, filters=256, kernel_size=1, strides = 1, padding='same', do_norm=False, activation_function="relu")
+                layer = self.general_conv2d(encoder_layer, filters=256, kernel_size=1, strides = 1, padding='same', do_norm=True, activation_function="relu")
             
-            layer = self.general_conv2d(layer, filters=256, kernel_size=1, strides = 1, padding='same', do_norm=False, activation_function='relu')
+            layer = self.general_conv2d(layer, filters=256, kernel_size=1, strides = 1, padding='same', do_norm=True, activation_function='relu')
             
             layer = self.general_conv2d(layer, filters=int(self.args.num_classes), kernel_size=1, padding='same', do_norm=False, activation_function="none")
 
@@ -154,9 +154,9 @@ class DeepLabV3Plus():
     
     def general_conv2d(self, input_data, filters=256,  kernel_size=1, strides=1, conv_type = 'conv', padding='same', activation_function='relu', dilation_rate=1 , do_norm=True, relu_factor=0, name="conv2d"):
         if conv_type == 'conv':
-            conv = tf.keras.layers.Conv2D(filters, kernel_size, strides, padding, activation=None, kernel_initializer='glorot_uniform',dilation_rate=dilation_rate, use_bias=False)(input_data)
+            conv = tf.keras.layers.Conv2D(filters, kernel_size, strides, padding, activation=None, kernel_initializer='glorot_uniform',dilation_rate=dilation_rate)(input_data)
         elif conv_type == 'dep_conv':
-            conv = tf.keras.layers.SeparableConv2D(filters, kernel_size, strides, padding, activation = None, depthwise_initializer = 'glorot_uniform', pointwise_initializer = 'glorot_uniform', use_bias=False)(input_data)
+            conv = tf.keras.layers.SeparableConv2D(filters, kernel_size, strides, padding, activation = None, depthwise_initializer = 'glorot_uniform', pointwise_initializer = 'glorot_uniform')(input_data)
         if do_norm:
             conv = tf.keras.layers.BatchNormalization(momentum=0.9997)(conv)
         if activation_function.casefold() == "leakyrelu":

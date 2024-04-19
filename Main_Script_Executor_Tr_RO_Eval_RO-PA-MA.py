@@ -92,7 +92,7 @@ for dr_localization in DR_LOCALIZATION:
                                 "--da_type " + da + " "
                                 "--runs " + runs + " "
                                 "--warmup " + warmup + " "
-                                "--patience 10 "
+                                "--patience " + SharedParameters.PATIENCE + " "
                                 "--checkpoint_dir " + checkpoint_dir_param + " "
                                 "--source_dataset " + source_dataset + " "
                                 "--target_dataset " + target_dataset + " "

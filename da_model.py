@@ -3,6 +3,7 @@ from tensorflow import keras
 from keras.models import Model
 from keras.layers import Input
 from layers import GradientReversalLayer
+from discriminators import DomainDiscriminatorFullyConnected
 
 class DomainAdaptationModel(tf.keras.Model):
 
@@ -12,7 +13,7 @@ class DomainAdaptationModel(tf.keras.Model):
         self.encoder_model = encoder_model
         self.decoder_model = decoder_model
         self.grl = GradientReversalLayer()
-        self.domain_discriminator = domain_discriminator_model
+        self.domain_discriminator = DomainDiscriminatorFullyConnected()
         self.main_network = MainNetwork(encoder_model,decoder_model)
 
         self.inputs = [Input(shape = input_shape), Input(shape = ())]
@@ -24,13 +25,10 @@ class DomainAdaptationModel(tf.keras.Model):
         input_img, l = inputs
 
         encoder_output, feature_output = self.encoder_model(input_img)
-
         segmentation_output = self.decoder_model([encoder_output,feature_output])
-
         discriminator_input = self.grl([encoder_output,l])
+        discriminator_logits,_ = self.domain_discriminator(discriminator_input)
         
-        discriminator_logits = self.domain_discriminator(discriminator_input)
-
         return segmentation_output, discriminator_logits
 
     def get_config(self):

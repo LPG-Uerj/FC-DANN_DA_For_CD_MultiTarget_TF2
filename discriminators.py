@@ -1,6 +1,44 @@
 import tensorflow as tf
 
 
+class DomainDiscriminatorFullyConnected(tf.keras.Model):
+
+    def __init__(self, units: int = 1024, num_targets: int = 2, **kwargs):
+        super(DomainDiscriminatorFullyConnected, self).__init__(**kwargs)
+
+        self.flat = tf.keras.layers.Flatten()
+        
+        self.dense_1 = tf.keras.layers.Dense(units = units)
+        self.activ_1 = tf.keras.layers.Activation('relu')
+        
+        self.dense_2 = tf.keras.layers.Dense(units = units)
+        self.activ_2 = tf.keras.layers.Activation('relu')
+                
+        self.dense_3 = tf.keras.layers.Dense(units = num_targets)     
+        self.proba = tf.keras.layers.Activation('softmax')    
+        
+    def call(self, x):
+
+        x = self.flat(x)
+        
+        x = self.dense_1(x)
+        x = self.activ_1(x)
+
+        x = self.dense_2(x)
+        x = self.activ_2(x)
+
+        x = self.dense_3(x)
+        probs = self.proba(x)
+
+        return x, probs
+
+    def get_config(self):
+        config = super(DomainDiscriminatorFullyConnected, self).get_config()
+        return config
+
+    def from_config(cls, config):
+        return cls(**config)
+
 def Domain_Regressor_FullyConnected(input_shape, units: int = 1024, num_targets: int = 2):
     print("Domain_Regressor_FullyConnected -  output neurons: " + str(num_targets))
 
@@ -19,6 +57,9 @@ def Domain_Regressor_FullyConnected(input_shape, units: int = 1024, num_targets:
     #output = tf.keras.layers.Softmax()(x)
 
     return tf.keras.Model(inputs = inputs, outputs = x, name = 'discriminator')
+
+
+
 
     
 def Domain_Regressor_Convolutional(input_shape, num_targets: int):

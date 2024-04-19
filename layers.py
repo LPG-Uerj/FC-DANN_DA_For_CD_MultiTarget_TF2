@@ -24,7 +24,8 @@ class ReshapeTensor(Layer):
         self.shape = shape
 
     def call(self, inputs):
-        reshaped = tf.compat.v1.image.resize(inputs, self.shape)
+        #reshaped = tf.compat.v1.image.resize(inputs, self.shape)
+        reshaped = tf.image.resize(inputs, self.shape, method=tf.image.ResizeMethod.BILINEAR)
         return reshaped
 
     def get_config(self):
