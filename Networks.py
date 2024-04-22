@@ -1,6 +1,5 @@
 import tensorflow as tf
-from layers import ReshapeTensor
-#--------------------
+from layers import ReshapeTensor, SlimConv2D
 
 from BaseModels import *
 
@@ -44,38 +43,12 @@ class DeepLabV3Plus():
 
         print('Building backbone architecture...')
 
-        '''
-        if 'ResNetV1' in self.args.backbone:
-            backbone = ResNetV1(self.args)
-            Encoder_Layers = backbone.build_Encoder_Layers(X, name = name)
-            low_Level_Features =  tf.keras.layers.Conv2D(Encoder_Layers[6], 48, 1, 1, padding = 'SAME', activation=None, kernel_initializer=tf.contrib.layers.xavier_initializer())
-            Encoder_Layers.append(self.atrous_Spatial_Pyramid_Pooling(Encoder_Layers[-1], self.args.aspp_rates, self.args.bn_decay, True))
-
-            return Encoder_Layers, low_Level_Features
-
-        if 'ResNetV2' in self.args.backbone:
-            backbone = ResNetV2(self.args)
-            Encoder_Layers = backbone.build_Encoder_Layers(X, name = name)
-            low_Level_Features =  tf.keras.layers.Conv2D(Encoder_Layers[6], 48, 1, 1, padding = 'SAME', activation=None, kernel_initializer=tf.contrib.layers.xavier_initializer())
-            Encoder_Layers.append(self.atrous_Spatial_Pyramid_Pooling(Encoder_Layers[-1], self.args.aspp_rates, self.args.bn_decay, True))
-
-            return Encoder_Layers, low_Level_Features
-
-        elif self.args.backbone == 'mobile_net':
-            backbone = MobileNet(self.args)
-            Encoder_Layers = backbone.build_Encoder_Layers(X, name = name)
-            Encoder_Layers.append(self.atrous_Spatial_Pyramid_Pooling(Encoder_Layers[-1], self.args.aspp_rates, self.args.bn_decay, True))
-            return Encoder_Layers, None
-        '''
         if self.args.backbone == 'xception':
             backbone = Xception(self.args)
             Encoder_Layers, low_layer = backbone.build_Encoder_Layers(input_block)
-            #low_Level_Features =  tf.keras.layers.Conv2D(48, 1, 1, padding = 'SAME', activation=None, kernel_initializer='glorot_uniform')(low_layer)
             
             #Layer that feedforward domain regressor model
             Encoder_Layers = self.atrous_Spatial_Pyramid_Pooling(Encoder_Layers, self.args.aspp_rates)
-
-            #model = tf.keras.Model(inputs = input_block, outputs = [Encoder_Layers, low_Level_Features], name = 'deeplabv3plus_encoder')
 
             return Encoder_Layers, low_layer
         else:
@@ -85,24 +58,29 @@ class DeepLabV3Plus():
         with tf.name_scope("DeepLab_Decoder"):
             encoder_layer = tf.keras.layers.Input(shape = features_shape)
             low_Level_Features = tf.keras.layers.Input(shape = skip_connect_shape)
-
+            
             if self.args.skip_connections:
                 print('Skip_connections enabled')
-                skip_connection = self.general_conv2d(low_Level_Features, filters=48, kernel_size=1, strides=1, padding = 'same', do_norm=False, activation_function="none")
+                skip_connection = tf.keras.layers.Conv2D(48, 1, strides=1, padding = 'same', activation=None)(low_Level_Features)
                 
                 low_level_features_size = skip_connection.shape[1:3]
                 layer = ReshapeTensor(low_level_features_size)(encoder_layer)
 
                 layer = tf.keras.layers.Concatenate(axis=3)([layer,skip_connection])
                 
-                layer = self.general_conv2d(layer, filters=256, kernel_size=1, strides = 1, padding='same', do_norm=True, activation_function="relu")
+                #layer = SlimConv2D(256, 3, stride = 1, padding='same', scope = 'convd_3x3_1')(layer)
+                layer = self.general_conv2d(layer, filters=256, kernel_size=3, strides = 1, padding='same', do_norm=True, activation_function="relu")
             else:
                 print('Skip_connections disabled')
-                layer = self.general_conv2d(encoder_layer, filters=256, kernel_size=1, strides = 1, padding='same', do_norm=True, activation_function="relu")
+                #layer = SlimConv2D(256, 3, stride = 1, padding='same', scope = 'convd_3x3_1')(encoder_layer)
+                layer = self.general_conv2d(encoder_layer, filters=256, kernel_size=3, strides = 1, padding='same', do_norm=True, activation_function="relu")
             
-            layer = self.general_conv2d(layer, filters=256, kernel_size=1, strides = 1, padding='same', do_norm=True, activation_function='relu')
+            #layer = SlimConv2D(256, 3, stride = 1, padding='same', scope = 'convd_3x3_2')(layer)
+            layer = self.general_conv2d(layer, filters=256, kernel_size=3, strides = 1, padding='same', do_norm=True, activation_function='relu')
             
+            #layer = SlimConv2D(int(self.args.num_classes), 1, stride = 1, padding='same', activation_fn = None, normalizer_fn = None, scope = 'convd_3x3_3')(layer)
             layer = self.general_conv2d(layer, filters=int(self.args.num_classes), kernel_size=1, padding='same', do_norm=False, activation_function="none")
+
 
             inputs_size = [self.args.patches_dimension, self.args.patches_dimension]
             logits = ReshapeTensor(inputs_size)(layer)
@@ -134,31 +112,53 @@ class DeepLabV3Plus():
         depth_padding = 'same'
 
         with tf.name_scope("atrous_pyramid"):
-            
-            conv_1x1 = self.general_conv2d(inputs, filters=depth, kernel_size=1, strides=1, padding=depth_padding, dilation_rate=1, activation_function='relu')
-            conv_3x3_1 = self.general_conv2d(inputs, filters=depth, kernel_size=3, strides=1, padding=depth_padding, dilation_rate=atrous_rates[0], activation_function='relu')
-            conv_3x3_2 = self.general_conv2d(inputs, filters=depth, kernel_size=3, strides=1, padding=depth_padding, dilation_rate=atrous_rates[1], activation_function='relu')
-            conv_3x3_3 = self.general_conv2d(inputs,  filters=depth, kernel_size=3, strides=1, padding=depth_padding, dilation_rate=atrous_rates[2], activation_function='relu')
-            
+
+            conv_1x1 = self.regularized_conv2d(inputs, filters=depth, kernel_size=1, strides=1, padding=depth_padding, dilation_rate=1, activation_function='relu')
+            conv_3x3_1 = self.regularized_conv2d(inputs, filters=depth, kernel_size=3, strides=1, padding=depth_padding, dilation_rate=atrous_rates[0], activation_function='relu')
+            conv_3x3_2 = self.regularized_conv2d(inputs, filters=depth, kernel_size=3, strides=1, padding=depth_padding, dilation_rate=atrous_rates[1], activation_function='relu')
+            conv_3x3_3 = self.regularized_conv2d(inputs,  filters=depth, kernel_size=3, strides=1, padding=depth_padding, dilation_rate=atrous_rates[2], activation_function='relu')
+
+            #conv_1x1 = SlimConv2D(depth, 1, stride=1, scope="conv_1x1")(inputs)
+            #conv_3x3_1 = SlimConv2D(depth, 3, stride=1, rate=atrous_rates[0], scope='conv_3x3_1')(inputs)
+            #conv_3x3_2 = SlimConv2D(depth, 3, stride=1, rate=atrous_rates[1], scope='conv_3x3_2')(inputs)
+            #conv_3x3_3 = SlimConv2D(depth, 3, stride=1, rate=atrous_rates[2], scope='conv_3x3_3')(inputs)
+         
         with tf.name_scope("image_level_features"):
             image_level_features = tf.keras.layers.GlobalAveragePooling2D(keepdims=True)(inputs)
-            image_level_features = self.general_conv2d(image_level_features, filters=depth, kernel_size=1, strides=1, padding=depth_padding, activation_function='relu')
-            
+            #image_level_features = SlimConv2D(depth, 1, stride=1, padding=depth_padding, scope='conv_image_level_features')(image_level_features)
+            image_level_features = self.regularized_conv2d(image_level_features, filters=depth, kernel_size=1, strides=1, padding=depth_padding, activation_function='relu')
+
             #bilinearly upsample features
             image_level_features = ReshapeTensor(inputs_size)(image_level_features)
 
         net = tf.keras.layers.Concatenate(axis=3)([conv_1x1, conv_3x3_1, conv_3x3_2, conv_3x3_3, image_level_features])
-        net = self.general_conv2d(net, filters=depth, kernel_size=1, strides=1, padding=depth_padding, activation_function='relu')
+        #net = SlimConv2D(depth, 1, stride=1, padding=depth_padding, scope='conv_1x1_concat')(net)
+        net = self.regularized_conv2d(net, filters=depth, kernel_size=1, strides=1, padding=depth_padding, activation_function='relu')
 
         return net
     
+    def regularized_conv2d(self, input_data, filters=256,  kernel_size=1, strides=1, padding='same', activation_function='relu', dilation_rate=1 , do_norm=True, relu_factor=0, name="conv2d"):
+        
+        initializer = tf.keras.initializers.VarianceScaling(scale=2.0,mode='fan_in',distribution='truncated_normal')
+        conv = tf.keras.layers.Conv2D(filters, kernel_size, strides, padding, activation=None, dilation_rate=dilation_rate,kernel_regularizer=tf.keras.regularizers.L2(l2=0.0001), kernel_initializer=initializer)(input_data)
+        
+        if do_norm:
+            conv = tf.keras.layers.BatchNormalization(momentum=0.9997, epsilon=1e-5)(conv)
+        if activation_function.casefold() == "leakyrelu":
+            conv = tf.keras.layers.LeakyReLU(alpha=relu_factor)(conv)
+        elif activation_function.casefold() != "none":
+            conv = tf.keras.layers.Activation(activation_function)(conv)
+        return conv
+    
+    
     def general_conv2d(self, input_data, filters=256,  kernel_size=1, strides=1, conv_type = 'conv', padding='same', activation_function='relu', dilation_rate=1 , do_norm=True, relu_factor=0, name="conv2d"):
         if conv_type == 'conv':
-            conv = tf.keras.layers.Conv2D(filters, kernel_size, strides, padding, activation=None, kernel_initializer='glorot_uniform',dilation_rate=dilation_rate)(input_data)
+            conv = tf.keras.layers.Conv2D(filters, kernel_size, strides, padding, activation=None, dilation_rate=dilation_rate)(input_data)
         elif conv_type == 'dep_conv':
-            conv = tf.keras.layers.SeparableConv2D(filters, kernel_size, strides, padding, activation = None, depthwise_initializer = 'glorot_uniform', pointwise_initializer = 'glorot_uniform')(input_data)
+            conv = tf.keras.layers.SeparableConv2D(filters, kernel_size, strides, padding, activation = None)(input_data)
         if do_norm:
-            conv = tf.keras.layers.BatchNormalization(momentum=0.9997)(conv)
+            conv = tf.keras.layers.BatchNormalization(momentum=0.9997, epsilon=1e-5)(conv)
+            #conv = tf.keras.layers.BatchNormalization()(conv)
         if activation_function.casefold() == "leakyrelu":
             conv = tf.keras.layers.LeakyReLU(alpha=relu_factor)(conv)
         elif activation_function.casefold() != "none":

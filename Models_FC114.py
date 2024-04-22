@@ -41,8 +41,8 @@ class Models():
         self.checkpoint_name = self.args.classifier_type        
 
         self.classifier_loss = WeightedCrossEntropyC()
-        self.domainregressor_loss = CategoricalCrossentropy(from_logits=True)
-        #self.domainregressor_loss = DiscriminatorCrossEntropy()
+        #self.domainregressor_loss = CategoricalCrossentropy(from_logits=True)
+        self.domainregressor_loss = DiscriminatorCrossEntropy()
 
         self.acc_function_discriminator = CategoricalAccuracy()   
         self.acc_function_discriminator_val = CategoricalAccuracy()               
@@ -524,7 +524,7 @@ class Models():
                     relative_progress = (float(e) - warmup + 1) / self.args.epochs
                     print("Number of warm-up epochs: %d"%(warmup))
                     if e >= warmup:
-                        self.l = np.float32(2. / (1. + np.exp(-self.args.gamma * relative_progress)) - 1) * 0.1
+                        self.l = np.float32(2. / (1. + np.exp(-self.args.gamma * relative_progress)) - 1)
                     else:
                         self.l = np.float32(0.)
                     print("Gamma parameter: %.6f"%(self.args.gamma))
