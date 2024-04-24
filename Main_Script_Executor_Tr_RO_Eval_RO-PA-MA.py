@@ -33,7 +33,6 @@ warnings.filterwarnings("ignore")
 Schedule = []
 
 
-
 Checkpoint_Results_MAIN_PATH = "./results/"
 
 source_dataset = AMAZON_RO.DATASET
@@ -50,6 +49,8 @@ num_targets = "2"
 
 #TARGET: RO
 target_dataset = AMAZON_RO.DATASET
+
+warmup = "1"
 
 DR_LOCALIZATION = ['55']
 METHODS  = [SharedParameters.METHOD]

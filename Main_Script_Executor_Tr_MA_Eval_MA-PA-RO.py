@@ -32,7 +32,7 @@ if args.running_in == 'Datarmor_PBS':
 warnings.filterwarnings("ignore")
 Schedule = []
 
-
+warmup = "1"
 
 Checkpoint_Results_MAIN_PATH = "./results/"
 

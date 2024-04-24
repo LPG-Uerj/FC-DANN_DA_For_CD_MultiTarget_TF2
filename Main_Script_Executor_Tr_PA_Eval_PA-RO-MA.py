@@ -48,6 +48,8 @@ num_classes = "2"
 #Source PA, Target PA
 num_targets = "2" 
 
+warmup = "1"
+
 #TARGET: PA
 target_dataset = AMAZON_PA.DATASET
 

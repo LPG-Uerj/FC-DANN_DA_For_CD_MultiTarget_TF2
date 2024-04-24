@@ -48,7 +48,6 @@ runs = "5"
 
 source_dataset = AMAZON_PA.DATASET
 
-
 #TARGET: MA
 target_dataset = CERRADO_MA.DATASET
 source_to_target = source_dataset + "_to_" + target_dataset
@@ -99,7 +98,7 @@ for dr_localization in DR_LOCALIZATION:
                                 "--da_type " + da + " "
                                 "--runs " + runs + " "
                                 "--warmup " + warmup + " "
-                                "--patience 10 "
+                                "--patience " + SharedParameters.PATIENCE + " "
                                 "--checkpoint_dir " + checkpoint_dir_param + " "
                                 "--source_dataset " + source_dataset + " "
                                 "--target_dataset " + target_dataset + " "
@@ -171,6 +170,7 @@ for dr_localization in DR_LOCALIZATION:
                                 "--checkpoint_results_main_path " + Checkpoint_Results_MAIN_PATH + " ")
 
 
+
 #TARGET: RO
 target_dataset = AMAZON_RO.DATASET
 source_to_target = source_dataset + "_to_" + target_dataset
@@ -183,6 +183,7 @@ DR_LOCALIZATION = ['55']
 METHODS  = [SharedParameters.METHOD]
 
 DA_TYPES = ['DR']
+
 TARGET_DATASETS = [target_dataset,source_dataset]
 
 for dr_localization in DR_LOCALIZATION:
@@ -222,7 +223,7 @@ for dr_localization in DR_LOCALIZATION:
                                 "--da_type " + da + " "
                                 "--runs " + runs + " "
                                 "--warmup " + warmup + " "
-                                "--patience 10 "
+                                "--patience " + SharedParameters.PATIENCE + " "
                                 "--checkpoint_dir " + checkpoint_dir_param + " "
                                 "--source_dataset " + source_dataset + " "
                                 "--target_dataset " + target_dataset + " "
@@ -292,7 +293,6 @@ for dr_localization in DR_LOCALIZATION:
                                 "--results_dir " + results_dir_param + " "
                                 "--dataset " + target_ds + " "                                
                                 "--checkpoint_results_main_path " + Checkpoint_Results_MAIN_PATH + " ")
-
 
                                 
 for i in range(len(Schedule)):

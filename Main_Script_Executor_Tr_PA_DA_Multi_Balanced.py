@@ -56,7 +56,6 @@ warmup = "1"
 DR_LOCALIZATION = ['55']
 METHODS  = [SharedParameters.METHOD]
 DA_TYPES = ['DR']
-#DA_TYPES = ['DRCL']
 TARGET_DATASETS = [AMAZON_RO.DATASET, CERRADO_MA.DATASET, source_dataset]
 
 for dr_localization in DR_LOCALIZATION:
@@ -98,7 +97,7 @@ for dr_localization in DR_LOCALIZATION:
                                 "--da_type " + da + " "
                                 "--runs " + runs + " "
                                 "--warmup " + warmup + " "
-                                "--patience 10 "
+                                "--patience " + SharedParameters.PATIENCE + " "
                                 "--checkpoint_dir " + checkpoint_dir_param + " "
                                 "--source_dataset " + source_dataset + " "
                                 "--target_dataset " + target_dataset + " "

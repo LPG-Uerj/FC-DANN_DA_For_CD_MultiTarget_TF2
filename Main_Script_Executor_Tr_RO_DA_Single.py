@@ -54,7 +54,6 @@ runs = "5"
 DR_LOCALIZATION = ['55']
 METHODS  = [SharedParameters.METHOD]
 DA_TYPES = ['DR']
-#DA_TYPES = ['DRCL']
 TARGET_DATASETS = [AMAZON_PA.DATASET, source_dataset]
 
 for dr_localization in DR_LOCALIZATION:
@@ -94,7 +93,7 @@ for dr_localization in DR_LOCALIZATION:
                                 "--da_type " + da + " "
                                 "--runs " + runs + " "
                                 "--warmup " + warmup + " "
-                                "--patience 10 "
+                                "--patience " + SharedParameters.PATIENCE + " "
                                 "--checkpoint_dir " + checkpoint_dir_param + " "
                                 "--source_dataset " + source_dataset + " "
                                 "--target_dataset " + target_dataset + " "
@@ -178,7 +177,6 @@ results_dir = "results_tr_"+source_to_target+"_"
 DR_LOCALIZATION = ['55']
 METHODS  = [SharedParameters.METHOD]
 DA_TYPES = ['DR']
-#DA_TYPES = ['DRCL']
 TARGET_DATASETS = [CERRADO_MA.DATASET, source_dataset]
 
 for dr_localization in DR_LOCALIZATION:
@@ -218,7 +216,7 @@ for dr_localization in DR_LOCALIZATION:
                                 "--da_type " + da + " "
                                 "--runs " + runs + " "
                                 "--warmup " + warmup + " "
-                                "--patience 10 "
+                                "--patience " + SharedParameters.PATIENCE + " "
                                 "--checkpoint_dir " + checkpoint_dir_param + " "
                                 "--source_dataset " + source_dataset + " "
                                 "--target_dataset " + target_dataset + " "
