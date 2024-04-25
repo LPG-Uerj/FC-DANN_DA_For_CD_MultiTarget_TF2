@@ -477,9 +477,9 @@ class Models():
             if self.args.training_type == TRAINING_TYPE_DOMAIN_ADAPTATION:
                 if 'DR' in self.args.da_type:
                     if len(self.D_out_shape) > 2:
-                        _y_train_d = y_train_d[index, :, :, :]
+                        y_train_d = y_train_d[index, :, :, :]
                     else:
-                        _y_train_d = y_train_d[index, :]
+                        y_train_d = y_train_d[index, :]
 
             #Shuffling the data and the labels for validation samples
             num_samples = corners_coordinates_vl.shape[0]
@@ -491,9 +491,9 @@ class Models():
             if self.args.training_type == TRAINING_TYPE_DOMAIN_ADAPTATION:
                 if 'DR' in self.args.da_type:
                     if len(self.D_out_shape) > 2:
-                        _y_valid_d = y_valid_d[index, :, :, :]
+                        y_valid_d = y_valid_d[index, :, :, :]
                     else:
-                        _y_valid_d = y_valid_d[index, :]
+                        y_valid_d = y_valid_d[index, :]
 
             # Open a file in order to save the training history
             with open(os.path.join(self.args.save_checkpoint_path,"Log.txt"),"a") as f:
