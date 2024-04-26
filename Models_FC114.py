@@ -42,6 +42,8 @@ class Models():
         else:
             self.num_targets = 2
 
+        self.args.num_targets = self.num_targets
+
         print("self.discriminate_domain_targets: " + str(self.args.discriminate_domain_targets))
         print("self.num_targets: " + str(self.num_targets))
 
@@ -66,9 +68,9 @@ class Models():
             self.data = tf.compat.v1.placeholder(tf.float32, [None, self.args.patches_dimension, self.args.patches_dimension, 2 * self.args.image_channels], name = "data")
 
         if self.args.domain_regressor_type == 'Dense':
-            self.label_d = tf.compat.v1.placeholder(tf.float32, [None, None, None, self.args.num_classes], name = "label_d")
+            self.label_d = tf.compat.v1.placeholder(tf.float32, [None, None, None, self.num_targets], name = "label_d")
         if self.args.domain_regressor_type == 'FC':
-            self.label_d = tf.compat.v1.placeholder(tf.float32, [None, self.args.num_classes], name = "label_d")
+            self.label_d = tf.compat.v1.placeholder(tf.float32, [None, self.num_targets], name = "label_d")
 
         self.label_c = tf.compat.v1.placeholder(tf.float32, [None, self.args.patches_dimension, self.args.patches_dimension, self.args.num_classes], name = "label_c")
         self.mask_c = tf.compat.v1.placeholder(tf.float32, [None, self.args.patches_dimension, self.args.patches_dimension], name="labeled_samples")
@@ -190,12 +192,12 @@ class Models():
     
 
     def summary(self, net, name):
-        f = open(self.args.save_checkpoint_path + "Architecture.txt","a")
+        summaryFile = os.path.join(self.args.save_checkpoint_path,"Architecture.txt")
+        f = open(summaryFile,"a")
         f.write(name + "\n")
         for i in range(len(net)):
             print(net[i].get_shape().as_list())
             f.write(str(net[i].get_shape().as_list()) + "\n")
-            #print(net[i].op.name)
         f.close()
 
     def weighted_cross_entropy_c(self, label_c, prediction_c, class_weights):
@@ -575,7 +577,7 @@ class Models():
                             else:
                                 y_train_d_batch = y_train_d[b * self.args.batch_size : (b + 1) * self.args.batch_size, :]
 
-                            y_train_d_hot_batch = tf.keras.utils.to_categorical(y_train_d_batch, 2)
+                            y_train_d_hot_batch = tf.keras.utils.to_categorical(y_train_d_batch, self.num_targets)
 
                             _, c_batch_loss, batch_probs, d_batch_loss  = self.sess.run([self.training_optimizer, self.classifier_loss, self.prediction_c, self.domainregressor_loss],
                                                                         feed_dict={self.data: data_batch, self.label_c: y_train_c_hot_batch, self.label_d: y_train_d_hot_batch,
@@ -686,7 +688,7 @@ class Models():
                                 y_valid_d_batch = y_valid_d[b * self.args.batch_size : (b + 1) * self.args.batch_size, :]
 
                         #y_valid_d_batch = y_valid_d[b * self.args.batch_size : (b + 1) * self.args.batch_size, :]
-                        y_valid_d_hot_batch = tf.keras.utils.to_categorical(y_valid_d_batch, 2)
+                        y_valid_d_hot_batch = tf.keras.utils.to_categorical(y_valid_d_batch, self.num_targets)
                         c_batch_loss, batch_probs, d_batch_loss = self.sess.run([self.classifier_loss, self.prediction_c, self.domainregressor_loss],
                                                                                 feed_dict={self.data: data_batch, self.label_c: y_valid_c_hot_batch, self.label_d: y_valid_d_hot_batch,
                                                                                 self.mask_c: classification_mask_batch, self.class_weights: Weights, self.L: 0, self.learning_rate: self.lr})
