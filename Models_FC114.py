@@ -33,12 +33,14 @@ class Models():
         self.args = args
         self.dataset_s = dataset_s
         self.dataset_t = dataset_t
+        self.loss_dr_threshold = 1.
 
         if self.args.discriminate_domain_targets:
             if self.args.num_targets is None:
                 raise Exception("Num_targets must have an integer positive value.")
 
             self.num_targets = self.args.num_targets + 1
+            self.loss_dr_threshold = 1.5
         else:
             self.num_targets = 2
 
@@ -768,7 +770,7 @@ class Models():
                                 self.sess.run(tf.compat.v1.initialize_all_variables())
                         elif self.l != 0:
                             FLAG = False
-                            if  best_val_dr < loss_dr_vl[0 , 0] and loss_dr_vl[0 , 0] < 1:
+                            if  best_val_dr < loss_dr_vl[0 , 0] and loss_dr_vl[0 , 0] < self.loss_dr_threshold:
                                 if best_val_fs < f1_score_vl:
                                     best_val_dr = loss_dr_vl[0 , 0]
                                     best_val_fs = f1_score_vl
@@ -867,12 +869,12 @@ class Models():
                 else:
                     print("Training ended")
                     print("[!] [!] No Model has been selected.")
-                    print("loss_dr_vl: %.3f"%(loss_dr_vl))                    
+                    print("loss_dr_vl: %.3f"%(loss_dr_vl[0 , 0]))                    
                     print("f1_score_vl: %.3f"%(f1_score_vl))                    
 
                     f.write("Training ended")
                     f.write("[!] [!] No Model has been selected.")
-                    f.write("loss_dr_vl: %.3f \n"%(loss_dr_vl))                    
+                    f.write("loss_dr_vl: %.3f \n"%(loss_dr_vl[0 , 0]))                    
                     f.write("f1_score_vl: %.3f \n"%(f1_score_vl))
         
 

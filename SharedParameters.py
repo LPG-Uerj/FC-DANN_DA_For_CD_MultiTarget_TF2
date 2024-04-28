@@ -56,24 +56,12 @@ MULTI_TARGET_LABEL = 'Train X |Test((Y)Y1,Y2 → X)\n(DA multi-target)'
 
 EXPERIMENTS_LABELS = [    
     '3 neurons fc discr.',
-    '3 neurons fc discr. unblcd mixed datasets',
-    #'3 neurons fc discr.',
-    '2 neurons fc discr.',    
-    '3 neurons conv discr.',    
-    '3 neurons fc discr. 1 run warmup',
-    '3 neurons fc discr. 5 runs warmup',
-    #'3 neurons fc discr. 1 run warmup 64 batch size'
+    '2 neurons fc discr.'
 ]
 
 EXPERIMENTS_LABELS_LB = [    
     '3 neurons fc discr.',
-    '3 neurons fc discr.\nunblcd mixed datasets',
-    #'3 neurons fc discr.',
-    '2 neurons fc discr.',    
-    '3 neurons conv discr.',    
-    '3 neurons fc discr.\n1 run warmup',
-    '3 neurons fc discr.\n5 runs warmup',
-    #'3 neurons fc discr.\n1 run warmup\n64 batch size'
+    '2 neurons fc discr.'    
 ]
 
 INCLUDE_DA_RESULTS = True
