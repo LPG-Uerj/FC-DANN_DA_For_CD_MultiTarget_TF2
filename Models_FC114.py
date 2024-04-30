@@ -525,7 +525,7 @@ class Models():
                 if self.args.training_type == 'domain_adaptation':
                     warmup = 1
                     if e >= warmup:
-                        self.l = (2. / (1. + np.exp(-2.5 * self.p)) - 1)
+                        self.l = (2. / (1. + np.exp(-self.args.gamma * self.p)) - 1)
                     else:
                         self.l = 0.
                     print("lambda_p: " + str(self.l))

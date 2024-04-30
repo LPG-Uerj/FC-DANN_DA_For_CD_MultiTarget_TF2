@@ -56,12 +56,14 @@ MULTI_TARGET_LABEL = 'Train X |Test((Y)Y1,Y2 → X)\n(DA multi-target)'
 
 EXPERIMENTS_LABELS = [    
     '3 neurons fc discr.',
-    '2 neurons fc discr.'
+    '2 neurons fc discr.',
+    '2 neurons fc discr. lambda gamma 0.25'
 ]
 
 EXPERIMENTS_LABELS_LB = [    
     '3 neurons fc discr.',
-    '2 neurons fc discr.'    
+    '2 neurons fc discr.',
+    '2 neurons fc discr. lambda gamma 0.25'
 ]
 
 INCLUDE_DA_RESULTS = True

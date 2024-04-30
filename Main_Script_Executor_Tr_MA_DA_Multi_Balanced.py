@@ -39,7 +39,7 @@ training_type = SharedParameters.TRAINING_TYPE_DOMAIN_ADAPTATION
 #Deforastation / No Deforastation
 num_classes = "2"
 
-discriminate_domain_targets = str(True)
+discriminate_domain_targets = str(False)
 num_targets = "2"
 
 source_dataset = CERRADO_MA.DATASET
@@ -63,7 +63,7 @@ for dr_localization in DR_LOCALIZATION:
         for da in DA_TYPES:
             
             
-            checkpoint_dir_param = checkpoint_dir + training_type + "_" + da + "_" + domain_regressor_type + "_multi_discriminate_target_" + discriminate_domain_targets + "_wrmp_" + warmup + "_" + target_dataset
+            checkpoint_dir_param = checkpoint_dir + training_type + "_" + da + "_" + domain_regressor_type + "_multi_discriminate_target_" + discriminate_domain_targets + "_gamma_" + SharedParameters.GAMMA + "_" + target_dataset + "_skipconn_" + SharedParameters.SKIP_CONNECTIONS
 
             if args.train:
                 
@@ -106,7 +106,7 @@ for dr_localization in DR_LOCALIZATION:
 
             for target_ds in TARGET_DATASETS:
                 
-                results_dir_param = results_dir + training_type + "_" + da + "_" + domain_regressor_type + "_multi_discriminate_target_" + discriminate_domain_targets + "_wrmp_" + warmup + "_"  + target_ds
+                results_dir_param = results_dir + training_type + "_" + da + "_" + domain_regressor_type + "_multi_discriminate_target_" + discriminate_domain_targets + "_gamma_" + SharedParameters.GAMMA + "_" + target_ds + "_skipconn_" + SharedParameters.SKIP_CONNECTIONS
 
                 if args.test:                    
                     Schedule.append("python " + Test_MAIN_COMMAND + " "
