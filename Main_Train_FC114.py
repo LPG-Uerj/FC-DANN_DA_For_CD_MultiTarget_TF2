@@ -113,22 +113,23 @@ def main():
 
     args.checkpoint_dir = args.checkpoint_results_main_path + 'checkpoints/' + args.checkpoint_dir
 
+    dataset_s = []
     dataset_t = []
 
-    if args.source_dataset == 'Amazon_RO':
+    if AMAZON_RO.DATASET in args.source_dataset:
         args.role = ROLE_SOURCE      
         args.reference_t2_name = args.source_reference_t2_name  
-        dataset_s = AMAZON_RO(args)
+        dataset_s.append(AMAZON_RO(args))
 
-    elif args.source_dataset == 'Amazon_PA':
+    elif AMAZON_PA.DATASET in args.source_dataset:
         args.role = ROLE_SOURCE
         args.reference_t2_name = args.source_reference_t2_name
-        dataset_s = AMAZON_PA(args)
+        dataset_s.append(AMAZON_PA(args))
 
-    elif args.source_dataset == 'Cerrado_MA':     
+    elif CERRADO_MA.DATASET in args.source_dataset:     
         args.role = ROLE_SOURCE   
         args.reference_t2_name = args.source_reference_t2_name
-        dataset_s = CERRADO_MA(args)
+        dataset_s.append(CERRADO_MA(args))
     else:
         raise Exception("Invalid argument source_dataset: " + args.source_dataset)
 
@@ -147,14 +148,12 @@ def main():
         args.reference_t2_name = args.target_reference_t2_name
         dataset_t.append(CERRADO_MA(args))
 
-    print(np.shape(dataset_s.images_norm))
-
     print(f'Cleaning up {args.checkpoint_dir}')
     cleanup_folder(args.checkpoint_dir)
     
     for i in range(len(dataset_t)):
         print(np.shape(dataset_t[i].images_norm))
-    #print(np.shape(dataset_t.images_norm))
+    
     for i in range(args.runs):
         print('[*]Training Run %d'%(i))
         dataset = []
@@ -175,16 +174,19 @@ def main():
         with open(os.path.join(args.save_checkpoint_path,'commandline_args.txt'), 'w') as f:
             json.dump(args.__dict__, f, indent=2)
         
+        
         args.overlap = args.overlap_s
         args.porcent_of_positive_pixels_in_actual_reference = args.porcent_of_positive_pixels_in_actual_reference_s
         
-        dataset_s.Tiles_Configuration(args, i)
-        dataset_s.Coordinates_Creator(args, i)
+        for s in dataset_s:
+            s.Tiles_Configuration(args, i)
+            s.Coordinates_Creator(args, i)
+
+        
+        args.overlap = args.overlap_t
+        args.porcent_of_positive_pixels_in_actual_reference = args.porcent_of_positive_pixels_in_actual_reference_t
 
         for t in dataset_t:
-            args.overlap = args.overlap_t            
-            args.porcent_of_positive_pixels_in_actual_reference = args.porcent_of_positive_pixels_in_actual_reference_t
-            
             t.Tiles_Configuration(args, i)
             t.Coordinates_Creator(args, i)
 

@@ -226,8 +226,12 @@ class Models():
         class_weights.append(0.4)
         class_weights.append(2)
 
-        reference_t1_s = np.zeros((self.dataset_s.references_[0].shape[0], self.dataset_s.references_[0].shape[1], 1))
-        reference_t2_s = np.zeros((self.dataset_s.references_[0].shape[0], self.dataset_s.references_[0].shape[1], 1))
+        reference_t1_s = []
+        reference_t2_s = []
+
+        for s in self.dataset_s:
+            reference_t1_s.append(np.zeros((s.references_[0].shape[0], s.references_[0].shape[1], 1)))
+            reference_t2_s.append(np.zeros((s.references_[0].shape[0], s.references_[0].shape[1], 1)))
         
         reference_t1_t = []
         reference_t2_t = []
@@ -239,21 +243,28 @@ class Models():
         if self.args.balanced_tr:
             class_weights = self.dataset_s.class_weights
 
-        # Copy the original input values
-        corners_coordinates_tr_s = self.dataset_s.corners_coordinates_tr.copy()
-        corners_coordinates_vl_s = self.dataset_s.corners_coordinates_vl.copy()
-        reference_t1_ = self.dataset_s.references_[0].copy()
-        reference_t1_[self.dataset_s.references_[0] == 0] = 1
-        reference_t1_[self.dataset_s.references_[0] == 1] = 0
+        corners_coordinates_tr_s = []
+        corners_coordinates_vl_t = []
 
-        reference_t1_s[:,:,0] = reference_t1_.copy()
-        reference_t2_s[:,:,0] = self.dataset_s.references_[1].copy()
+        reference_t1_s = []
+        reference_t2_s = []
+
+        # Copy the original input values
+        for index, s in enumerate(self.dataset_s):
+            corners_coordinates_tr_s.append(s.corners_coordinates_tr.copy())
+            corners_coordinates_vl_s.append(s.corners_coordinates_vl.copy())
+
+            reference_t1_ = s.references_[0].copy()
+            reference_t1_[s.references_[0] == 0] = 1
+            reference_t1_[s.references_[0] == 1] = 0
+
+            reference_t1_s[index,:,:,0] = reference_t1_.copy()
+            reference_t2_s[index,:,:,0] = s.references_[1].copy()
 
         corners_coordinates_tr_t = []
         corners_coordinates_vl_t = []
 
         if self.args.training_type == TRAINING_TYPE_DOMAIN_ADAPTATION:
-
             for t in self.dataset_t:
                 corners_coordinates_tr_t.append(t.corners_coordinates_tr.copy())
                 corners_coordinates_vl_t.append(t.corners_coordinates_vl.copy())
@@ -266,7 +277,6 @@ class Models():
                     reference_t1_[self.dataset_t[i].references_[0] == 1] = 0
                     reference_t1_t[i][:,:,0] = reference_t1_.copy()
                     reference_t2_t[i][:,:,0] = self.dataset_t[i].references_[1].copy()
-
 
         print('Sets dimensions before data augmentation')
         print('Source dimensions: ')
@@ -294,8 +304,6 @@ class Models():
                 for i in range(len(self.dataset_t)):
                     corners_coordinates_tr_t[i] = Data_Augmentation_Definition(corners_coordinates_tr_t[i])
                     corners_coordinates_vl_t[i] = Data_Augmentation_Definition(corners_coordinates_vl_t[i])
-                    print(np.shape(corners_coordinates_tr_t[i]))
-                    print(np.shape(corners_coordinates_vl_t[i]))  
 
         if self.args.training_type == TRAINING_TYPE_DOMAIN_ADAPTATION and 'DR' in self.args.da_type:
             #Generating target labels before data shuffling and balancing            
@@ -313,7 +321,7 @@ class Models():
             #size_vl_t = []
             
             target_label_value = 1                    
-            for i in range(len(self.dataset_t)): 
+            for i in range(len(self.dataset_t)):
                 print(f"Target Dataset {self.dataset_t[i].DATASET}")
 
                 if self.args.discriminate_domain_targets:
