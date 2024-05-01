@@ -1,0 +1,7 @@
+Run: 0 Accuracy: 66.03% F1-Score: 17.97% Recall: 91.85% Precision: 9.96% Area: 37.36% File Name: DeepLab_Model_Results_Trained_03_2024_12_03_2024_11_20_47_Tested_2016_2017_12_03_2024_11_43_23
+Run: 1 Accuracy: 85.56% F1-Score: 33.84% Recall: 91.10% Precision: 20.78% Area: 17.77% File Name: DeepLab_Model_Results_Trained_03_2024_12_03_2024_10_58_28_Tested_2016_2017_12_03_2024_11_43_17
+Run: 2 Accuracy: 84.16% F1-Score: 31.70% Recall: 90.73% Precision: 19.21% Area: 19.15% File Name: DeepLab_Model_Results_Trained_03_2024_12_03_2024_10_38_12_Tested_2016_2017_12_03_2024_11_43_36
+Run: 3 Accuracy: 84.94% F1-Score: 18.54% Recall: 42.31% Precision: 11.87% Area: 14.44% File Name: DeepLab_Model_Results_Trained_03_2024_12_03_2024_10_19_52_Tested_2016_2017_12_03_2024_11_43_08
+Run: 4 Accuracy: 90.85% F1-Score: 35.00% Recall: 60.75% Precision: 24.58% Area: 10.02% File Name: DeepLab_Model_Results_Trained_03_2024_12_03_2024_09_56_26_Tested_2016_2017_12_03_2024_11_43_30
+Mean: 0 Accuracy: 82.308923% F1-Score: 27.408843% Recall: 75.349013% Precision: 17.277730% Area: 19.745670%
+Std: 0 Accuracy: 8.47% F1-Score: 7.55% Recall: 20.30% Precision: 5.51% Area: 9.35%
