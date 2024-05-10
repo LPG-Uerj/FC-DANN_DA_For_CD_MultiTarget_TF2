@@ -39,7 +39,7 @@ training_type = SharedParameters.TRAINING_TYPE_DOMAIN_ADAPTATION
 #Deforastation / No Deforastation
 num_classes = "2"
 
-num_targets = "2" 
+num_domains = "2" 
 
 warmup = "1"
 

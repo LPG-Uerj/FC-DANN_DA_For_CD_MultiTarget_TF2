@@ -45,7 +45,7 @@ runs = "5"
 num_classes = "2"
 
 #Source RO, Target RO
-num_targets = "2" 
+num_domains = "2" 
 
 #TARGET: RO
 target_dataset = AMAZON_RO.DATASET

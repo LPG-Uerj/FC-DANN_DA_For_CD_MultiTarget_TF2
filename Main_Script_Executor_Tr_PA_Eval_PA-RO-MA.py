@@ -46,7 +46,7 @@ runs = "5"
 num_classes = "2"
 
 #Source PA, Target PA
-num_targets = "2" 
+num_domains = "2" 
 
 warmup = "1"
 

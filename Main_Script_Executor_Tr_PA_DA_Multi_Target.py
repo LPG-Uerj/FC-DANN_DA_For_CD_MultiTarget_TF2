@@ -32,46 +32,49 @@ if args.running_in == 'Datarmor_PBS':
 warnings.filterwarnings("ignore")
 Schedule = []
 
-warmup = "1"
-
 Checkpoint_Results_MAIN_PATH = "./results/"
 
-source_dataset = CERRADO_MA.DATASET
-training_type = SharedParameters.TRAINING_TYPE_CLASSIFICATION
-checkpoint_dir = "checkpoint_tr_"+source_dataset+"_"
-results_dir = "results_tr_"+source_dataset+"_"
-runs = "5"
+training_type = SharedParameters.TRAINING_TYPE_DOMAIN_ADAPTATION
 
 #Deforastation / No Deforastation
 num_classes = "2"
 
-#Source MA, Target MA
-num_domains = "2" 
+discriminate_domain_targets = str(False)
+num_domains = "2"
 
-#TARGET: MA
-target_dataset = CERRADO_MA.DATASET
+#TARGET: RO, MA
+source_dataset = AMAZON_PA.DATASET
+target_dataset = AMAZON_RO.DATASET + "_" + CERRADO_MA.DATASET
+source_to_target = source_dataset + "_to_" + target_dataset
+
+checkpoint_dir = "checkpoint_tr_"+source_to_target+"_"
+results_dir = "results_tr_"+source_to_target+"_"
+runs = "5"
+domain_regressor_type = "FC"
+warmup = "1"
 
 DR_LOCALIZATION = ['55']
 METHODS  = [SharedParameters.METHOD]
-DA_TYPES = ['None']
-DATASETS = [CERRADO_MA.DATASET,AMAZON_PA.DATASET,AMAZON_RO.DATASET]
+DA_TYPES = ['DR']
+TARGET_DATASETS = [AMAZON_RO.DATASET, CERRADO_MA.DATASET, source_dataset]
 
 for dr_localization in DR_LOCALIZATION:
     for method in METHODS:
         for da in DA_TYPES:
-
-            checkpoint_dir_param = checkpoint_dir + training_type + "_" + target_dataset
+            
+            checkpoint_dir_param = checkpoint_dir + training_type + "_" + da + "_" + domain_regressor_type + "_multi_discriminate_target_" + discriminate_domain_targets + "_gamma_" + SharedParameters.GAMMA + "_" + target_dataset + "_skipconn_" + SharedParameters.SKIP_CONNECTIONS
 
             if args.train:
                 
                 Schedule.append("python " + Train_MAIN_COMMAND + " "
                                 "--classifier_type " + method + " "
-                                "--domain_regressor_type FC "
+                                "--domain_regressor_type " + domain_regressor_type + " "
                                 "--DR_Localization " + dr_localization + " "
                                 "--skip_connections " + SharedParameters.SKIP_CONNECTIONS + " "
                                 "--epochs 100 "
                                 "--batch_size " + SharedParameters.TRAINING_BATCH_SIZE + " "
                                 "--lr " + SharedParameters.LR + " "
+                                "--gamma " + SharedParameters.GAMMA + " "
                                 "--beta1 0.9 "
                                 "--data_augmentation True "                                                              
                                 "--fixed_tiles True "
@@ -86,7 +89,9 @@ for dr_localization in DR_LOCALIZATION:
                                 "--porcent_of_last_reference_in_actual_reference 100 "
                                 "--porcent_of_positive_pixels_in_actual_reference_s 2 "
                                 "--porcent_of_positive_pixels_in_actual_reference_t 2 "
-                                "--num_classes " + num_classes + " "                                
+                                "--num_classes " + num_classes + " "
+                                "--discriminate_domain_targets " + discriminate_domain_targets + " "
+                                "--num_domains " + num_domains + " "
                                 "--phase train "
                                 "--training_type " + training_type + " "
                                 "--da_type " + da + " "
@@ -98,14 +103,14 @@ for dr_localization in DR_LOCALIZATION:
                                 "--target_dataset " + target_dataset + " "
                                 "--checkpoint_results_main_path " + Checkpoint_Results_MAIN_PATH + " ")
 
-            for target_ds in DATASETS:
-
-                results_dir_param = results_dir + training_type + "_S_" + source_dataset + "_T_" + target_ds
+            for target_ds in TARGET_DATASETS:
+                
+                results_dir_param = results_dir + training_type + "_" + da + "_" + domain_regressor_type + "_multi_discriminate_target_" + discriminate_domain_targets + "_gamma_" + SharedParameters.GAMMA + "_" + target_ds + "_skipconn_" + SharedParameters.SKIP_CONNECTIONS
 
                 if args.test:                    
                     Schedule.append("python " + Test_MAIN_COMMAND + " "
                                 "--classifier_type " + method + " "
-                                "--domain_regressor_type FC "
+                                "--domain_regressor_type " + domain_regressor_type + " "
                                 "--DR_Localization " + dr_localization + " "
                                 "--skip_connections " + SharedParameters.SKIP_CONNECTIONS + " "
                                 "--batch_size " + SharedParameters.TESTING_BATCH_SIZE + " "                                
@@ -114,7 +119,9 @@ for dr_localization in DR_LOCALIZATION:
                                 "--beta1 0.9 "
                                 "--patches_dimension 64 "
                                 "--compute_ndvi False "
-                                "--num_classes " + num_classes + " "                                
+                                "--num_classes " + num_classes + " "  
+                                "--discriminate_domain_targets " + discriminate_domain_targets + " "   
+                                "--num_domains " + num_domains + " "                           
                                 "--phase test "
                                 "--training_type " + training_type + " "
                                 "--da_type " + da + " "
@@ -126,7 +133,7 @@ for dr_localization in DR_LOCALIZATION:
                 if args.metrics:
                     Schedule.append("python " + Metrics_05_MAIN_COMMAND + " "
                                 "--classifier_type " + method + " "
-                                "--domain_regressor_type FC "
+                                "--domain_regressor_type " + domain_regressor_type + " "
                                 "--skip_connections " + SharedParameters.SKIP_CONNECTIONS + " "                                
                                 "--patches_dimension 64 "
                                 "--fixed_tiles True "
@@ -145,7 +152,7 @@ for dr_localization in DR_LOCALIZATION:
 
                     Schedule.append("python " + Metrics_th_MAIN_COMMAND + " "
                                 "--classifier_type " + method + " "
-                                "--domain_regressor_type FC "
+                                "--domain_regressor_type " + domain_regressor_type + " "
                                 "--skip_connections " + SharedParameters.SKIP_CONNECTIONS + " "                                
                                 "--patches_dimension 64 "
                                 "--fixed_tiles True "
@@ -162,7 +169,6 @@ for dr_localization in DR_LOCALIZATION:
                                 "--results_dir " + results_dir_param + " "
                                 "--dataset " + target_ds + " "                                
                                 "--checkpoint_results_main_path " + Checkpoint_Results_MAIN_PATH + " ")
-
 
 for i in range(len(Schedule)):
     if os.system(Schedule[i]) != 0:

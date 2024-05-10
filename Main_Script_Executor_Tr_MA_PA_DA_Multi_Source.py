@@ -40,29 +40,29 @@ training_type = SharedParameters.TRAINING_TYPE_DOMAIN_ADAPTATION
 num_classes = "2"
 
 discriminate_domain_targets = str(False)
-num_targets = "2"
 
-#TARGET: RO, MA
-source_dataset = AMAZON_PA.DATASET
-target_dataset = AMAZON_RO.DATASET + "_" + CERRADO_MA.DATASET
+source_dataset = CERRADO_MA.DATASET + "_" + AMAZON_PA.DATASET
+target_dataset = AMAZON_RO.DATASET 
 source_to_target = source_dataset + "_to_" + target_dataset
 
 checkpoint_dir = "checkpoint_tr_"+source_to_target+"_"
 results_dir = "results_tr_"+source_to_target+"_"
 runs = "5"
+
 domain_regressor_type = "FC"
 warmup = "1"
 
 DR_LOCALIZATION = ['55']
 METHODS  = [SharedParameters.METHOD]
 DA_TYPES = ['DR']
-TARGET_DATASETS = [AMAZON_RO.DATASET, CERRADO_MA.DATASET, source_dataset]
+TARGET_DATASETS = [AMAZON_RO.DATASET]
 
 for dr_localization in DR_LOCALIZATION:
     for method in METHODS:
         for da in DA_TYPES:
             
-            checkpoint_dir_param = checkpoint_dir + training_type + "_" + da + "_" + domain_regressor_type + "_multi_discriminate_target_" + discriminate_domain_targets + "_gamma_" + SharedParameters.GAMMA + "_" + target_dataset + "_skipconn_" + SharedParameters.SKIP_CONNECTIONS
+            
+            checkpoint_dir_param = checkpoint_dir + training_type + "_" + da + "_" + domain_regressor_type + "_multi_source_discriminate_target_" + discriminate_domain_targets
 
             if args.train:
                 
@@ -91,7 +91,6 @@ for dr_localization in DR_LOCALIZATION:
                                 "--porcent_of_positive_pixels_in_actual_reference_t 2 "
                                 "--num_classes " + num_classes + " "
                                 "--discriminate_domain_targets " + discriminate_domain_targets + " "
-                                "--num_targets " + num_targets + " "
                                 "--phase train "
                                 "--training_type " + training_type + " "
                                 "--da_type " + da + " "
@@ -105,7 +104,7 @@ for dr_localization in DR_LOCALIZATION:
 
             for target_ds in TARGET_DATASETS:
                 
-                results_dir_param = results_dir + training_type + "_" + da + "_" + domain_regressor_type + "_multi_discriminate_target_" + discriminate_domain_targets + "_gamma_" + SharedParameters.GAMMA + "_" + target_ds + "_skipconn_" + SharedParameters.SKIP_CONNECTIONS
+                results_dir_param = results_dir + training_type + "_" + da + "_" + domain_regressor_type + "_multi_source_discriminate_target_" + discriminate_domain_targets
 
                 if args.test:                    
                     Schedule.append("python " + Test_MAIN_COMMAND + " "
@@ -119,9 +118,8 @@ for dr_localization in DR_LOCALIZATION:
                                 "--beta1 0.9 "
                                 "--patches_dimension 64 "
                                 "--compute_ndvi False "
-                                "--num_classes " + num_classes + " "  
-                                "--discriminate_domain_targets " + discriminate_domain_targets + " "   
-                                "--num_targets " + num_targets + " "                           
+                                "--num_classes " + num_classes + " " 
+                                "--discriminate_domain_targets " + discriminate_domain_targets + " "                              
                                 "--phase test "
                                 "--training_type " + training_type + " "
                                 "--da_type " + da + " "

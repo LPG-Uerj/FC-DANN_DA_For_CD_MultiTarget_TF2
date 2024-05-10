@@ -42,7 +42,7 @@ training_type = SharedParameters.TRAINING_TYPE_DOMAIN_ADAPTATION
 num_classes = "2"
 
 #Source PA, Target RO
-num_targets = "2" 
+num_domains = "2" 
 
 runs = "5"
 

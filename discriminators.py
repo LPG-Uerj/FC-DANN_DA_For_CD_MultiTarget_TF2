@@ -3,7 +3,7 @@ import tensorflow as tf
 
 class DomainDiscriminatorFullyConnected(tf.keras.Model):
 
-    def __init__(self, units: int = 1024, num_targets: int = 2, **kwargs):
+    def __init__(self, units: int = 1024, num_domains: int = 2, **kwargs):
         super(DomainDiscriminatorFullyConnected, self).__init__(**kwargs)
 
         self.flat = tf.keras.layers.Flatten()
@@ -14,7 +14,7 @@ class DomainDiscriminatorFullyConnected(tf.keras.Model):
         self.dense_2 = tf.keras.layers.Dense(units = units)
         self.activ_2 = tf.keras.layers.Activation('relu')
                 
-        self.dense_3 = tf.keras.layers.Dense(units = num_targets)     
+        self.dense_3 = tf.keras.layers.Dense(units = num_domains)     
         self.proba = tf.keras.layers.Activation('softmax')    
         
     def call(self, x):
@@ -39,8 +39,8 @@ class DomainDiscriminatorFullyConnected(tf.keras.Model):
     def from_config(cls, config):
         return cls(**config)
 
-def Domain_Regressor_FullyConnected(input_shape, units: int = 1024, num_targets: int = 2):
-    print("Domain_Regressor_FullyConnected -  output neurons: " + str(num_targets))
+def Domain_Regressor_FullyConnected(input_shape, units: int = 1024, num_domains: int = 2):
+    print("Domain_Regressor_FullyConnected -  output neurons: " + str(num_domains))
 
     inputs = tf.keras.Input(shape=input_shape)
 
@@ -52,7 +52,7 @@ def Domain_Regressor_FullyConnected(input_shape, units: int = 1024, num_targets:
     x = tf.keras.layers.Dense(units=units)(x)
     x = tf.keras.layers.Activation('relu')(x)
     
-    x = tf.keras.layers.Dense(units=num_targets, activation=None)(x)
+    x = tf.keras.layers.Dense(units=num_domains, activation=None)(x)
     
     #output = tf.keras.layers.Softmax()(x)
 
@@ -62,7 +62,7 @@ def Domain_Regressor_FullyConnected(input_shape, units: int = 1024, num_targets:
 
 
     
-def Domain_Regressor_Convolutional(input_shape, num_targets: int):
+def Domain_Regressor_Convolutional(input_shape, num_domains: int):
     print("Domain_Regressor_Convolutional - input_shape: " + str(input_shape))
     num_filters = input_shape[2]
     inputs = tf.keras.Input(shape=input_shape)
@@ -70,7 +70,7 @@ def Domain_Regressor_Convolutional(input_shape, num_targets: int):
     layers = inputs    
     for i in range(3):            
         layers = general_conv2d(layers, num_filters/(2**i), 3, strides=1, padding='SAME', activation_function='leakyrelu', do_norm=True)
-    layers = general_conv2d(layers, num_targets, 1, strides=1, padding='SAME', activation_function='None', do_norm=False)
+    layers = general_conv2d(layers, num_domains, 1, strides=1, padding='SAME', activation_function='None', do_norm=False)
     output = tf.keras.layers.Softmax()(layers)
     model = tf.keras.Model(inputs = inputs, outputs = [output, layers], name = 'Domain_Regressor_FullyConnected')
     return model

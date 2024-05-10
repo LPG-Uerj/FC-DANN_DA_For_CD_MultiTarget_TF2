@@ -36,18 +36,16 @@ class Models():
         self.loss_dr_threshold = 1.
 
         if self.args.discriminate_domain_targets:
-            if self.args.num_targets is None:
-                raise Exception("Num_targets must have an integer positive value.")
-
-            self.num_targets = self.args.num_targets + 1
+            self.num_domains = len(self.dataset_s) + len(self.dataset_t)
             self.loss_dr_threshold = 1.5
         else:
-            self.num_targets = 2
+            #source + target
+            self.num_domains = 2
 
-        self.args.num_targets = self.num_targets
+        self.args.num_domains = self.num_domains
 
         print("self.discriminate_domain_targets: " + str(self.args.discriminate_domain_targets))
-        print("self.num_targets: " + str(self.num_targets))
+        print("self.num_domains: " + str(self.num_domains))
 
         self.segmentation_history = {}
         self.discriminator_history = {}
@@ -70,9 +68,9 @@ class Models():
             self.data = tf.compat.v1.placeholder(tf.float32, [None, self.args.patches_dimension, self.args.patches_dimension, 2 * self.args.image_channels], name = "data")
 
         if self.args.domain_regressor_type == 'Dense':
-            self.label_d = tf.compat.v1.placeholder(tf.float32, [None, None, None, self.num_targets], name = "label_d")
+            self.label_d = tf.compat.v1.placeholder(tf.float32, [None, None, None, self.num_domains], name = "label_d")
         if self.args.domain_regressor_type == 'FC':
-            self.label_d = tf.compat.v1.placeholder(tf.float32, [None, self.num_targets], name = "label_d")
+            self.label_d = tf.compat.v1.placeholder(tf.float32, [None, self.num_domains], name = "label_d")
 
         self.label_c = tf.compat.v1.placeholder(tf.float32, [None, self.args.patches_dimension, self.args.patches_dimension, self.args.num_classes], name = "label_c")
         self.mask_c = tf.compat.v1.placeholder(tf.float32, [None, self.args.patches_dimension, self.args.patches_dimension], name="labeled_samples")
@@ -244,10 +242,7 @@ class Models():
             class_weights = self.dataset_s.class_weights
 
         corners_coordinates_tr_s = []
-        corners_coordinates_vl_t = []
-
-        reference_t1_s = []
-        reference_t2_s = []
+        corners_coordinates_vl_s = []
 
         # Copy the original input values
         for index, s in enumerate(self.dataset_s):
@@ -258,8 +253,8 @@ class Models():
             reference_t1_[s.references_[0] == 0] = 1
             reference_t1_[s.references_[0] == 1] = 0
 
-            reference_t1_s[index,:,:,0] = reference_t1_.copy()
-            reference_t2_s[index,:,:,0] = s.references_[1].copy()
+            reference_t1_s[index][:,:,0] = reference_t1_.copy()
+            reference_t2_s[index][:,:,0] = s.references_[1].copy()
 
         corners_coordinates_tr_t = []
         corners_coordinates_vl_t = []
@@ -280,30 +275,34 @@ class Models():
 
         print('Sets dimensions before data augmentation')
         print('Source dimensions: ')
-        print(np.shape(corners_coordinates_tr_s))
-        print(np.shape(corners_coordinates_vl_s))
+        for i in range(len(self.dataset_s)):
+            print(np.shape(corners_coordinates_tr_s[i]))
+            print(np.shape(corners_coordinates_vl_s[i]))
+
+        print('Target dimensions: ')
         if self.args.training_type == TRAINING_TYPE_DOMAIN_ADAPTATION:
-            print('Target dimension: ')
-            print(np.shape(corners_coordinates_tr_t))
-            print(np.shape(corners_coordinates_tr_t[0]))
-            print(np.shape(corners_coordinates_vl_t))
-            print(np.shape(corners_coordinates_vl_t[0]))
+            for i in range(len(self.dataset_t)):
+                print(np.shape(corners_coordinates_tr_t[i]))
+                print(np.shape(corners_coordinates_vl_t[i]))
             print('******************************')
         
         if self.args.data_augmentation:
-            corners_coordinates_tr_s = Data_Augmentation_Definition(corners_coordinates_tr_s)
-            corners_coordinates_vl_s = Data_Augmentation_Definition(corners_coordinates_vl_s)
-
             print('Sets dimensions after data augmentation')
             print('Source dimensions: ')
-            print(np.shape(corners_coordinates_tr_s))
-            print(np.shape(corners_coordinates_vl_s))  
+
+            for i in range(len(self.dataset_s)):
+                corners_coordinates_tr_s[i] = Data_Augmentation_Definition(corners_coordinates_tr_s[i])
+                corners_coordinates_vl_s[i] = Data_Augmentation_Definition(corners_coordinates_vl_s[i])
+                print(np.shape(corners_coordinates_tr_s[i]))
+                print(np.shape(corners_coordinates_vl_s[i]))
 
             print('Target dimensions: ')
             if self.args.training_type == TRAINING_TYPE_DOMAIN_ADAPTATION:
                 for i in range(len(self.dataset_t)):
                     corners_coordinates_tr_t[i] = Data_Augmentation_Definition(corners_coordinates_tr_t[i])
                     corners_coordinates_vl_t[i] = Data_Augmentation_Definition(corners_coordinates_vl_t[i])
+                    print(np.shape(corners_coordinates_tr_t[i]))
+                    print(np.shape(corners_coordinates_vl_t[i]))
 
         if self.args.training_type == TRAINING_TYPE_DOMAIN_ADAPTATION and 'DR' in self.args.da_type:
             #Generating target labels before data shuffling and balancing            
@@ -314,13 +313,46 @@ class Models():
             target_labels_tr = []                
             target_labels_vl = []     
 
+            source_labels_tr = []
+            source_labels_vl = []
+
+
+            domain_indexs_tr_s = []
+            domain_indexs_vl_s = []
+
+            source_label_value = 0
+            for i in range(len(self.dataset_s)):
+                print(f"Source Dataset {self.dataset_s[i].DATASET}")
+
+                if self.args.discriminate_domain_targets:
+                    print(f"Assigned label value: {source_label_value}")
+                    if len(self.D_out_shape) > 2:
+                        source_labels_tr.append(np.full((np.shape(corners_coordinates_tr_s[i])[0], self.D_out_shape[0], self.D_out_shape[1],1),source_label_value))
+                        source_labels_vl.append(np.full((np.shape(corners_coordinates_vl_s[i])[0], self.D_out_shape[0], self.D_out_shape[1],1),source_label_value))
+                    else:
+                        source_labels_tr.append(np.full((corners_coordinates_tr_s[i].shape[0], 1), source_label_value))
+                        source_labels_vl.append(np.full((corners_coordinates_vl_s[i].shape[0], 1), source_label_value))
+                else:
+                    print(f"Assigned label value: 0")
+                    if len(self.D_out_shape) > 2:
+                        source_labels_tr.append(np.zeros((np.shape(corners_coordinates_tr_s[i])[0], self.D_out_shape[0], self.D_out_shape[1],1)))
+                        source_labels_vl.append(np.zeros((np.shape(corners_coordinates_vl_s[i])[0], self.D_out_shape[0], self.D_out_shape[1],1)))
+                    else:
+                        source_labels_tr.append(np.zeros((corners_coordinates_tr_s[i].shape[0], 1)))
+                        source_labels_vl.append(np.zeros((corners_coordinates_vl_s[i].shape[0], 1)))
+
+                print(f"Assigned domain index value: {source_label_value}")
+                # Source Domain indexs configuration
+                domain_indexs_tr_s.append(np.full((np.shape(corners_coordinates_tr_s[i])[0], 1), source_label_value))
+                domain_indexs_vl_s.append(np.full((np.shape(corners_coordinates_vl_s[i])[0], 1), source_label_value))
+
+                source_label_value += 1
+
+
             domain_indexs_tr_t = []
             domain_indexs_vl_t = []
-
-            #size_tr_t = []
-            #size_vl_t = []
             
-            target_label_value = 1                    
+            target_label_value = source_label_value
             for i in range(len(self.dataset_t)):
                 print(f"Target Dataset {self.dataset_t[i].DATASET}")
 
@@ -333,7 +365,7 @@ class Models():
                         target_labels_tr.append(np.full((corners_coordinates_tr_t[i].shape[0], 1), target_label_value))
                         target_labels_vl.append(np.full((corners_coordinates_vl_t[i].shape[0], 1), target_label_value))
                 else:
-                    print("Assigned label value: 1")
+                    print(f"Assigned label value: 1")
                     if len(self.D_out_shape) > 2:
                         target_labels_tr.append(np.ones((corners_coordinates_tr_t[i].shape[0], self.D_out_shape[0], self.D_out_shape[1],1)))
                         target_labels_vl.append(np.ones((corners_coordinates_vl_t[i].shape[0], self.D_out_shape[0], self.D_out_shape[1],1)))
@@ -341,16 +373,15 @@ class Models():
                         target_labels_tr.append(np.ones((corners_coordinates_tr_t[i].shape[0], 1)))
                         target_labels_vl.append(np.ones((corners_coordinates_vl_t[i].shape[0], 1)))
                 
+                print(f"Assigned domain index value: {target_label_value}")
                 # Target Domains indexes configuration                    
                 domain_indexs_tr_t.append(np.full((corners_coordinates_tr_t[i].shape[0], 1), target_label_value))
                 domain_indexs_vl_t.append(np.full((corners_coordinates_vl_t[i].shape[0], 1), target_label_value))
                 
-                
                 target_label_value += 1
 
-            #if self.args.source_targets_balanced == True:
-            size_tr_s = [np.shape(corners_coordinates_tr_s)[0]]
-            size_vl_s = [np.shape(corners_coordinates_vl_s)[0]]
+            size_tr_s = [x.shape[0] for x in corners_coordinates_tr_s]
+            size_vl_s = [x.shape[0] for x in corners_coordinates_vl_s]
 
             size_tr_t = [x.shape[0] for x in corners_coordinates_tr_t]
             size_vl_t = [x.shape[0] for x in corners_coordinates_vl_t]
@@ -370,19 +401,42 @@ class Models():
             print('min size_vl_list:')
             print(min_vl_size)
            
+            
+            data = []
+
             #Shuffling the num_samples
-            index_tr_s = np.arange(size_tr_s[0])
-            index_vl_s = np.arange(size_vl_s[0])
+            index_tr_s = []
+            index_vl_s = []
 
-            np.random.shuffle(index_tr_s)            
-            np.random.shuffle(index_vl_s)            
+            for i in range(len(self.dataset_s)):
+                index_tr_s.append(np.arange(size_tr_s[i]))
+                index_vl_s.append(np.arange(size_vl_s[i]))
 
-            corners_coordinates_tr_s = corners_coordinates_tr_s[index_tr_s, :]
-            corners_coordinates_vl_s = corners_coordinates_vl_s[index_vl_s, :]    
+                np.random.shuffle(index_tr_s[i])
+                np.random.shuffle(index_vl_s[i])
 
-            #RETIRA AMOSTRAS DO CONJUNTO MAIOR PARA SE IGUALAR AO MENOR            
-            corners_coordinates_tr_s = corners_coordinates_tr_s[:min_tr_size,:]    
-            corners_coordinates_vl_s = corners_coordinates_vl_s[:min_vl_size,:]        
+                corners_coordinates_tr_s[i] = corners_coordinates_tr_s[i][index_tr_s[i], :]
+                corners_coordinates_vl_s[i] = corners_coordinates_vl_s[i][index_vl_s[i], :]    
+
+                source_labels_tr[i] = source_labels_tr[i][index_tr_s[i], :]
+                source_labels_vl[i] = source_labels_vl[i][index_vl_s[i], :]
+
+                domain_indexs_tr_s[i] = domain_indexs_tr_s[i][index_tr_s[i], :]
+                domain_indexs_vl_s[i] = domain_indexs_vl_s[i][index_vl_s[i], :]
+
+                #RETIRA AMOSTRAS DO CONJUNTO MAIOR PARA SE IGUALAR AO MENOR            
+                corners_coordinates_tr_s[i] = corners_coordinates_tr_s[i][:min_tr_size,:]    
+                corners_coordinates_vl_s[i] = corners_coordinates_vl_s[i][:min_vl_size,:]   
+
+                source_labels_tr[i] = source_labels_tr[i][:min_tr_size, :]     
+                source_labels_vl[i] = source_labels_vl[i][:min_vl_size,:]
+
+                domain_indexs_tr_s[i] = domain_indexs_tr_s[i][:min_tr_size, :]
+                domain_indexs_vl_s[i] = domain_indexs_vl_s[i][:min_vl_size,:]
+
+                x_train_s = np.concatenate((self.dataset_s[i].images_norm_[0], self.dataset_s[i].images_norm_[1], reference_t1_s[i], reference_t2_s[i]), axis = 2)
+                data.append(x_train_s)
+
 
             index_tr_t = []
             index_vl_t = []
@@ -394,7 +448,7 @@ class Models():
                 np.random.shuffle(index_tr_t[i])
                 np.random.shuffle(index_vl_t[i])
 
-                corners_coordinates_tr_t[i] = corners_coordinates_tr_t[i][index_tr_t[i], :]            
+                corners_coordinates_tr_t[i] = corners_coordinates_tr_t[i][index_tr_t[i], :]
                 corners_coordinates_vl_t[i] = corners_coordinates_vl_t[i][index_vl_t[i], :]
             
                 target_labels_tr[i] = target_labels_tr[i][index_tr_t[i], :]
@@ -410,67 +464,70 @@ class Models():
                     
                 corners_coordinates_vl_t[i] = corners_coordinates_vl_t[i][:min_vl_size,:]
                 target_labels_vl[i] = target_labels_vl[i][:min_vl_size,:]
-                domain_indexs_vl_t[i] = domain_indexs_vl_t[i][:min_vl_size,:]             
+                domain_indexs_vl_t[i] = domain_indexs_vl_t[i][:min_vl_size,:]    
 
-        data = []
-        x_train_s = np.concatenate((self.dataset_s.images_norm_[0], self.dataset_s.images_norm_[1], reference_t1_s, reference_t2_s), axis = 2)
-        data.append(x_train_s)
-
-        # Training configuration
-        if self.args.training_type == TRAINING_TYPE_CLASSIFICATION:
-            # Domain indexs configuration
-            corners_coordinates_tr = corners_coordinates_tr_s.copy()
-            corners_coordinates_vl = corners_coordinates_vl_s.copy()
-            domain_indexs_tr = np.zeros((np.shape(corners_coordinates_tr)[0], 1))
-            domain_indexs_vl = np.zeros((np.shape(corners_coordinates_vl)[0], 1))
-
-        elif self.args.training_type == TRAINING_TYPE_DOMAIN_ADAPTATION:            
-            for i in range(len(self.dataset_t)):
                 x_train_t = np.concatenate((self.dataset_t[i].images_norm_[0], self.dataset_t[i].images_norm_[1], reference_t1_t[i], reference_t2_t[i]), axis = 2)
                 data.append(x_train_t)
                        
+            corners_coordinates_tr_s = np.concatenate(corners_coordinates_tr_s, axis=0)
+            corners_coordinates_vl_s = np.concatenate(corners_coordinates_vl_s, axis=0)
+                    
             corners_coordinates_tr_t = np.concatenate(corners_coordinates_tr_t, axis=0)
             corners_coordinates_vl_t = np.concatenate(corners_coordinates_vl_t, axis=0)
 
             corners_coordinates_tr = np.concatenate((corners_coordinates_tr_s, corners_coordinates_tr_t), axis = 0)
             corners_coordinates_vl = np.concatenate((corners_coordinates_vl_s, corners_coordinates_vl_t), axis = 0)
             
-            # Source Domain indexs configuration
-            domain_indexs_tr_s = np.zeros((np.shape(corners_coordinates_tr_s)[0], 1))            
-            domain_indexs_vl_s = np.zeros((np.shape(corners_coordinates_vl_s)[0], 1))     
+            domain_indexs_tr_s = np.concatenate(domain_indexs_tr_s,axis=0)
+            domain_indexs_vl_s = np.concatenate(domain_indexs_vl_s,axis=0)
 
             domain_indexs_tr_t = np.concatenate(domain_indexs_tr_t,axis=0)
-            domain_indexs_vl_t = np.concatenate(domain_indexs_vl_t,axis=0)        
+            domain_indexs_vl_t = np.concatenate(domain_indexs_vl_t,axis=0)
 
             domain_indexs_tr = np.concatenate((domain_indexs_tr_s, domain_indexs_tr_t), axis = 0)
             domain_indexs_vl = np.concatenate((domain_indexs_vl_s, domain_indexs_vl_t), axis = 0)
 
+            source_labels_tr = np.concatenate(source_labels_tr,axis=0)
+            source_labels_vl = np.concatenate(source_labels_vl,axis=0)
+
             target_labels_tr = np.concatenate(target_labels_tr,axis=0)
             target_labels_vl = np.concatenate(target_labels_vl,axis=0)
 
-
-            if 'DR' in self.args.da_type:
-                # Source Domain labels configuration
-                if len(self.D_out_shape) > 2:
-                    source_labels_tr = np.zeros((np.shape(corners_coordinates_tr_s)[0], self.D_out_shape[0], self.D_out_shape[1],1))
-                    source_labels_vl = np.zeros((np.shape(corners_coordinates_vl_s)[0], self.D_out_shape[0], self.D_out_shape[1],1))
-                else:
-                    source_labels_tr = np.zeros((corners_coordinates_tr_s.shape[0], 1))
-                    source_labels_vl = np.zeros((corners_coordinates_vl_s.shape[0], 1))
                 
-                print(f"Source Dataset {self.dataset_s.DATASET}")
-                print("Assigned label value: 0")
-                
-                y_train_d = np.concatenate((source_labels_tr, target_labels_tr), axis = 0)
-                y_valid_d = np.concatenate((source_labels_vl, target_labels_vl), axis = 0)
+            y_train_d = np.concatenate((source_labels_tr, target_labels_tr), axis = 0)
+            y_valid_d = np.concatenate((source_labels_vl, target_labels_vl), axis = 0)
 
-        #Computing the number of batches
-        num_batches_tr = corners_coordinates_tr.shape[0]//self.args.batch_size
-        num_batches_vl = corners_coordinates_vl.shape[0]//self.args.batch_size      
+            #Computing the number of batches
+            num_batches_tr = corners_coordinates_tr.shape[0]//self.args.batch_size
+            num_batches_vl = corners_coordinates_vl.shape[0]//self.args.batch_size      
 
-        print(f'Num samples for training: {corners_coordinates_tr.shape[0]}')
-        print(f'Num samples for validation: {corners_coordinates_vl.shape[0]}')  
+            print(f'Num samples for training: {corners_coordinates_tr.shape[0]}')
+            print(f'Num samples for validation: {corners_coordinates_vl.shape[0]}')  
+        
+        # Training configuration
+        elif self.args.training_type == TRAINING_TYPE_CLASSIFICATION:
+            # Domain indexs configuration
+            corners_coordinates_tr = []
+            corners_coordinates_vl = []
 
+            domain_indexs_tr = []
+            domain_indexs_vl = []
+
+            source_label_value = 0
+            for i in range(len(self.dataset_s)):
+                corners_coordinates_tr.append(corners_coordinates_tr_s[i].copy())
+                corners_coordinates_vl.append(corners_coordinates_vl_s[i].copy())
+
+                domain_indexs_tr.append(np.full((np.shape(corners_coordinates_tr[i])[0], 1), source_label_value))
+                domain_indexs_vl.append(np.full((np.shape(corners_coordinates_vl[i])[0], 1), source_label_value))
+
+                source_label_value += 1
+
+            corners_coordinates_tr = np.concatenate(corners_coordinates_tr, axis = 0)
+            corners_coordinates_vl = np.concatenate(corners_coordinates_vl, axis = 0)
+
+            domain_indexs_tr = np.concatenate(domain_indexs_tr,axis=0)
+            domain_indexs_vl = np.concatenate(domain_indexs_vl,axis=0)
 
         #Training starts now:
         e = 0
@@ -587,7 +644,7 @@ class Models():
                             else:
                                 y_train_d_batch = y_train_d[b * self.args.batch_size : (b + 1) * self.args.batch_size, :]
 
-                            y_train_d_hot_batch = tf.keras.utils.to_categorical(y_train_d_batch, self.num_targets)
+                            y_train_d_hot_batch = tf.keras.utils.to_categorical(y_train_d_batch, self.num_domains)
 
                             _, c_batch_loss, batch_probs, d_batch_loss  = self.sess.run([self.training_optimizer, self.classifier_loss, self.prediction_c, self.domainregressor_loss],
                                                                         feed_dict={self.data: data_batch, self.label_c: y_train_c_hot_batch, self.label_d: y_train_d_hot_batch,
@@ -698,7 +755,7 @@ class Models():
                                 y_valid_d_batch = y_valid_d[b * self.args.batch_size : (b + 1) * self.args.batch_size, :]
 
                         #y_valid_d_batch = y_valid_d[b * self.args.batch_size : (b + 1) * self.args.batch_size, :]
-                        y_valid_d_hot_batch = tf.keras.utils.to_categorical(y_valid_d_batch, self.num_targets)
+                        y_valid_d_hot_batch = tf.keras.utils.to_categorical(y_valid_d_batch, self.num_domains)
                         c_batch_loss, batch_probs, d_batch_loss = self.sess.run([self.classifier_loss, self.prediction_c, self.domainregressor_loss],
                                                                                 feed_dict={self.data: data_batch, self.label_c: y_valid_c_hot_batch, self.label_d: y_valid_d_hot_batch,
                                                                                 self.mask_c: classification_mask_batch, self.class_weights: Weights, self.L: 0, self.learning_rate: self.lr})

@@ -60,7 +60,7 @@ parser.add_argument('--checkpoint_results_main_path', dest='checkpoint_results_m
 
 parser.add_argument('--discriminate_domain_targets', dest='discriminate_domain_targets', type=eval, choices=[True, False], default=False, help='Applies for Multi-target training. Decides whether each target dataset will be assigned a different domain label or every target dataset will get the same label.')
 
-parser.add_argument('--num_targets', dest='num_targets', type=int, default=None, help='Number of targets for discriminator training (domain adaptation)')
+parser.add_argument('--num_domains', dest='num_domains', type=int, default=None, help='Number of targets for discriminator training (domain adaptation)')
 
 args = parser.parse_args()
 

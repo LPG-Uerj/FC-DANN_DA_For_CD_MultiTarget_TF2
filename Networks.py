@@ -159,7 +159,7 @@ class Domain_Regressors():
             Layers.append(self.general_dense(Layers[-1], units=1024, activation_function="relu", name=name + '_dense1'))
             Layers.append(self.general_dense(Layers[-1], units=1024, activation_function="relu", name=name + '_dense2'))
             #SERÁ AQUI O ERRO??? ACTIVATION NONE NA VERDADE USA UMA ATIVAÇÃO LINEAR
-            Layers.append(tf.compat.v1.layers.dense(Layers[-1], units=self.args.num_targets, activation=None))
+            Layers.append(tf.compat.v1.layers.dense(Layers[-1], units=self.args.num_domains, activation=None))
             #ALÉM DISSO, AQUI EU USO UMA SOFTMAX, MAS EM MODELS, OUTRA SOFTMAX É USADA EM CIMA DESSE LOGITS (essa saída não é usada em models)
             Layers.append(tf.nn.softmax(Layers[-1], name=name + '_softmax'))
 

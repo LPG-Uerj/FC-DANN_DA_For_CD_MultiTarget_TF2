@@ -101,7 +101,7 @@ parser.add_argument('--source_targets_balanced', dest='source_targets_balanced',
 
 parser.add_argument('--discriminate_domain_targets', dest='discriminate_domain_targets', type=eval, choices=[True, False], default=False, help='Applies for Multi-target training. Decides whether each target dataset will be assigned a different domain label or every target dataset will get the same label.')
 
-parser.add_argument('--num_targets', dest='num_targets', type=int, default=None, help='Number of classes for discriminator training (domain adaptation)')
+parser.add_argument('--num_domains', dest='num_domains', type=int, default=None, help='Number of classes for discriminator training (domain adaptation)')
 
 args = parser.parse_args()
 
@@ -120,18 +120,15 @@ def main():
         args.role = ROLE_SOURCE      
         args.reference_t2_name = args.source_reference_t2_name  
         dataset_s.append(AMAZON_RO(args))
-
-    elif AMAZON_PA.DATASET in args.source_dataset:
+    if AMAZON_PA.DATASET in args.source_dataset:
         args.role = ROLE_SOURCE
         args.reference_t2_name = args.source_reference_t2_name
         dataset_s.append(AMAZON_PA(args))
-
-    elif CERRADO_MA.DATASET in args.source_dataset:     
+    if CERRADO_MA.DATASET in args.source_dataset:     
         args.role = ROLE_SOURCE   
         args.reference_t2_name = args.source_reference_t2_name
         dataset_s.append(CERRADO_MA(args))
-    else:
-        raise Exception("Invalid argument source_dataset: " + args.source_dataset)
+
 
     if AMAZON_RO.DATASET in args.target_dataset:              
         args.role = ROLE_TARGET     
@@ -147,6 +144,12 @@ def main():
         args.role = ROLE_TARGET
         args.reference_t2_name = args.target_reference_t2_name
         dataset_t.append(CERRADO_MA(args))
+
+    if len(dataset_s) > 1 and len(dataset_t) > 1:
+        raise Exception("Error. Both source and target datasets cannot have multiple domains.")
+    
+    if len(dataset_s) == 0 or len(dataset_t) == 0:
+        raise Exception("Error. Empty dataset.")
 
     print(f'Cleaning up {args.checkpoint_dir}')
     cleanup_folder(args.checkpoint_dir)
