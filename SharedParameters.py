@@ -46,24 +46,40 @@ SKIP_CONNECTIONS = str(True)
 TRAINING_TYPE_CLASSIFICATION = "classification"
 TRAINING_TYPE_DOMAIN_ADAPTATION = "domain_adaptation"
 
+DA_MULTI_SOURCE_TITLE = 'DA multi-source '
 DA_CHART_TITLE = 'DA multi-target experiments comparison'
 
 LOWER_BOUND_LABEL = 'Train(X)|Test(Y)]\n(Source only training)'
 UPPER_BOUND_SOURCE_ONLY_LABEL = 'Train(Y)|Test(Y)\n(Training on target)'
-#UPPER_BOUND_DA_LABEL = 'Train X,Y1,Y2 |Test((Y)Y1,Y2 → X)\n(DA training on multi-target)'
 SINGLE_TARGET_LABEL = 'Train X |Test(Y → X)\n(DA single-target)'
 MULTI_TARGET_LABEL = 'Train X |Test((Y)Y1,Y2 → X)\n(DA multi-target)'
+MULTI_SOURCE_LABEL = 'Train X, Y |Test(Z → X,Y)\n(DA multi-source)'
+
+FORMAT_LOWER_BOUND_LABEL = 'Train({})|Test({})]\n(Source only training)'
+FORMAT_UPPER_BOUND_SOURCE_ONLY_LABEL = 'Train({})|Test({})\n(Training on target)'
+FORMAT_SINGLE_TARGET_LABEL = 'Train {} |Test({} → {})\n(DA single-target)'
+FORMAT_MULTI_TARGET_LABEL = 'Train {} |Test({},{} → {}})\n(DA multi-target)'
+FORMAT_MULTI_SOURCE_LABEL = 'Train {},{} |Test({} → {},{})\n(DA multi-source)'
+
+formatted_lower_bound_label = lambda x, y: FORMAT_LOWER_BOUND_LABEL.format(x, y)
+formatted_upper_bound_source_only_label = lambda y: FORMAT_UPPER_BOUND_SOURCE_ONLY_LABEL.format(y,y)
+formatted_single_target_label = lambda x, y: FORMAT_SINGLE_TARGET_LABEL.format(x, y, x)
+formatted_multi_target_label = lambda x, y1, y2: FORMAT_MULTI_TARGET_LABEL.format(x, y1, y2, x)
+formatted_multi_source_label = lambda x, y, z: FORMAT_MULTI_SOURCE_LABEL.format(x, y, z, x, y)
 
 EXPERIMENTS_LABELS = [    
     '3 neurons fc discr.',
-    '2 neurons fc discr.',
-    '2 neurons fc discr. lambda gamma 0.25'
+    '2 neurons fc discr.'
 ]
 
 EXPERIMENTS_LABELS_LB = [    
     '3 neurons fc discr.',
-    '2 neurons fc discr.',
-    '2 neurons fc discr. lambda gamma 0.25'
+    '2 neurons fc discr.'
 ]
+
+MULTI_SOURCE_EXPERIMENTS_LABELS = [    
+    '2 neurons fc discr.'
+]
+
 
 INCLUDE_DA_RESULTS = True

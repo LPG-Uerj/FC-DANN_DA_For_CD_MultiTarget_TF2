@@ -107,8 +107,8 @@ def create_chart(args, experiments, target, result_list,checkpoint_list, mAP_lis
     if len(result_list) != len(set(result_list)):        
         raise Exception("Duplicates found in the result list")
     
-    if len(experiments) != len(set(experiments)):        
-        raise Exception("Duplicates found in the experiment list")
+    #if len(experiments) != len(set(experiments)):        
+    #    raise Exception("Duplicates found in the experiment list")
     
     _length = len(result_list)    
 

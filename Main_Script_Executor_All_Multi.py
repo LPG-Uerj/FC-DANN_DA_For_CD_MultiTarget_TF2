@@ -59,7 +59,9 @@ REFERENCES = [
 ]
 
 REFERENCES = [
-    'Main_Script_Executor_Tr_MA_PA_DA_Multi_Source.py 2>&1 | tee Main_Script_Executor_Tr_MA_DA_Multi_Source.txt'
+    'Main_Script_Executor_Tr_MA_PA_DA_Multi_Source.py 2>&1 | tee Main_Script_Executor_Tr_MA_PA_DA_Multi_Source.txt',
+    'Main_Script_Executor_Tr_MA_RO_DA_Multi_Source.py 2>&1 | tee Main_Script_Executor_Tr_MA_RO_DA_Multi_Source.txt',
+    'Main_Script_Executor_Tr_PA_RO_DA_Multi_Source.py 2>&1 | tee Main_Script_Executor_Tr_PA_RO_DA_Multi_Source.txt'
 ]
 
 for reference in REFERENCES:
