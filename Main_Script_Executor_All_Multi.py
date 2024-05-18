@@ -64,6 +64,16 @@ REFERENCES = [
     'Main_Script_Executor_Tr_PA_RO_DA_Multi_Source.py 2>&1 | tee Main_Script_Executor_Tr_PA_RO_DA_Multi_Source.txt'
 ]
 
+
+REFERENCES = [
+    'Main_Script_Executor_Tr_MA_DA_Multi_Target.py --train False --test False',
+    'Main_Script_Executor_Tr_PA_DA_Multi_Target.py --train False --test False',
+    'Main_Script_Executor_Tr_RO_DA_Multi_Target.py --train False --test False',
+    #'Main_Script_Executor_Tr_MA_PA_DA_Multi_Source.py --train False --test False',
+    #'Main_Script_Executor_Tr_MA_RO_DA_Multi_Source.py --train False --test False',
+    #'Main_Script_Executor_Tr_PA_RO_DA_Multi_Source.py --train False --test False'
+]
+
 for reference in REFERENCES:
     Schedule.append("python " + reference + " ")
 
