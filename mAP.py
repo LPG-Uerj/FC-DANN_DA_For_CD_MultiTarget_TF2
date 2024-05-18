@@ -25,6 +25,12 @@ REFERENCES = [
     'Main_Compute_Create_Precision_vs_Recall_Curves_Multi_Target_RO-PA.py'
 ]
 
+REFERENCES = [
+    'Main_Compute_Create_Precision_vs_Recall_Curves_Multi_Source_MA_PA.py  2>&1 | tee Main_Compute_Create_Precision_vs_Recall_Curves_Multi_Source_MA_PA.txt',
+    'Main_Compute_Create_Precision_vs_Recall_Curves_Multi_Source_MA_RO.py  2>&1 | tee Main_Compute_Create_Precision_vs_Recall_Curves_Multi_Source_MA_RO.txt',
+    'Main_Compute_Create_Precision_vs_Recall_Curves_Multi_Source_PA_RO.py  2>&1 | tee Main_Compute_Create_Precision_vs_Recall_Curves_Multi_Source_PA_RO.txt'
+]
+
 for reference in REFERENCES:
     Schedule.append("python " + reference + " ")
 
