@@ -102,7 +102,7 @@ def Main():
     dataset.Tiles_Configuration(args, 0)
     Avg_hit_map = HIT_MAP/counter
     args.file = 'Avg_Scores'
-    args.results_dir = args.average_results_dir    
+    args.results_dir = args.average_results_dir
 
     if not os.path.exists(args.results_dir + args.file + '/'):
         os.makedirs(args.results_dir + args.file + '/')
@@ -110,7 +110,7 @@ def Main():
     if args.save_result_text:
         # Open a file in order to save the training history
         f = open(args.results_dir + "Results.txt","a")
-    #   if counter == 0:     #TROCADO DE COUNTER ==0 PARA COUNER == 1 POIS O INCREMENTO ACONTECE ANTES (gabriel)
+        #   if counter == 0:     #TROCADO DE COUNTER ==0 PARA COUNER == 1 POIS O INCREMENTO ACONTECE ANTES (gabriel)
         ACCURACY_ = []
         FSCORE_ = []
         RECALL_ = []

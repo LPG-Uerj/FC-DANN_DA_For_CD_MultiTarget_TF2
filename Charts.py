@@ -107,8 +107,6 @@ def create_chart(args, experiments, target, result_list,checkpoint_list, mAP_lis
     if len(result_list) != len(set(result_list)):        
         raise Exception("Duplicates found in the result list")
     
-    #if len(experiments) != len(set(experiments)):        
-    #    raise Exception("Duplicates found in the experiment list")
     
     _length = len(result_list)    
 
@@ -279,8 +277,6 @@ def create_map_chart(result_path,labels,main_path,path_to_export_chart,file_titl
                 recall__ = recall__/100
                 precision__ = precision__/100
 
-                print()
-
                 if Correct:
 
                     if precision__[0 , 0] == 0:
@@ -306,7 +302,7 @@ def create_map_chart(result_path,labels,main_path,path_to_export_chart,file_titl
                 precision_i = precision__
 
                 mAP = Area_under_the_curve(recall__, precision__)
-                print(mAP)
+                print(f"mAP: {mAP}")
         map_list.append(np.round(mAP,1))
         if displayChart:
             ax.plot(recall_i[0,:], precision_i[0,:], color=colors[rf], label=labels[rf] + ' - mAP:' + str(np.round(mAP,1)))

@@ -1137,12 +1137,12 @@ def Metrics_For_Test(hit_map,
         #CLASSIFICATION_MAPS[th, :, :, :] = Classification_map
         ALERT_AREA[0 , th] = Alert_area
 
+    np.save(os.path.join(save_path,'Fscore'), FSCORE)
+    np.save(os.path.join(save_path,'Recall'), RECALL)
+    np.save(os.path.join(save_path,'Precission'), PRECISSION)
     #Saving the metrics as npy array
     if not args.save_result_text:
         np.save(os.path.join(save_path,'Accuracy'), ACCURACY)
-        np.save(os.path.join(save_path,'Fscore'), FSCORE)
-        np.save(os.path.join(save_path,'Recall'), RECALL)
-        np.save(os.path.join(save_path,'Precission'), PRECISSION)
         np.save(os.path.join(save_path,'Confusion_matrix'), CONFUSION_MATRIX)
         np.save(os.path.join(save_path,'Alert_area'), ALERT_AREA)
 
