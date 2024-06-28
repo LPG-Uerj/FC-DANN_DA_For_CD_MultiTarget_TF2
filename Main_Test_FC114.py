@@ -96,7 +96,7 @@ def main():
             ds.Tiles_Configuration(args, 0)
             ds.Coordinates_Creator(args, 0)
 
-        print("[*] Iterating over checkpoint_files...")        
+        print(f"[*] Iterating over checkpoint_files on {args.checkpoint_dir}")        
         
         checkpoint_files = [item for item in os.listdir(args.checkpoint_dir) if os.path.isdir(os.path.join(args.checkpoint_dir,item))]
 
@@ -123,6 +123,8 @@ def main():
             try:
                 model = Models(args, None, dataset)
                 model.Test()
+
+                print(f"Results have been generated successfully at {args.save_results_dir}")
             except Exception as e:
                 print(e)                
 

@@ -4,6 +4,7 @@ import json
 import argparse
 import numpy as np
 import matplotlib.pyplot as plt
+import Charts
 from skimage.morphology import square, disk
 
 from Tools import *
@@ -70,6 +71,10 @@ def Main():
 
     args.results_dir = args.checkpoint_results_main_path + 'results/' + args.results_dir + '/'
     args.checkpoint_dir = args.checkpoint_results_main_path + 'checkpoints/' + args.checkpoint_dir + '/'
+
+    if os.path.exists(os.path.join(args.results_dir, "Results.txt")):
+        os.remove(os.path.join(args.results_dir, "Results.txt"))
+
     counter = 0
     files = os.listdir(args.results_dir)
     for i in range(0, len(files)):
@@ -85,13 +90,16 @@ def Main():
 
             if args.save_result_text:
                 # Open a file in order to save the training history
+                # 'w' parameter - Write mode - will overwrite any existing content
                 f = open(args.results_dir + "/Results.txt","a")
+
                 if counter == 0:
                     ACCURACY_ = []
                     FSCORE_ = []
                     RECALL_ = []
                     PRECISION_ = []
                     ALERT_AREA_ = []
+                    mAP_ = []
 
             args.create_classification_map = True
 
@@ -100,6 +108,8 @@ def Main():
                                                                                                  dataset.Train_tiles, dataset.Valid_tiles, dataset.Undesired_tiles,
                                                                                                  Thresholds,
                                                                                                 args)
+            
+            _,_,mAP = Charts.computeMap(100, RECALL, PRECISION)
 
             if args.save_result_text:
                 ACCURACY_.append(ACCURACY[0,0])
@@ -107,13 +117,13 @@ def Main():
                 RECALL_.append(RECALL[0,0])
                 PRECISION_.append(PRECISION[0,0])
                 ALERT_AREA_.append(ALERT_AREA[0,0])
-                #histories.sendLoss(loss = FSCORE[0 , 0], epoch = i, total_epochs = len(files))
-                f.write("Run: %d Accuracy: %.2f%% F1-Score: %.2f%% Recall: %.2f%% Precision: %.2f%% Area: %.2f%% File Name: %s\n" % (counter, ACCURACY, FSCORE, RECALL, PRECISION, ALERT_AREA, args.file))
+                mAP_.append(mAP)
+                
+                f.write("Run: %d Accuracy: %.2f%% F1-Score: %.2f%% Recall: %.2f%% Precision: %.2f%% Area: %.2f%% mAP: %.2f%% File Name: %s\n" % (counter, ACCURACY, FSCORE, RECALL, PRECISION, ALERT_AREA, mAP, args.file))
                 f.close()
             else:
                 print('Coming up!')
-                #histories.sendLoss(loss = 0.0, epoch = i, total_epochs = len(files))
-
+                
             counter += 1    
     if args.save_result_text:
         f = open(args.results_dir + "/Results.txt","a")
@@ -122,6 +132,7 @@ def Main():
         RECALL_m = np.mean(RECALL_)
         PRECISION_m = np.mean(PRECISION_)
         ALERT_AREA_m = np.mean(ALERT_AREA_)
+        mAP_m = np.mean(mAP_)
 
 
         ACCURACY_s = np.std(ACCURACY_)
@@ -129,10 +140,11 @@ def Main():
         RECALL_s = np.std(RECALL_)
         PRECISION_s = np.std(PRECISION_)
         ALERT_AREA_s = np.std(ALERT_AREA_)
+        mAP_s = np.std(mAP_)
 
         #histories.sendLoss(loss = FSCORE_m, epoch = i + 1, total_epochs = len(files) + 1)
-        f.write("Mean: %d Accuracy: %f%% F1-Score: %f%% Recall: %f%% Precision: %f%% Area: %f%%\n" % ( 0, ACCURACY_m, FSCORE_m, RECALL_m, PRECISION_m, ALERT_AREA_m))
-        f.write("Std: %d Accuracy: %.2f%% F1-Score: %.2f%% Recall: %.2f%% Precision: %.2f%% Area: %.2f%%\n" % ( 0, ACCURACY_s, FSCORE_s, RECALL_s, PRECISION_s, ALERT_AREA_s))
+        f.write("Mean: %d Accuracy: %f%% F1-Score: %f%% Recall: %f%% Precision: %f%% Area: %f%% mAP: %f%% \n" % ( 0, ACCURACY_m, FSCORE_m, RECALL_m, PRECISION_m, ALERT_AREA_m, mAP_m))
+        f.write("Std: %d Accuracy: %.2f%% F1-Score: %.2f%% Recall: %.2f%% Precision: %.2f%% Area: %.2f%% mAP: %f%% \n" % ( 0, ACCURACY_s, FSCORE_s, RECALL_s, PRECISION_s, ALERT_AREA_s, mAP_s))
         f.close()
 
 if __name__=='__main__':

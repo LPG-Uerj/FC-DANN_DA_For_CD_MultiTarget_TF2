@@ -22,14 +22,13 @@ lower_bound_checkpoint = 'checkpoint_tr_Cerrado_MA_classification_Cerrado_MA/'
 upper_bound_source_only_path = 'results_tr_Amazon_RO_classification_S_Amazon_RO_T_Amazon_RO/'
 upper_bound_source_only_checkpoint = 'checkpoint_tr_Amazon_RO_classification_Amazon_RO/'
 
-
 single_target_path = 'results_tr_Cerrado_MA_to_Amazon_RO_domain_adaptation_DR_single_Amazon_RO_wrmp1_gamma_2.5_skipconn_True/'
 single_target_checkpoint = 'checkpoint_tr_Cerrado_MA_to_Amazon_RO_domain_adaptation_DR_single_Amazon_RO_gamma_2.5_skipconn_True/'
 
 result_path = [    
     'results_tr_Cerrado_MA_to_Amazon_RO_Amazon_PA_domain_adaptation_DR_FC_multi_discriminate_target_True_wrmp_1_Amazon_RO_skipconn_True/',
     'results_tr_Cerrado_MA_to_Amazon_RO_Amazon_PA_domain_adaptation_DR_FC_multi_discriminate_target_False_wrmp_1_Amazon_RO_skipconn_True/',
-    'results_tr_Cerrado_MA_to_Amazon_RO_Amazon_PA_domain_adaptation_DR_FC_multi_discriminate_target_False_gamma_0.25_Amazon_RO_skipconn_True/'
+    #'results_tr_Cerrado_MA_to_Amazon_RO_Amazon_PA_domain_adaptation_DR_FC_multi_discriminate_target_False_gamma_0.25_Amazon_RO_skipconn_True/'
 ]
 
 
@@ -37,7 +36,7 @@ result_path = [
 checkpoint_list = [    
     'checkpoint_tr_Cerrado_MA_to_Amazon_RO_Amazon_PA_domain_adaptation_DR_FC_multi_discriminate_target_True_wrmp_1_Amazon_RO_Amazon_PA_skipconn_True/',
     'checkpoint_tr_Cerrado_MA_to_Amazon_RO_Amazon_PA_domain_adaptation_DR_FC_multi_discriminate_target_False_wrmp_1_Amazon_RO_Amazon_PA_skipconn_True/',
-    'checkpoint_tr_Cerrado_MA_to_Amazon_RO_Amazon_PA_domain_adaptation_DR_FC_multi_discriminate_target_False_gamma_0.25_Amazon_RO_Amazon_PA_skipconn_True/'
+    #'checkpoint_tr_Cerrado_MA_to_Amazon_RO_Amazon_PA_domain_adaptation_DR_FC_multi_discriminate_target_False_gamma_0.25_Amazon_RO_Amazon_PA_skipconn_True/'
 ]
 
 args.checkpoint_results_main_path = "./results/"

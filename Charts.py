@@ -10,19 +10,8 @@ from Amazonia_Legal_PA import AMAZON_PA
 from Cerrado_Biome_MA import CERRADO_MA
 import SharedParameters
 
-#colors = []
-#colors.append('#1767BD')
-#colors.append('#FA7703')
-#colors.append('#1AB023')
-#colors.append('#7D8080')
-#colors.append('#E7E424')
-#colors.append('#7125B0')
-#colors.append('#2FE5EB')
-#colors.append('#FF0000')
 
-colors = ["#e60049", "#0bb4ff", "#50e991", "#e6d800", "#9b19f5", "#ffa300", "#dc0ab4", "#b3d4ff", "#00bfa0"]
-
-
+colors = ["#dba237", "#70b2e4", "#469b76", "#eee461", "#c17da5", "#ffa300", "#dc0ab4", "#b3d4ff", "#00bfa0"]
 
 
 def get_metrics(args):
@@ -243,9 +232,6 @@ def create_map_chart(result_path,labels,main_path,path_to_export_chart,file_titl
         if not os.path.exists(result_folder):
             continue
 
-        recall = np.zeros((1 , num_samples))
-        precision = np.zeros((1 , num_samples))
-
         MAP = 0
 
         recall_i = np.zeros((1,num_samples))
@@ -257,53 +243,12 @@ def create_map_chart(result_path,labels,main_path,path_to_export_chart,file_titl
 
         for i in range(len(folder_i)):
             result_folder_name = folder_i[i]
+            result_folder_path = os.path.join(result_folder,result_folder_name)
+
             if result_folder_name != 'Results.txt':
-                #print(folder_i[i])
-                recall_path = result_folder + folder_i[i] + '/Recall.npy'
-                precision_path = result_folder + folder_i[i] + '/Precission.npy'
-                fscore_path = result_folder + folder_i[i] + '/Fscore.npy'
-
-                recall__ = np.load(recall_path)
-                precision__ = np.load(precision_path)
-                fscore__ = np.load(fscore_path)
-
-                print(precision__)
-
-                if np.size(recall__, 1) > Npoints:
-                    recall__ = recall__[:,:-1]
-                if np.size(precision__, 1) > Npoints:
-                    precision__ = precision__[:,:-1]
-
-                recall__ = recall__/100
-                precision__ = precision__/100
-
-                if Correct:
-
-                    if precision__[0 , 0] == 0:
-                        precision__[0 , 0] = 2 * precision__[0 , 1] - precision__[0 , 2]
-
-                    if Interpolation:
-                        precision = precision__[0,:]
-                        precision__[0,:] = np.maximum.accumulate(precision[::-1])[::-1]
-
-
-                    if recall__[0 , 0] > 0:
-                        recall = np.zeros((1,num_samples + 1))
-                        precision = np.zeros((1,num_samples + 1))
-                        # Replicating precision value
-                        precision[0 , 0] = precision__[0 , 0]
-                        precision[0 , 1:] = precision__
-                        precision__ = precision
-                        # Attending recall
-                        recall[0 , 1:] = recall__
-                        recall__ = recall
-
-                recall_i = recall__
-                precision_i = precision__
-
-                mAP = Area_under_the_curve(recall__, precision__)
+                recall_i, precision_i, mAP = computeMap(num_samples,None, None, result_folder_path)
                 print(f"mAP: {mAP}")
-        map_list.append(np.round(mAP,1))
+                map_list.append(np.round(mAP,1))
         if displayChart:
             ax.plot(recall_i[0,:], precision_i[0,:], color=colors[rf], label=labels[rf] + ' - mAP:' + str(np.round(mAP,1)))
 
@@ -323,3 +268,53 @@ def create_map_chart(result_path,labels,main_path,path_to_export_chart,file_titl
         init += 1
     
     return map_list
+
+def computeMap(num_samples,recall, precision, result_folder_path=None):
+    Npoints = num_samples
+    Interpolation = True
+    Correct = True
+
+    if result_folder_path is not None:
+        recall_path = result_folder_path + '/Recall.npy'
+        precision_path = result_folder_path + '/Precission.npy'
+        recall__ = np.load(recall_path)
+        precision__ = np.load(precision_path)
+    else:
+        recall__ = recall
+        precision__ = precision
+
+    if np.size(recall__, 1) > Npoints:
+        recall__ = recall__[:,:-1]
+    if np.size(precision__, 1) > Npoints:
+        precision__ = precision__[:,:-1]
+
+    recall__ = recall__/100
+    precision__ = precision__/100
+
+    if Correct:
+
+        if precision__[0 , 0] == 0:
+            precision__[0 , 0] = 2 * precision__[0 , 1] - precision__[0 , 2]
+
+        if Interpolation:
+            precision = precision__[0,:]
+            precision__[0,:] = np.maximum.accumulate(precision[::-1])[::-1]
+
+
+        if recall__[0 , 0] > 0:
+            recall = np.zeros((1,num_samples + 1))
+            precision = np.zeros((1,num_samples + 1))
+            # Replicating precision value
+            precision[0 , 0] = precision__[0 , 0]
+            precision[0 , 1:] = precision__
+            precision__ = precision
+            # Attending recall
+            recall[0 , 1:] = recall__
+            recall__ = recall
+
+    recall_i = recall__
+    precision_i = precision__
+
+    mAP = Area_under_the_curve(recall__, precision__)
+    
+    return recall_i, precision_i, mAP

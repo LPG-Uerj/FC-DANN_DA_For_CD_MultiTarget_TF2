@@ -1,0 +1,2675 @@
+WARNING:tensorflow:From /home/luizmoura/.conda/envs/tf211env/lib/python3.8/site-packages/tensorflow/python/compat/v2_compat.py:107: disable_resource_variables (from tensorflow.python.ops.variable_scope) is deprecated and will be removed in a future version.
+Instructions for updating:
+non-resource variables are not supported in the long term
+/home/luizmoura/workspace/FC-DANN_DA_For_CD_MultiTarget_TF2/BaseModels.py:440: UserWarning: `tf.layers.conv2d` is deprecated and will be removed in a future version. Please Use `tf.keras.layers.Conv2D` instead.
+  conv = tf.compat.v1.layers.conv2d(input_data, filters, kernel_size, stride, padding, activation=None, kernel_initializer=slim.initializers.xavier_initializer())
+/home/luizmoura/workspace/FC-DANN_DA_For_CD_MultiTarget_TF2/BaseModels.py:445: UserWarning: `tf.layers.batch_normalization` is deprecated and will be removed in a future version. Please use `tf.keras.layers.BatchNormalization` instead. In particular, `tf.control_dependencies(tf.GraphKeys.UPDATE_OPS)` should not be used (consult the `tf.keras.layers.BatchNormalization` documentation).
+  conv = tf.compat.v1.layers.batch_normalization(conv, momentum=0.9)
+/home/luizmoura/.conda/envs/tf211env/lib/python3.8/site-packages/tensorflow/python/keras/engine/base_layer_v1.py:1694: UserWarning: `layer.apply` is deprecated and will be removed in a future version. Please use `layer.__call__` method instead.
+  warnings.warn('`layer.apply` is deprecated and '
+/home/luizmoura/workspace/FC-DANN_DA_For_CD_MultiTarget_TF2/BaseModels.py:373: UserWarning: `tf.layers.max_pooling2d` is deprecated and will be removed in a future version. Please use `tf.keras.layers.MaxPooling2D` instead.
+  Layers.append(tf.compat.v1.layers.max_pooling2d(Layers[-1], 2, 2, name=name + '_maxpooling_1'))
+/home/luizmoura/workspace/FC-DANN_DA_For_CD_MultiTarget_TF2/BaseModels.py:385: UserWarning: `tf.layers.max_pooling2d` is deprecated and will be removed in a future version. Please use `tf.keras.layers.MaxPooling2D` instead.
+  Layers.append(tf.compat.v1.layers.max_pooling2d(Layers[-1], 2, 2, name=name + '_maxpooling_1'))
+/home/luizmoura/workspace/FC-DANN_DA_For_CD_MultiTarget_TF2/Networks.py:334: UserWarning: `tf.layers.conv2d` is deprecated and will be removed in a future version. Please Use `tf.keras.layers.Conv2D` instead.
+  low_Level_Features =  tf.compat.v1.layers.conv2d(Encoder_Layers[14], 48, 1, 1, padding = 'SAME', activation=None, kernel_initializer=tf.compat.v1.keras.initializers.glorot_normal)
+WARNING:tensorflow:From /home/luizmoura/.conda/envs/tf211env/lib/python3.8/site-packages/keras/layers/normalization/batch_normalization.py:561: _colocate_with (from tensorflow.python.framework.ops) is deprecated and will be removed in a future version.
+Instructions for updating:
+Colocations handled automatically by placer.
+/home/luizmoura/workspace/FC-DANN_DA_For_CD_MultiTarget_TF2/Networks.py:158: UserWarning: `tf.layers.flatten` is deprecated and will be removed in a future version. Please use `tf.keras.layers.Flatten` instead.
+  Layers.append(tf.compat.v1.layers.flatten(input_data))
+/home/luizmoura/workspace/FC-DANN_DA_For_CD_MultiTarget_TF2/Networks.py:206: UserWarning: `tf.layers.dense` is deprecated and will be removed in a future version. Please use `tf.keras.layers.Dense` instead.
+  dense = tf.compat.v1.layers.dense(input_data, units, activation=None)
+/home/luizmoura/workspace/FC-DANN_DA_For_CD_MultiTarget_TF2/Networks.py:162: UserWarning: `tf.layers.dense` is deprecated and will be removed in a future version. Please use `tf.keras.layers.Dense` instead.
+  Layers.append(tf.compat.v1.layers.dense(Layers[-1], units=self.args.num_domains, activation=None))
+WARNING:tensorflow:From /home/luizmoura/.conda/envs/tf211env/lib/python3.8/site-packages/tensorflow/python/util/tf_should_use.py:243: initialize_all_variables (from tensorflow.python.ops.variables) is deprecated and will be removed after 2017-03-02.
+Instructions for updating:
+Use `tf.global_variables_initializer` instead.
+Namespace(DR_Localization=55, batch_size=500, beta1=0.9, buffer=False, checkpoint_dir='checkpoint_tr_Amazon_RO_to_Amazon_PA_domain_adaptation_DR_single_Amazon_PA_gamma_2.5_skipconn_True', checkpoint_results_main_path='./results/', classifier_type='DeepLab', compute_ndvi=False, da_type='DR', data_t1_name=None, data_t1_year='2016', data_t2_name=None, data_t2_year='2017', data_type='.npy', dataset='Amazon_PA', dataset_main_path='/media/lvc/Dados/PEDROWORK/Trabajo_Domain_Adaptation/Dataset/', discriminate_domain_targets=False, domain_regressor_type='FC', horizontal_blocks=10, image_channels=7, images_section='Organized/Images/', num_classes=2, num_domains=None, overlap=0.75, patches_dimension=64, phase='test', reference_section='Organized/References/', reference_t1_name=None, reference_t2_name=None, results_dir='results_tr_Amazon_RO_to_Amazon_PA_domain_adaptation_DR_single_Amazon_PA_wrmp1_gamma_2.5_skipconn_True', skip_connections=True, training_type='domain_adaptation', vertical_blocks=10)
+Cleaning up ./results/results/results_tr_Amazon_RO_to_Amazon_PA_domain_adaptation_DR_single_Amazon_PA_wrmp1_gamma_2.5_skipconn_True/
+Phase test
+Reference t2: REFERENCE_2017_EPSG4674_R225_62_PA
+[*]Reading images...
+(7, 1098, 2600)
+(7, 1098, 2600)
+[*]Normalizing the images...
+-7.949463
+28.993855
+-7.7179017
+44.9543
+[*]Defining the central patches coordinates...
+(2, 1098, 2600, 7)
+[*] Iterating over checkpoint_files...
+Tr_M_25_04_2024_23_58_41
+Testing checkpoint Tr_M_25_04_2024_23_58_41 at 21_05_2024_23_52_22
+[*]Initializing the model...
+self.discriminate_domain_targets: False
+self.num_domains: 2
+-------------------------------------
+Initializing DeepLab V3+ Architecture
+-------------------------------------
+Input data shape: (?, 64, 64, 14)
+Building backbone architecture...
+[*]Loading the feature extractor and classifier trained models...
+ [*] Reading checkpoint...
+./results/checkpoints/checkpoint_tr_Amazon_RO_to_Amazon_PA_domain_adaptation_DR_single_Amazon_PA_gamma_2.5_skipconn_True/Tr_M_25_04_2024_23_58_41
+ [*] Weights loaded successfuly
+  0%|          | 0/22 [00:00<?, ?it/s]  5%|▍         | 1/22 [00:03<01:15,  3.61s/it]  9%|▉         | 2/22 [00:03<00:31,  1.59s/it] 14%|█▎        | 3/22 [00:03<00:17,  1.06it/s] 18%|█▊        | 4/22 [00:04<00:11,  1.57it/s] 23%|██▎       | 5/22 [00:04<00:08,  2.12it/s] 27%|██▋       | 6/22 [00:04<00:05,  2.71it/s] 32%|███▏      | 7/22 [00:04<00:04,  3.28it/s] 36%|███▋      | 8/22 [00:04<00:03,  3.80it/s] 41%|████      | 9/22 [00:04<00:03,  4.26it/s] 45%|████▌     | 10/22 [00:05<00:02,  4.63it/s] 50%|█████     | 11/22 [00:05<00:02,  4.93it/s] 55%|█████▍    | 12/22 [00:05<00:01,  5.16it/s] 59%|█████▉    | 13/22 [00:05<00:01,  5.34it/s] 64%|██████▎   | 14/22 [00:05<00:01,  5.46it/s] 68%|██████▊   | 15/22 [00:06<00:01,  5.56it/s] 73%|███████▎  | 16/22 [00:06<00:01,  5.62it/s] 77%|███████▋  | 17/22 [00:06<00:00,  5.66it/s] 82%|████████▏ | 18/22 [00:06<00:00,  5.70it/s] 86%|████████▋ | 19/22 [00:06<00:00,  5.72it/s] 91%|█████████ | 20/22 [00:06<00:00,  5.74it/s] 95%|█████████▌| 21/22 [00:07<00:00,  5.75it/s]100%|██████████| 22/22 [00:07<00:00,  5.75it/s]100%|██████████| 22/22 [00:07<00:00,  3.04it/s]
+22
+Hit map:
+(1098, 2600)
+Tr_M_25_04_2024_22_06_10
+Testing checkpoint Tr_M_25_04_2024_22_06_10 at 21_05_2024_23_52_36
+[*]Initializing the model...
+self.discriminate_domain_targets: False
+self.num_domains: 2
+-------------------------------------
+Initializing DeepLab V3+ Architecture
+-------------------------------------
+Input data shape: (?, 64, 64, 14)
+Building backbone architecture...
+[*]Loading the feature extractor and classifier trained models...
+ [*] Reading checkpoint...
+./results/checkpoints/checkpoint_tr_Amazon_RO_to_Amazon_PA_domain_adaptation_DR_single_Amazon_PA_gamma_2.5_skipconn_True/Tr_M_25_04_2024_22_06_10
+ [*] Weights loaded successfuly
+  0%|          | 0/22 [00:00<?, ?it/s]  5%|▍         | 1/22 [00:00<00:06,  3.07it/s]  9%|▉         | 2/22 [00:00<00:04,  4.21it/s] 14%|█▎        | 3/22 [00:00<00:03,  4.81it/s] 18%|█▊        | 4/22 [00:00<00:03,  5.15it/s] 23%|██▎       | 5/22 [00:01<00:03,  5.36it/s] 27%|██▋       | 6/22 [00:01<00:02,  5.50it/s] 32%|███▏      | 7/22 [00:01<00:02,  5.59it/s] 36%|███▋      | 8/22 [00:01<00:02,  5.65it/s] 41%|████      | 9/22 [00:01<00:02,  5.69it/s] 45%|████▌     | 10/22 [00:01<00:02,  5.72it/s] 50%|█████     | 11/22 [00:02<00:01,  5.74it/s] 55%|█████▍    | 12/22 [00:02<00:01,  5.75it/s] 59%|█████▉    | 13/22 [00:02<00:01,  5.76it/s] 64%|██████▎   | 14/22 [00:02<00:01,  5.77it/s] 68%|██████▊   | 15/22 [00:02<00:01,  5.77it/s] 73%|███████▎  | 16/22 [00:02<00:01,  5.78it/s] 77%|███████▋  | 17/22 [00:03<00:00,  5.78it/s] 82%|████████▏ | 18/22 [00:03<00:00,  5.78it/s] 86%|████████▋ | 19/22 [00:03<00:00,  5.78it/s] 91%|█████████ | 20/22 [00:03<00:00,  5.78it/s] 95%|█████████▌| 21/22 [00:03<00:00,  5.78it/s]100%|██████████| 22/22 [00:03<00:00,  5.77it/s]100%|██████████| 22/22 [00:03<00:00,  5.55it/s]
+22
+Hit map:
+(1098, 2600)
+Tr_M_25_04_2024_23_06_22
+Testing checkpoint Tr_M_25_04_2024_23_06_22 at 21_05_2024_23_52_43
+[*]Initializing the model...
+self.discriminate_domain_targets: False
+self.num_domains: 2
+-------------------------------------
+Initializing DeepLab V3+ Architecture
+-------------------------------------
+Input data shape: (?, 64, 64, 14)
+Building backbone architecture...
+[*]Loading the feature extractor and classifier trained models...
+ [*] Reading checkpoint...
+./results/checkpoints/checkpoint_tr_Amazon_RO_to_Amazon_PA_domain_adaptation_DR_single_Amazon_PA_gamma_2.5_skipconn_True/Tr_M_25_04_2024_23_06_22
+ [*] Weights loaded successfuly
+  0%|          | 0/22 [00:00<?, ?it/s]  5%|▍         | 1/22 [00:00<00:06,  3.12it/s]  9%|▉         | 2/22 [00:00<00:04,  4.26it/s] 14%|█▎        | 3/22 [00:00<00:03,  4.85it/s] 18%|█▊        | 4/22 [00:00<00:03,  5.18it/s] 23%|██▎       | 5/22 [00:01<00:03,  5.38it/s] 27%|██▋       | 6/22 [00:01<00:02,  5.51it/s] 32%|███▏      | 7/22 [00:01<00:02,  5.60it/s] 36%|███▋      | 8/22 [00:01<00:02,  5.66it/s] 41%|████      | 9/22 [00:01<00:02,  5.69it/s] 45%|████▌     | 10/22 [00:01<00:02,  5.72it/s] 50%|█████     | 11/22 [00:02<00:01,  5.74it/s] 55%|█████▍    | 12/22 [00:02<00:01,  5.75it/s] 59%|█████▉    | 13/22 [00:02<00:01,  5.76it/s] 64%|██████▎   | 14/22 [00:02<00:01,  5.76it/s] 68%|██████▊   | 15/22 [00:02<00:01,  5.77it/s] 73%|███████▎  | 16/22 [00:02<00:01,  5.78it/s] 77%|███████▋  | 17/22 [00:03<00:00,  5.78it/s] 82%|████████▏ | 18/22 [00:03<00:00,  5.78it/s] 86%|████████▋ | 19/22 [00:03<00:00,  5.78it/s] 91%|█████████ | 20/22 [00:03<00:00,  5.78it/s] 95%|█████████▌| 21/22 [00:03<00:00,  5.79it/s]100%|██████████| 22/22 [00:03<00:00,  5.78it/s]100%|██████████| 22/22 [00:03<00:00,  5.57it/s]
+22
+Hit map:
+(1098, 2600)
+Tr_M_26_04_2024_02_00_00
+Testing checkpoint Tr_M_26_04_2024_02_00_00 at 21_05_2024_23_52_51
+[*]Initializing the model...
+self.discriminate_domain_targets: False
+self.num_domains: 2
+-------------------------------------
+Initializing DeepLab V3+ Architecture
+-------------------------------------
+Input data shape: (?, 64, 64, 14)
+Building backbone architecture...
+[*]Loading the feature extractor and classifier trained models...
+ [*] Reading checkpoint...
+./results/checkpoints/checkpoint_tr_Amazon_RO_to_Amazon_PA_domain_adaptation_DR_single_Amazon_PA_gamma_2.5_skipconn_True/Tr_M_26_04_2024_02_00_00
+ [*] Weights loaded successfuly
+  0%|          | 0/22 [00:00<?, ?it/s]  5%|▍         | 1/22 [00:00<00:06,  3.11it/s]  9%|▉         | 2/22 [00:00<00:04,  4.26it/s] 14%|█▎        | 3/22 [00:00<00:03,  4.85it/s] 18%|█▊        | 4/22 [00:00<00:03,  5.18it/s] 23%|██▎       | 5/22 [00:01<00:03,  5.39it/s] 27%|██▋       | 6/22 [00:01<00:02,  5.52it/s] 32%|███▏      | 7/22 [00:01<00:02,  5.60it/s] 36%|███▋      | 8/22 [00:01<00:02,  5.66it/s] 41%|████      | 9/22 [00:01<00:02,  5.70it/s] 45%|████▌     | 10/22 [00:01<00:02,  5.73it/s] 50%|█████     | 11/22 [00:02<00:01,  5.75it/s] 55%|█████▍    | 12/22 [00:02<00:01,  5.76it/s] 59%|█████▉    | 13/22 [00:02<00:01,  5.77it/s] 64%|██████▎   | 14/22 [00:02<00:01,  5.78it/s] 68%|██████▊   | 15/22 [00:02<00:01,  5.78it/s] 73%|███████▎  | 16/22 [00:02<00:01,  5.78it/s] 77%|███████▋  | 17/22 [00:03<00:00,  5.78it/s] 82%|████████▏ | 18/22 [00:03<00:00,  5.78it/s] 86%|████████▋ | 19/22 [00:03<00:00,  5.78it/s] 91%|█████████ | 20/22 [00:03<00:00,  5.77it/s] 95%|█████████▌| 21/22 [00:03<00:00,  5.77it/s]100%|██████████| 22/22 [00:03<00:00,  5.77it/s]100%|██████████| 22/22 [00:03<00:00,  5.57it/s]
+22
+Hit map:
+(1098, 2600)
+Tr_M_26_04_2024_01_12_14
+Testing checkpoint Tr_M_26_04_2024_01_12_14 at 21_05_2024_23_53_00
+[*]Initializing the model...
+self.discriminate_domain_targets: False
+self.num_domains: 2
+-------------------------------------
+Initializing DeepLab V3+ Architecture
+-------------------------------------
+Input data shape: (?, 64, 64, 14)
+Building backbone architecture...
+[*]Loading the feature extractor and classifier trained models...
+ [*] Reading checkpoint...
+./results/checkpoints/checkpoint_tr_Amazon_RO_to_Amazon_PA_domain_adaptation_DR_single_Amazon_PA_gamma_2.5_skipconn_True/Tr_M_26_04_2024_01_12_14
+ [*] Weights loaded successfuly
+  0%|          | 0/22 [00:00<?, ?it/s]  5%|▍         | 1/22 [00:00<00:06,  3.11it/s]  9%|▉         | 2/22 [00:00<00:04,  4.27it/s] 14%|█▎        | 3/22 [00:00<00:04,  4.70it/s] 18%|█▊        | 4/22 [00:00<00:03,  5.00it/s] 23%|██▎       | 5/22 [00:01<00:03,  5.25it/s] 27%|██▋       | 6/22 [00:01<00:02,  5.42it/s] 32%|███▏      | 7/22 [00:01<00:02,  5.53it/s] 36%|███▋      | 8/22 [00:01<00:02,  5.60it/s] 41%|████      | 9/22 [00:01<00:02,  5.65it/s] 45%|████▌     | 10/22 [00:01<00:02,  5.69it/s] 50%|█████     | 11/22 [00:02<00:01,  5.71it/s] 55%|█████▍    | 12/22 [00:02<00:01,  5.72it/s] 59%|█████▉    | 13/22 [00:02<00:01,  5.73it/s] 64%|██████▎   | 14/22 [00:02<00:01,  5.74it/s] 68%|██████▊   | 15/22 [00:02<00:01,  5.75it/s] 73%|███████▎  | 16/22 [00:02<00:01,  5.75it/s] 77%|███████▋  | 17/22 [00:03<00:00,  5.76it/s] 82%|████████▏ | 18/22 [00:03<00:00,  5.77it/s] 86%|████████▋ | 19/22 [00:03<00:00,  5.77it/s] 91%|█████████ | 20/22 [00:03<00:00,  5.77it/s] 95%|█████████▌| 21/22 [00:03<00:00,  5.77it/s]100%|██████████| 22/22 [00:03<00:00,  5.77it/s]100%|██████████| 22/22 [00:03<00:00,  5.52it/s]
+22
+Hit map:
+(1098, 2600)
+Phase compute_metrics
+Reference t2: REFERENCE_2017_EPSG4674_R225_62_PA
+[*]Reading images...
+(7, 1098, 2600)
+(7, 1098, 2600)
+[*]Computing buffer regions...
+[*]Normalizing the images...
+-7.949463
+28.993855
+-7.7179017
+44.9543
+[*]Defining the initial central patches coordinates...
+[*]The metrics computation has started...
+0.5
+51.34722814259754
+Accuracy
+[[95.94947963]]
+Fscore
+[[51.34722814]]
+Recall
+[[59.28353106]]
+Precision
+[[45.28492283]]
+Confusion matrix
+[[1004517.   27653.]
+ [  15719.   22887.]]
+Alert_area
+[[4.71994143]]
+[*]Defining the initial central patches coordinates...
+[*]The metrics computation has started...
+0.5
+52.41412881438438
+Accuracy
+[[97.08595329]]
+Fscore
+[[52.41412881]]
+Recall
+[[44.76084076]]
+Precision
+[[63.22433851]]
+Confusion matrix
+[[1024980.   10021.]
+ [  21261.   17228.]]
+Alert_area
+[[2.5383562]]
+[*]Defining the initial central patches coordinates...
+[*]The metrics computation has started...
+0.5
+47.365240896803954
+Accuracy
+[[96.90716159]]
+Fscore
+[[47.3652409]]
+Recall
+[[38.99973815]]
+Precision
+[[60.29959514]]
+Confusion matrix
+[[1022283.    9806.]
+ [  23296.   14894.]]
+Alert_area
+[[2.30780946]]
+[*]Defining the initial central patches coordinates...
+[*]The metrics computation has started...
+0.5
+51.32877550477508
+Accuracy
+[[96.5780474]]
+Fscore
+[[51.3287755]]
+Recall
+[[50.05837333]]
+Precision
+[[52.66533832]]
+Confusion matrix
+[[1013444.   17342.]
+ [  19250.   19295.]]
+Alert_area
+[[3.42616084]]
+[*]Defining the initial central patches coordinates...
+[*]The metrics computation has started...
+0.5
+55.275962341289265
+Accuracy
+[[97.10197381]]
+Fscore
+[[55.27596234]]
+Recall
+[[49.82094665]]
+Precision
+[[62.0724216]]
+Confusion matrix
+[[1021773.   11731.]
+ [  19337.   19199.]]
+Alert_area
+[[2.88515354]]
+Phase compute_metrics
+Reference t2: REFERENCE_2017_EPSG4674_R225_62_PA
+[*]Reading images...
+(7, 1098, 2600)
+(7, 1098, 2600)
+[*]Computing buffer regions...
+[*]Normalizing the images...
+-7.949463
+28.993855
+-7.7179017
+44.9543
+Cleaning up ./results/results_avg/results_tr_Amazon_RO_to_Amazon_PA_domain_adaptation_DR_single_Amazon_PA_wrmp1_gamma_2.5_skipconn_True/
+Results file
+[*]Defining the initial central patches coordinates...
+Max probability value:
+1.0
+Thresholds:
+[1.         0.98989899 0.97979798 0.96969697 0.95959596 0.94949495
+ 0.93939394 0.92929293 0.91919192 0.90909091 0.8989899  0.88888889
+ 0.87878788 0.86868687 0.85858586 0.84848485 0.83838384 0.82828283
+ 0.81818182 0.80808081 0.7979798  0.78787879 0.77777778 0.76767677
+ 0.75757576 0.74747475 0.73737374 0.72727273 0.71717172 0.70707071
+ 0.6969697  0.68686869 0.67676768 0.66666667 0.65656566 0.64646465
+ 0.63636364 0.62626263 0.61616162 0.60606061 0.5959596  0.58585859
+ 0.57575758 0.56565657 0.55555556 0.54545455 0.53535354 0.52525253
+ 0.51515152 0.50505051 0.49494949 0.48484848 0.47474747 0.46464646
+ 0.45454545 0.44444444 0.43434343 0.42424242 0.41414141 0.4040404
+ 0.39393939 0.38383838 0.37373737 0.36363636 0.35353535 0.34343434
+ 0.33333333 0.32323232 0.31313131 0.3030303  0.29292929 0.28282828
+ 0.27272727 0.26262626 0.25252525 0.24242424 0.23232323 0.22222222
+ 0.21212121 0.2020202  0.19191919 0.18181818 0.17171717 0.16161616
+ 0.15151515 0.14141414 0.13131313 0.12121212 0.11111111 0.1010101
+ 0.09090909 0.08080808 0.07070707 0.06060606 0.05050505 0.04040404
+ 0.03030303 0.02020202 0.01010101 0.        ]
+[*]The metrics computation has started...
+1.0
+100.0
+2.698830333185714
+0.98989898989899
+90.06936034349884
+21.457797828253685
+0.9797979797979799
+87.85319255907491
+22.84541365965903
+0.9696969696969698
+87.28435743361118
+23.563579277864992
+0.9595959595959598
+86.7552790346908
+24.09730041109162
+0.9494949494949497
+86.18881118881119
+24.542143736735923
+0.9393939393939397
+85.96745027124774
+24.915489636015828
+0.9292929292929296
+85.70663811563169
+25.198709372786652
+0.9191919191919196
+85.41611856528984
+25.550891920251832
+0.9090909090909095
+84.74825114431297
+25.766049625836946
+0.8989898989898994
+84.71563981042654
+26.237844355324892
+0.8888888888888894
+84.26891317040621
+26.496892129350364
+0.8787878787878793
+83.93680052666228
+26.75269494059328
+0.8686868686868693
+83.36983856574997
+26.99926439680538
+0.8585858585858592
+83.31999359692652
+27.361614887241757
+0.8484848484848492
+83.22243346007605
+27.635732323232325
+0.8383838383838391
+82.9807093963908
+28.033846638986702
+0.8282828282828291
+82.52864782276546
+28.405774236806813
+0.818181818181819
+82.33091154220658
+28.884509262908946
+0.808080808080809
+81.97725284339458
+29.54593231027959
+0.7979797979797989
+82.05443144353222
+33.14531923227575
+0.7878787878787888
+80.95703721811404
+34.56490541422048
+0.7777777777777788
+80.56888888888889
+35.43116253615823
+0.7676767676767687
+80.3561071801415
+36.09859044839895
+0.7575757575757587
+80.13286753336007
+36.50499621696366
+0.7474747474747486
+79.85517904621825
+36.84485278763834
+0.7373737373737386
+79.49088483770565
+37.293350717079534
+0.7272727272727285
+79.18820811791882
+37.57208841105399
+0.7171717171717185
+78.90160924505885
+38.06335643203251
+0.7070707070707084
+78.38670277733524
+38.447112754929286
+0.6969696969696983
+78.14517398834829
+38.77949679637444
+0.6868686868686883
+77.73054792390234
+39.06982803543512
+0.6767676767676782
+77.58028991445987
+39.437573232652
+0.6666666666666682
+77.28172086652123
+39.689942678478374
+0.6565656565656581
+76.81130373784949
+39.96558736117628
+0.6464646464646481
+76.54241961691861
+40.431231793591344
+0.636363636363638
+76.25345153320738
+40.87403598971722
+0.626262626262628
+75.6352195261477
+41.235023520544736
+0.6161616161616179
+75.09469254150105
+41.72144137590605
+0.6060606060606079
+74.87306161657746
+42.46685520068495
+0.5959595959595978
+73.99294517266908
+44.127882817369624
+0.5858585858585877
+72.8774280537648
+44.956203051490654
+0.5757575757575777
+72.11230605040637
+45.60747663551402
+0.5656565656565676
+71.49195337393618
+46.065284058422996
+0.5555555555555576
+70.82111436950147
+46.473708846933995
+0.5454545454545475
+70.5739945333854
+46.94179674311093
+0.5353535353535375
+70.09586878681708
+47.3153490306149
+0.5252525252525274
+69.67873765467137
+47.77025449451319
+0.5151515151515174
+69.36344969199179
+48.16331821127673
+0.5050505050505073
+69.02344471109471
+48.492944594314174
+0.49494949494949725
+68.77821464977428
+48.913859617326466
+0.4848484848484872
+68.22289156626506
+49.274836838288614
+0.47474747474747714
+67.89542576148865
+49.666166347497544
+0.4646464646464671
+67.40267894516533
+50.019414459889724
+0.45454545454545703
+67.14433701657458
+50.35477522270562
+0.444444444444447
+66.71785421785422
+50.65682083171396
+0.4343434343434369
+66.26088711033393
+51.05456806757527
+0.42424242424242686
+65.7040187254805
+51.58802060414671
+0.4141414141414168
+65.24526469159785
+52.12499029980082
+0.40404040404040675
+64.58273860500523
+52.70091885595962
+0.3939393939393967
+62.78287002253944
+54.173689806291
+0.38383838383838664
+61.71877280555799
+54.82858772885224
+0.3737373737373766
+60.75931354412727
+55.38146255415186
+0.36363636363636653
+60.001672520488384
+55.84671665412656
+0.3535353535353565
+59.182056605835434
+56.22809977418434
+0.3434343434343464
+58.47612397271311
+56.56647008391572
+0.33333333333333637
+57.92280479433972
+56.97221500908854
+0.3232323232323263
+57.411697337255006
+57.320686070686065
+0.31313131313131626
+56.640585046537794
+57.60988296488947
+0.3030303030303062
+56.042269467857594
+57.94183445190156
+0.29292929292929615
+55.55114496241348
+58.290162184677065
+0.2828282828282861
+54.96360349797255
+58.62383408889583
+0.27272727272727604
+54.39647704302628
+58.93318038428449
+0.262626262626266
+53.626881872669784
+59.274908711528425
+0.2525252525252559
+52.95017026895545
+59.64303420922161
+0.24242424242424587
+52.2347824117074
+60.11889242321531
+0.23232323232323582
+51.51407670139658
+60.57399056382452
+0.22222222222222576
+50.602305971433495
+61.17439018047537
+0.2121212121212157
+49.549400236176425
+61.98201466815249
+0.20202020202020565
+47.66682998530133
+63.121561299698946
+0.1919191919191956
+42.51793472769526
+65.55538245832683
+0.18181818181818554
+41.099903938520654
+66.56208675810926
+0.1717171717171755
+39.97468393510443
+67.19601432352484
+0.16161616161616543
+39.24349171536301
+67.75774867073012
+0.15151515151515538
+38.436248867588176
+68.24667911996679
+0.14141414141414532
+37.505672149744754
+68.6844292095149
+0.13131313131313527
+36.99021716505932
+69.16889384779054
+0.12121212121212521
+36.23751162884763
+69.65299194029078
+0.11111111111111516
+35.61739543099698
+70.04822150782951
+0.1010101010101051
+35.05575056782986
+70.46798796305904
+0.09090909090909505
+34.438435416928684
+70.95988390173112
+0.08080808080808499
+33.7807359466549
+71.41302376201705
+0.07070707070707494
+33.03133977851157
+71.84080891884884
+0.06060606060606488
+32.2310899620009
+72.34781706937675
+0.05050505050505483
+31.321999153278817
+72.89462767060776
+0.04040404040404477
+30.30871567456933
+73.58368487797303
+0.030303030303034717
+29.248231282129588
+74.41017273975086
+0.020202020202024662
+28.001876172607883
+75.60868441457741
+0.010101010101014607
+25.806867395339246
+77.38070699783573
+0.0
+3.6186252606770726
+100.0
+Accuracy
+[[96.52706492 97.13000437 97.14274286 97.16011848 97.17239698 97.18088536
+  97.18971756 97.19768088 97.20451439 97.20496923 97.213499   97.21670128
+  97.21977192 97.22355083 97.23432489 97.24275791 97.24783449 97.25330971
+  97.2619873  97.2748093  97.35970957 97.37692656 97.38971218 97.40288378
+  97.41255533 97.41689622 97.41872684 97.4214317  97.42385904 97.42204818
+  97.42504728 97.42385141 97.42801303 97.42884533 97.42592651 97.42509681
+  97.42471057 97.42004292 97.41675508 97.42513315 97.44164465 97.42946481
+  97.41727094 97.41005332 97.39825682 97.39646127 97.38938473 97.37954188
+  97.37431348 97.36994021 97.36437573 97.3513362  97.34410279 97.33211297
+  97.32874684 97.31820569 97.30637128 97.28937374 97.27655088 97.25757892
+  97.198678   97.15355142 97.11084301 97.07506255 97.03411444 96.99884912
+  96.96792481 96.94153799 96.89753835 96.86158858 96.83307236 96.79721812
+  96.76077649 96.70814237 96.66004763 96.6034396  96.54538103 96.4615603
+  96.35607758 96.17835168 95.56659646 95.34969263 95.17470134 95.04515732
+  94.90352007 94.73832716 94.62714506 94.466951   94.33451972 94.208758
+  94.05510484 93.8925242  93.70478534 93.48819694 93.22877241 92.90237824
+  92.54101156 92.03841035 91.04514144  3.61862526]]
+Fscore
+[[ 5.25581513 34.6586456  36.26138745 37.10906918 37.71798602 38.20536352
+  38.63391642 38.94666423 39.33525836 39.51755799 40.06644385 40.31685223
+  40.57359932 40.78902979 41.195093   41.492891   41.90925162 42.26443145
+  42.76543594 43.43660666 47.21746894 48.4457285  49.21807124 49.81752153
+  50.1595268  50.42419047 50.76852082 50.96366565 51.35315619 51.59024186
+  51.83560499 52.00187269 52.29250104 52.44530134 52.57562247 52.91284443
+  53.22040775 53.3723551  53.64085777 54.19508642 55.28494965 55.60878372
+  55.87608537 56.02882837 56.12046225 56.38170106 56.49563234 56.68113399
+  56.85128519 56.96482167 57.16966001 57.22105263 57.36746925 57.42433023
+  57.55001776 57.588477   57.6722132  57.79659542 57.9518003  58.03996465
+  58.16141875 58.0700092  57.94587846 57.84968488 57.66727449 57.50544734
+  57.44357753 57.36615561 57.12112226 56.97622367 56.88770325 56.73474534
+  56.57402425 56.30962115 56.0976807  55.90021455 55.67788387 55.38838266
+  55.07276412 54.31624552 51.58126992 50.8200778  50.1282436  49.70130513
+  49.17649698 48.51781194 48.20259665 47.67285111 47.22321748 46.81995243
+  46.37165744 45.86554384 45.25506913 44.5950157  43.81652978 42.93339978
+  41.99111423 40.86813171 38.70531227  6.98450737]]
+Recall
+[[  2.69883033  21.45779783  22.84541366  23.56357928  24.09730041
+   24.54214374  24.91548964  25.19870937  25.55089192  25.76604963
+   26.23784436  26.49689213  26.75269494  26.9992644   27.36161489
+   27.63573232  28.03384664  28.40577424  28.88450926  29.54593231
+   33.14531923  34.56490541  35.43116254  36.09859045  36.50499622
+   36.84485279  37.29335072  37.57208841  38.06335643  38.44711275
+   38.7794968   39.06982804  39.43757323  39.68994268  39.96558736
+   40.43123179  40.87403599  41.23502352  41.72144138  42.4668552
+   44.12788282  44.95620305  45.60747664  46.06528406  46.47370885
+   46.94179674  47.31534903  47.77025449  48.16331821  48.49294459
+   48.91385962  49.27483684  49.66616635  50.01941446  50.35477522
+   50.65682083  51.05456807  51.5880206   52.1249903   52.70091886
+   54.17368981  54.82858773  55.38146255  55.84671665  56.22809977
+   56.56647008  56.97221501  57.32068607  57.60988296  57.94183445
+   58.29016218  58.62383409  58.93318038  59.27490871  59.64303421
+   60.11889242  60.57399056  61.17439018  61.98201467  63.1215613
+   65.55538246  66.56208676  67.19601432  67.75774867  68.24667912
+   68.68442921  69.16889385  69.65299194  70.04822151  70.46798796
+   70.9598839   71.41302376  71.84080892  72.34781707  72.89462767
+   73.58368488  74.41017274  75.60868441  77.380707   100.        ]]
+Precision
+[[100.          90.06936034  87.85319256  87.28435743  86.75527903
+   86.18881119  85.96745027  85.70663812  85.41611857  84.74825114
+   84.71563981  84.26891317  83.93680053  83.36983857  83.3199936
+   83.22243346  82.9807094   82.52864782  82.33091154  81.97725284
+   82.05443144  80.95703722  80.56888889  80.35610718  80.13286753
+   79.85517905  79.49088484  79.18820812  78.90160925  78.38670278
+   78.14517399  77.73054792  77.58028991  77.28172087  76.81130374
+   76.54241962  76.25345153  75.63521953  75.09469254  74.87306162
+   73.99294517  72.87742805  72.11230605  71.49195337  70.82111437
+   70.57399453  70.09586879  69.67873765  69.36344969  69.02344471
+   68.77821465  68.22289157  67.89542576  67.40267895  67.14433702
+   66.71785422  66.26088711  65.70401873  65.24526469  64.58273861
+   62.78287002  61.71877281  60.75931354  60.00167252  59.18205661
+   58.47612397  57.92280479  57.41169734  56.64058505  56.04226947
+   55.55114496  54.9636035   54.39647704  53.62688187  52.95017027
+   52.23478241  51.5140767   50.60230597  49.54940024  47.66682999
+   42.51793473  41.09990394  39.97468394  39.24349172  38.43624887
+   37.50567215  36.99021717  36.23751163  35.61739543  35.05575057
+   34.43843542  33.78073595  33.03133978  32.23108996  31.32199915
+   30.30871567  29.24823128  28.00187617  25.8068674    3.61862526]]
+Confusion matrix
+[[1.037101e+06 0.000000e+00]
+ [3.735100e+04 1.036000e+03]]
+Alert_area
+[[9.63283644e-02 8.45079595e-01 9.25131770e-01 9.59899675e-01
+  9.86911881e-01 1.01112630e+00 1.02902578e+00 1.04287920e+00
+  1.06104325e+00 1.07742397e+00 1.09945223e+00 1.11557129e+00
+  1.13073837e+00 1.14707541e+00 1.16266301e+00 1.17481518e+00
+  1.19638330e+00 1.21816622e+00 1.24244469e+00 1.27642111e+00
+  1.43923648e+00 1.52235762e+00 1.57002449e+00 1.60425170e+00
+  1.62480657e+00 1.64504541e+00 1.67431923e+00 1.69211855e+00
+  1.72332123e+00 1.75241538e+00 1.77312423e+00 1.79532829e+00
+  1.81693811e+00 1.83457121e+00 1.85758456e+00 1.89011128e+00
+  1.92113688e+00 1.95223143e+00 1.99015393e+00 2.03445006e+00
+  2.13743911e+00 2.20926022e+00 2.26773031e+00 2.30806038e+00
+  2.34925884e+00 2.38428846e+00 2.41825708e+00 2.46041522e+00
+  2.49375978e+00 2.52186673e+00 2.55750618e+00 2.59652475e+00
+  2.63187542e+00 2.66928368e+00 2.69676816e+00 2.72900998e+00
+  2.76943738e+00 2.82489611e+00 2.87646967e+00 2.93683116e+00
+  3.10134381e+00 3.19361966e+00 3.27598778e+00 3.34521013e+00
+  3.41340276e+00 3.47260176e+00 3.53294402e+00 3.58404917e+00
+  3.64839639e+00 3.70808174e+00 3.76125147e+00 3.82060390e+00
+  3.87889152e+00 3.95571777e+00 4.02995650e+00 4.12122717e+00
+  4.21217562e+00 4.34092429e+00 4.50741867e+00 4.76620158e+00
+  5.55410062e+00 5.84599373e+00 6.06648306e+00 6.23797038e+00
+  6.41493588e+00 6.61060340e+00 6.75850569e+00 6.95536950e+00
+  7.11634906e+00 7.27218124e+00 7.46326797e+00 7.65905912e+00
+  7.87730534e+00 8.13080891e+00 8.42980174e+00 8.80904042e+00
+  9.23024450e+00 9.82530061e+00 1.09557265e+01 1.00000000e+02]]
+Coming up!
+WARNING:tensorflow:From /home/luizmoura/.conda/envs/tf211env/lib/python3.8/site-packages/tensorflow/python/compat/v2_compat.py:107: disable_resource_variables (from tensorflow.python.ops.variable_scope) is deprecated and will be removed in a future version.
+Instructions for updating:
+non-resource variables are not supported in the long term
+/home/luizmoura/workspace/FC-DANN_DA_For_CD_MultiTarget_TF2/BaseModels.py:440: UserWarning: `tf.layers.conv2d` is deprecated and will be removed in a future version. Please Use `tf.keras.layers.Conv2D` instead.
+  conv = tf.compat.v1.layers.conv2d(input_data, filters, kernel_size, stride, padding, activation=None, kernel_initializer=slim.initializers.xavier_initializer())
+/home/luizmoura/workspace/FC-DANN_DA_For_CD_MultiTarget_TF2/BaseModels.py:445: UserWarning: `tf.layers.batch_normalization` is deprecated and will be removed in a future version. Please use `tf.keras.layers.BatchNormalization` instead. In particular, `tf.control_dependencies(tf.GraphKeys.UPDATE_OPS)` should not be used (consult the `tf.keras.layers.BatchNormalization` documentation).
+  conv = tf.compat.v1.layers.batch_normalization(conv, momentum=0.9)
+/home/luizmoura/.conda/envs/tf211env/lib/python3.8/site-packages/tensorflow/python/keras/engine/base_layer_v1.py:1694: UserWarning: `layer.apply` is deprecated and will be removed in a future version. Please use `layer.__call__` method instead.
+  warnings.warn('`layer.apply` is deprecated and '
+/home/luizmoura/workspace/FC-DANN_DA_For_CD_MultiTarget_TF2/BaseModels.py:373: UserWarning: `tf.layers.max_pooling2d` is deprecated and will be removed in a future version. Please use `tf.keras.layers.MaxPooling2D` instead.
+  Layers.append(tf.compat.v1.layers.max_pooling2d(Layers[-1], 2, 2, name=name + '_maxpooling_1'))
+/home/luizmoura/workspace/FC-DANN_DA_For_CD_MultiTarget_TF2/BaseModels.py:385: UserWarning: `tf.layers.max_pooling2d` is deprecated and will be removed in a future version. Please use `tf.keras.layers.MaxPooling2D` instead.
+  Layers.append(tf.compat.v1.layers.max_pooling2d(Layers[-1], 2, 2, name=name + '_maxpooling_1'))
+/home/luizmoura/workspace/FC-DANN_DA_For_CD_MultiTarget_TF2/Networks.py:334: UserWarning: `tf.layers.conv2d` is deprecated and will be removed in a future version. Please Use `tf.keras.layers.Conv2D` instead.
+  low_Level_Features =  tf.compat.v1.layers.conv2d(Encoder_Layers[14], 48, 1, 1, padding = 'SAME', activation=None, kernel_initializer=tf.compat.v1.keras.initializers.glorot_normal)
+WARNING:tensorflow:From /home/luizmoura/.conda/envs/tf211env/lib/python3.8/site-packages/keras/layers/normalization/batch_normalization.py:561: _colocate_with (from tensorflow.python.framework.ops) is deprecated and will be removed in a future version.
+Instructions for updating:
+Colocations handled automatically by placer.
+/home/luizmoura/workspace/FC-DANN_DA_For_CD_MultiTarget_TF2/Networks.py:158: UserWarning: `tf.layers.flatten` is deprecated and will be removed in a future version. Please use `tf.keras.layers.Flatten` instead.
+  Layers.append(tf.compat.v1.layers.flatten(input_data))
+/home/luizmoura/workspace/FC-DANN_DA_For_CD_MultiTarget_TF2/Networks.py:206: UserWarning: `tf.layers.dense` is deprecated and will be removed in a future version. Please use `tf.keras.layers.Dense` instead.
+  dense = tf.compat.v1.layers.dense(input_data, units, activation=None)
+/home/luizmoura/workspace/FC-DANN_DA_For_CD_MultiTarget_TF2/Networks.py:162: UserWarning: `tf.layers.dense` is deprecated and will be removed in a future version. Please use `tf.keras.layers.Dense` instead.
+  Layers.append(tf.compat.v1.layers.dense(Layers[-1], units=self.args.num_domains, activation=None))
+WARNING:tensorflow:From /home/luizmoura/.conda/envs/tf211env/lib/python3.8/site-packages/tensorflow/python/util/tf_should_use.py:243: initialize_all_variables (from tensorflow.python.ops.variables) is deprecated and will be removed after 2017-03-02.
+Instructions for updating:
+Use `tf.global_variables_initializer` instead.
+Namespace(DR_Localization=55, batch_size=500, beta1=0.9, buffer=False, checkpoint_dir='checkpoint_tr_Amazon_RO_to_Amazon_PA_domain_adaptation_DR_single_Amazon_PA_gamma_2.5_skipconn_True', checkpoint_results_main_path='./results/', classifier_type='DeepLab', compute_ndvi=False, da_type='DR', data_t1_name=None, data_t1_year='2016', data_t2_name=None, data_t2_year='2017', data_type='.npy', dataset='Amazon_RO', dataset_main_path='/media/lvc/Dados/PEDROWORK/Trabajo_Domain_Adaptation/Dataset/', discriminate_domain_targets=False, domain_regressor_type='FC', horizontal_blocks=10, image_channels=7, images_section='Organized/Images/', num_classes=2, num_domains=None, overlap=0.75, patches_dimension=64, phase='test', reference_section='Organized/References/', reference_t1_name=None, reference_t2_name=None, results_dir='results_tr_Amazon_RO_to_Amazon_PA_domain_adaptation_DR_single_Amazon_RO_wrmp1_gamma_2.5_skipconn_True', skip_connections=True, training_type='domain_adaptation', vertical_blocks=10)
+Cleaning up ./results/results/results_tr_Amazon_RO_to_Amazon_PA_domain_adaptation_DR_single_Amazon_RO_wrmp1_gamma_2.5_skipconn_True/
+Phase test
+Reference t2: REFERENCE_2017_EPSG32620_R232_67_RO
+/home/luizmoura/workspace/dataset/Amazonia_Legal/Organized/Images/18_07_2016_image_R232_67_RO.npy
+[*]Reading images...
+4203.0
+65535.0
+[*]Normalizing the images...
+-7.127954
+48.105057
+-7.155134
+67.27362
+[*]Defining the central patches coordinates...
+(2, 2550, 5120, 7)
+[*] Iterating over checkpoint_files...
+Tr_M_25_04_2024_23_58_41
+Testing checkpoint Tr_M_25_04_2024_23_58_41 at 21_05_2024_23_56_42
+[*]Initializing the model...
+self.discriminate_domain_targets: False
+self.num_domains: 2
+-------------------------------------
+Initializing DeepLab V3+ Architecture
+-------------------------------------
+Input data shape: (?, 64, 64, 14)
+Building backbone architecture...
+[*]Loading the feature extractor and classifier trained models...
+ [*] Reading checkpoint...
+./results/checkpoints/checkpoint_tr_Amazon_RO_to_Amazon_PA_domain_adaptation_DR_single_Amazon_PA_gamma_2.5_skipconn_True/Tr_M_25_04_2024_23_58_41
+ [*] Weights loaded successfuly
+  0%|          | 0/102 [00:00<?, ?it/s]  1%|          | 1/102 [00:03<05:59,  3.56s/it]  2%|▏         | 2/102 [00:03<02:36,  1.57s/it]  3%|▎         | 3/102 [00:03<01:32,  1.07it/s]  4%|▍         | 4/102 [00:04<01:01,  1.58it/s]  5%|▍         | 5/102 [00:04<00:45,  2.14it/s]  6%|▌         | 6/102 [00:04<00:35,  2.73it/s]  7%|▋         | 7/102 [00:04<00:28,  3.30it/s]  8%|▊         | 8/102 [00:04<00:24,  3.82it/s]  9%|▉         | 9/102 [00:04<00:21,  4.28it/s] 10%|▉         | 10/102 [00:05<00:19,  4.65it/s] 11%|█         | 11/102 [00:05<00:18,  4.95it/s] 12%|█▏        | 12/102 [00:05<00:17,  5.18it/s] 13%|█▎        | 13/102 [00:05<00:16,  5.35it/s] 14%|█▎        | 14/102 [00:05<00:16,  5.48it/s] 15%|█▍        | 15/102 [00:05<00:15,  5.57it/s] 16%|█▌        | 16/102 [00:06<00:15,  5.63it/s] 17%|█▋        | 17/102 [00:06<00:14,  5.68it/s] 18%|█▊        | 18/102 [00:06<00:14,  5.71it/s] 19%|█▊        | 19/102 [00:06<00:14,  5.73it/s] 20%|█▉        | 20/102 [00:06<00:14,  5.75it/s] 21%|██        | 21/102 [00:07<00:14,  5.76it/s] 22%|██▏       | 22/102 [00:07<00:13,  5.77it/s] 23%|██▎       | 23/102 [00:07<00:13,  5.77it/s] 24%|██▎       | 24/102 [00:07<00:13,  5.78it/s] 25%|██▍       | 25/102 [00:07<00:13,  5.78it/s] 25%|██▌       | 26/102 [00:07<00:13,  5.79it/s] 26%|██▋       | 27/102 [00:08<00:12,  5.79it/s] 27%|██▋       | 28/102 [00:08<00:12,  5.79it/s] 28%|██▊       | 29/102 [00:08<00:12,  5.79it/s] 29%|██▉       | 30/102 [00:08<00:12,  5.79it/s] 30%|███       | 31/102 [00:08<00:12,  5.79it/s] 31%|███▏      | 32/102 [00:08<00:12,  5.79it/s] 32%|███▏      | 33/102 [00:09<00:11,  5.79it/s] 33%|███▎      | 34/102 [00:09<00:11,  5.79it/s] 34%|███▍      | 35/102 [00:09<00:11,  5.79it/s] 35%|███▌      | 36/102 [00:09<00:11,  5.79it/s] 36%|███▋      | 37/102 [00:09<00:11,  5.79it/s] 37%|███▋      | 38/102 [00:09<00:11,  5.79it/s] 38%|███▊      | 39/102 [00:10<00:10,  5.79it/s] 39%|███▉      | 40/102 [00:10<00:10,  5.79it/s] 40%|████      | 41/102 [00:10<00:10,  5.79it/s] 41%|████      | 42/102 [00:10<00:10,  5.79it/s] 42%|████▏     | 43/102 [00:10<00:10,  5.79it/s] 43%|████▎     | 44/102 [00:10<00:10,  5.79it/s] 44%|████▍     | 45/102 [00:11<00:09,  5.79it/s] 45%|████▌     | 46/102 [00:11<00:09,  5.79it/s] 46%|████▌     | 47/102 [00:11<00:09,  5.79it/s] 47%|████▋     | 48/102 [00:11<00:09,  5.79it/s] 48%|████▊     | 49/102 [00:11<00:09,  5.79it/s] 49%|████▉     | 50/102 [00:12<00:08,  5.79it/s] 50%|█████     | 51/102 [00:12<00:08,  5.79it/s] 51%|█████     | 52/102 [00:12<00:08,  5.79it/s] 52%|█████▏    | 53/102 [00:12<00:08,  5.79it/s] 53%|█████▎    | 54/102 [00:12<00:08,  5.79it/s] 54%|█████▍    | 55/102 [00:12<00:08,  5.79it/s] 55%|█████▍    | 56/102 [00:13<00:07,  5.79it/s] 56%|█████▌    | 57/102 [00:13<00:07,  5.79it/s] 57%|█████▋    | 58/102 [00:13<00:07,  5.78it/s] 58%|█████▊    | 59/102 [00:13<00:07,  5.78it/s] 59%|█████▉    | 60/102 [00:13<00:07,  5.78it/s] 60%|█████▉    | 61/102 [00:13<00:07,  5.78it/s] 61%|██████    | 62/102 [00:14<00:06,  5.77it/s] 62%|██████▏   | 63/102 [00:14<00:06,  5.77it/s] 63%|██████▎   | 64/102 [00:14<00:06,  5.77it/s] 64%|██████▎   | 65/102 [00:14<00:06,  5.77it/s] 65%|██████▍   | 66/102 [00:14<00:06,  5.77it/s] 66%|██████▌   | 67/102 [00:14<00:06,  5.78it/s] 67%|██████▋   | 68/102 [00:15<00:05,  5.77it/s] 68%|██████▊   | 69/102 [00:15<00:05,  5.77it/s] 69%|██████▊   | 70/102 [00:15<00:05,  5.77it/s] 70%|██████▉   | 71/102 [00:15<00:05,  5.77it/s] 71%|███████   | 72/102 [00:15<00:05,  5.78it/s] 72%|███████▏  | 73/102 [00:16<00:05,  5.77it/s] 73%|███████▎  | 74/102 [00:16<00:04,  5.77it/s] 74%|███████▎  | 75/102 [00:16<00:04,  5.77it/s] 75%|███████▍  | 76/102 [00:16<00:04,  5.77it/s] 75%|███████▌  | 77/102 [00:16<00:04,  5.78it/s] 76%|███████▋  | 78/102 [00:16<00:04,  5.78it/s] 77%|███████▋  | 79/102 [00:17<00:03,  5.77it/s] 78%|███████▊  | 80/102 [00:17<00:03,  5.70it/s] 79%|███████▉  | 81/102 [00:17<00:03,  5.72it/s] 80%|████████  | 82/102 [00:17<00:03,  5.74it/s] 81%|████████▏ | 83/102 [00:17<00:03,  5.75it/s] 82%|████████▏ | 84/102 [00:17<00:03,  5.76it/s] 83%|████████▎ | 85/102 [00:18<00:02,  5.76it/s] 84%|████████▍ | 86/102 [00:18<00:02,  5.77it/s] 85%|████████▌ | 87/102 [00:18<00:02,  5.77it/s] 86%|████████▋ | 88/102 [00:18<00:02,  5.77it/s] 87%|████████▋ | 89/102 [00:18<00:02,  5.77it/s] 88%|████████▊ | 90/102 [00:18<00:02,  5.78it/s] 89%|████████▉ | 91/102 [00:19<00:01,  5.78it/s] 90%|█████████ | 92/102 [00:19<00:01,  5.78it/s] 91%|█████████ | 93/102 [00:19<00:01,  5.77it/s] 92%|█████████▏| 94/102 [00:19<00:01,  5.78it/s] 93%|█████████▎| 95/102 [00:19<00:01,  5.78it/s] 94%|█████████▍| 96/102 [00:19<00:01,  5.78it/s] 95%|█████████▌| 97/102 [00:20<00:00,  5.78it/s] 96%|█████████▌| 98/102 [00:20<00:00,  5.78it/s] 97%|█████████▋| 99/102 [00:20<00:00,  5.78it/s] 98%|█████████▊| 100/102 [00:20<00:00,  5.78it/s] 99%|█████████▉| 101/102 [00:20<00:00,  5.78it/s]100%|██████████| 102/102 [00:21<00:00,  5.78it/s]100%|██████████| 102/102 [00:21<00:00,  4.85it/s]
+102
+Hit map:
+(2550, 5120)
+Tr_M_25_04_2024_22_06_10
+Testing checkpoint Tr_M_25_04_2024_22_06_10 at 21_05_2024_23_57_06
+[*]Initializing the model...
+self.discriminate_domain_targets: False
+self.num_domains: 2
+-------------------------------------
+Initializing DeepLab V3+ Architecture
+-------------------------------------
+Input data shape: (?, 64, 64, 14)
+Building backbone architecture...
+[*]Loading the feature extractor and classifier trained models...
+ [*] Reading checkpoint...
+./results/checkpoints/checkpoint_tr_Amazon_RO_to_Amazon_PA_domain_adaptation_DR_single_Amazon_PA_gamma_2.5_skipconn_True/Tr_M_25_04_2024_22_06_10
+ [*] Weights loaded successfuly
+  0%|          | 0/102 [00:00<?, ?it/s]  1%|          | 1/102 [00:00<00:32,  3.13it/s]  2%|▏         | 2/102 [00:00<00:23,  4.28it/s]  3%|▎         | 3/102 [00:00<00:20,  4.86it/s]  4%|▍         | 4/102 [00:00<00:18,  5.18it/s]  5%|▍         | 5/102 [00:01<00:18,  5.38it/s]  6%|▌         | 6/102 [00:01<00:17,  5.51it/s]  7%|▋         | 7/102 [00:01<00:16,  5.60it/s]  8%|▊         | 8/102 [00:01<00:16,  5.65it/s]  9%|▉         | 9/102 [00:01<00:16,  5.69it/s] 10%|▉         | 10/102 [00:01<00:16,  5.72it/s] 11%|█         | 11/102 [00:02<00:15,  5.74it/s] 12%|█▏        | 12/102 [00:02<00:15,  5.75it/s] 13%|█▎        | 13/102 [00:02<00:15,  5.76it/s] 14%|█▎        | 14/102 [00:02<00:15,  5.76it/s] 15%|█▍        | 15/102 [00:02<00:15,  5.77it/s] 16%|█▌        | 16/102 [00:02<00:14,  5.77it/s] 17%|█▋        | 17/102 [00:03<00:14,  5.78it/s] 18%|█▊        | 18/102 [00:03<00:14,  5.78it/s] 19%|█▊        | 19/102 [00:03<00:14,  5.77it/s] 20%|█▉        | 20/102 [00:03<00:14,  5.77it/s] 21%|██        | 21/102 [00:03<00:14,  5.78it/s] 22%|██▏       | 22/102 [00:03<00:13,  5.78it/s] 23%|██▎       | 23/102 [00:04<00:13,  5.78it/s] 24%|██▎       | 24/102 [00:04<00:13,  5.78it/s] 25%|██▍       | 25/102 [00:04<00:13,  5.78it/s] 25%|██▌       | 26/102 [00:04<00:13,  5.78it/s] 26%|██▋       | 27/102 [00:04<00:12,  5.78it/s] 27%|██▋       | 28/102 [00:04<00:12,  5.78it/s] 28%|██▊       | 29/102 [00:05<00:12,  5.78it/s] 29%|██▉       | 30/102 [00:05<00:12,  5.78it/s] 30%|███       | 31/102 [00:05<00:12,  5.79it/s] 31%|███▏      | 32/102 [00:05<00:12,  5.79it/s] 32%|███▏      | 33/102 [00:05<00:11,  5.78it/s] 33%|███▎      | 34/102 [00:06<00:11,  5.78it/s] 34%|███▍      | 35/102 [00:06<00:11,  5.78it/s] 35%|███▌      | 36/102 [00:06<00:11,  5.79it/s] 36%|███▋      | 37/102 [00:06<00:11,  5.79it/s] 37%|███▋      | 38/102 [00:06<00:11,  5.78it/s] 38%|███▊      | 39/102 [00:06<00:10,  5.78it/s] 39%|███▉      | 40/102 [00:07<00:10,  5.78it/s] 40%|████      | 41/102 [00:07<00:10,  5.78it/s] 41%|████      | 42/102 [00:07<00:10,  5.78it/s] 42%|████▏     | 43/102 [00:07<00:10,  5.78it/s] 43%|████▎     | 44/102 [00:07<00:10,  5.78it/s] 44%|████▍     | 45/102 [00:07<00:09,  5.78it/s] 45%|████▌     | 46/102 [00:08<00:09,  5.78it/s] 46%|████▌     | 47/102 [00:08<00:09,  5.78it/s] 47%|████▋     | 48/102 [00:08<00:09,  5.78it/s] 48%|████▊     | 49/102 [00:08<00:09,  5.78it/s] 49%|████▉     | 50/102 [00:08<00:08,  5.78it/s] 50%|█████     | 51/102 [00:08<00:08,  5.78it/s] 51%|█████     | 52/102 [00:09<00:08,  5.78it/s] 52%|█████▏    | 53/102 [00:09<00:08,  5.78it/s] 53%|█████▎    | 54/102 [00:09<00:08,  5.78it/s] 54%|█████▍    | 55/102 [00:09<00:08,  5.78it/s] 55%|█████▍    | 56/102 [00:09<00:07,  5.78it/s] 56%|█████▌    | 57/102 [00:10<00:07,  5.78it/s] 57%|█████▋    | 58/102 [00:10<00:07,  5.78it/s] 58%|█████▊    | 59/102 [00:10<00:07,  5.78it/s] 59%|█████▉    | 60/102 [00:10<00:07,  5.78it/s] 60%|█████▉    | 61/102 [00:10<00:07,  5.78it/s] 61%|██████    | 62/102 [00:10<00:06,  5.78it/s] 62%|██████▏   | 63/102 [00:11<00:06,  5.78it/s] 63%|██████▎   | 64/102 [00:11<00:06,  5.78it/s] 64%|██████▎   | 65/102 [00:11<00:06,  5.78it/s] 65%|██████▍   | 66/102 [00:11<00:06,  5.78it/s] 66%|██████▌   | 67/102 [00:11<00:06,  5.78it/s] 67%|██████▋   | 68/102 [00:11<00:05,  5.78it/s] 68%|██████▊   | 69/102 [00:12<00:05,  5.78it/s] 69%|██████▊   | 70/102 [00:12<00:05,  5.78it/s] 70%|██████▉   | 71/102 [00:12<00:05,  5.78it/s] 71%|███████   | 72/102 [00:12<00:05,  5.78it/s] 72%|███████▏  | 73/102 [00:12<00:05,  5.78it/s] 73%|███████▎  | 74/102 [00:12<00:04,  5.78it/s] 74%|███████▎  | 75/102 [00:13<00:04,  5.78it/s] 75%|███████▍  | 76/102 [00:13<00:04,  5.77it/s] 75%|███████▌  | 77/102 [00:13<00:04,  5.77it/s] 76%|███████▋  | 78/102 [00:13<00:04,  5.77it/s] 77%|███████▋  | 79/102 [00:13<00:03,  5.78it/s] 78%|███████▊  | 80/102 [00:13<00:03,  5.78it/s] 79%|███████▉  | 81/102 [00:14<00:03,  5.78it/s] 80%|████████  | 82/102 [00:14<00:03,  5.78it/s] 81%|████████▏ | 83/102 [00:14<00:03,  5.78it/s] 82%|████████▏ | 84/102 [00:14<00:03,  5.78it/s] 83%|████████▎ | 85/102 [00:14<00:02,  5.78it/s] 84%|████████▍ | 86/102 [00:15<00:02,  5.78it/s] 85%|████████▌ | 87/102 [00:15<00:02,  5.78it/s] 86%|████████▋ | 88/102 [00:15<00:02,  5.78it/s] 87%|████████▋ | 89/102 [00:15<00:02,  5.78it/s] 88%|████████▊ | 90/102 [00:15<00:02,  5.78it/s] 89%|████████▉ | 91/102 [00:15<00:01,  5.78it/s] 90%|█████████ | 92/102 [00:16<00:01,  5.78it/s] 91%|█████████ | 93/102 [00:16<00:01,  5.77it/s] 92%|█████████▏| 94/102 [00:16<00:01,  5.77it/s] 93%|█████████▎| 95/102 [00:16<00:01,  5.77it/s] 94%|█████████▍| 96/102 [00:16<00:01,  5.78it/s] 95%|█████████▌| 97/102 [00:16<00:00,  5.78it/s] 96%|█████████▌| 98/102 [00:17<00:00,  5.78it/s] 97%|█████████▋| 99/102 [00:17<00:00,  5.78it/s] 98%|█████████▊| 100/102 [00:17<00:00,  5.78it/s] 99%|█████████▉| 101/102 [00:17<00:00,  5.78it/s]100%|██████████| 102/102 [00:17<00:00,  5.78it/s]100%|██████████| 102/102 [00:17<00:00,  5.73it/s]
+102
+Hit map:
+(2550, 5120)
+Tr_M_25_04_2024_23_06_22
+Testing checkpoint Tr_M_25_04_2024_23_06_22 at 21_05_2024_23_57_25
+[*]Initializing the model...
+self.discriminate_domain_targets: False
+self.num_domains: 2
+-------------------------------------
+Initializing DeepLab V3+ Architecture
+-------------------------------------
+Input data shape: (?, 64, 64, 14)
+Building backbone architecture...
+[*]Loading the feature extractor and classifier trained models...
+ [*] Reading checkpoint...
+./results/checkpoints/checkpoint_tr_Amazon_RO_to_Amazon_PA_domain_adaptation_DR_single_Amazon_PA_gamma_2.5_skipconn_True/Tr_M_25_04_2024_23_06_22
+ [*] Weights loaded successfuly
+  0%|          | 0/102 [00:00<?, ?it/s]  1%|          | 1/102 [00:00<00:32,  3.11it/s]  2%|▏         | 2/102 [00:00<00:23,  4.27it/s]  3%|▎         | 3/102 [00:00<00:20,  4.85it/s]  4%|▍         | 4/102 [00:00<00:18,  5.18it/s]  5%|▍         | 5/102 [00:01<00:18,  5.38it/s]  6%|▌         | 6/102 [00:01<00:17,  5.51it/s]  7%|▋         | 7/102 [00:01<00:16,  5.59it/s]  8%|▊         | 8/102 [00:01<00:16,  5.65it/s]  9%|▉         | 9/102 [00:01<00:16,  5.69it/s] 10%|▉         | 10/102 [00:01<00:16,  5.71it/s] 11%|█         | 11/102 [00:02<00:15,  5.73it/s] 12%|█▏        | 12/102 [00:02<00:15,  5.75it/s] 13%|█▎        | 13/102 [00:02<00:15,  5.75it/s] 14%|█▎        | 14/102 [00:02<00:15,  5.76it/s] 15%|█▍        | 15/102 [00:02<00:15,  5.76it/s] 16%|█▌        | 16/102 [00:02<00:14,  5.77it/s] 17%|█▋        | 17/102 [00:03<00:14,  5.77it/s] 18%|█▊        | 18/102 [00:03<00:14,  5.77it/s] 19%|█▊        | 19/102 [00:03<00:14,  5.77it/s] 20%|█▉        | 20/102 [00:03<00:14,  5.77it/s] 21%|██        | 21/102 [00:03<00:14,  5.77it/s] 22%|██▏       | 22/102 [00:03<00:13,  5.77it/s] 23%|██▎       | 23/102 [00:04<00:13,  5.77it/s] 24%|██▎       | 24/102 [00:04<00:13,  5.77it/s] 25%|██▍       | 25/102 [00:04<00:13,  5.77it/s] 25%|██▌       | 26/102 [00:04<00:13,  5.77it/s] 26%|██▋       | 27/102 [00:04<00:12,  5.77it/s] 27%|██▋       | 28/102 [00:04<00:12,  5.77it/s] 28%|██▊       | 29/102 [00:05<00:12,  5.77it/s] 29%|██▉       | 30/102 [00:05<00:12,  5.77it/s] 30%|███       | 31/102 [00:05<00:12,  5.78it/s] 31%|███▏      | 32/102 [00:05<00:12,  5.78it/s] 32%|███▏      | 33/102 [00:05<00:11,  5.77it/s] 33%|███▎      | 34/102 [00:06<00:11,  5.78it/s] 34%|███▍      | 35/102 [00:06<00:11,  5.78it/s] 35%|███▌      | 36/102 [00:06<00:11,  5.78it/s] 36%|███▋      | 37/102 [00:06<00:11,  5.78it/s] 37%|███▋      | 38/102 [00:06<00:11,  5.78it/s] 38%|███▊      | 39/102 [00:06<00:10,  5.78it/s] 39%|███▉      | 40/102 [00:07<00:10,  5.77it/s] 40%|████      | 41/102 [00:07<00:10,  5.78it/s] 41%|████      | 42/102 [00:07<00:10,  5.77it/s] 42%|████▏     | 43/102 [00:07<00:10,  5.77it/s] 43%|████▎     | 44/102 [00:07<00:10,  5.78it/s] 44%|████▍     | 45/102 [00:07<00:09,  5.78it/s] 45%|████▌     | 46/102 [00:08<00:09,  5.78it/s] 46%|████▌     | 47/102 [00:08<00:09,  5.78it/s] 47%|████▋     | 48/102 [00:08<00:09,  5.78it/s] 48%|████▊     | 49/102 [00:08<00:09,  5.78it/s] 49%|████▉     | 50/102 [00:08<00:09,  5.78it/s] 50%|█████     | 51/102 [00:08<00:08,  5.77it/s] 51%|█████     | 52/102 [00:09<00:08,  5.77it/s] 52%|█████▏    | 53/102 [00:09<00:08,  5.77it/s] 53%|█████▎    | 54/102 [00:09<00:08,  5.77it/s] 54%|█████▍    | 55/102 [00:09<00:08,  5.78it/s] 55%|█████▍    | 56/102 [00:09<00:07,  5.78it/s] 56%|█████▌    | 57/102 [00:10<00:07,  5.77it/s] 57%|█████▋    | 58/102 [00:10<00:07,  5.78it/s] 58%|█████▊    | 59/102 [00:10<00:07,  5.77it/s] 59%|█████▉    | 60/102 [00:10<00:07,  5.77it/s] 60%|█████▉    | 61/102 [00:10<00:07,  5.77it/s] 61%|██████    | 62/102 [00:10<00:06,  5.77it/s] 62%|██████▏   | 63/102 [00:11<00:06,  5.77it/s] 63%|██████▎   | 64/102 [00:11<00:06,  5.78it/s] 64%|██████▎   | 65/102 [00:11<00:06,  5.77it/s] 65%|██████▍   | 66/102 [00:11<00:06,  5.77it/s] 66%|██████▌   | 67/102 [00:11<00:06,  5.77it/s] 67%|██████▋   | 68/102 [00:11<00:05,  5.77it/s] 68%|██████▊   | 69/102 [00:12<00:05,  5.77it/s] 69%|██████▊   | 70/102 [00:12<00:05,  5.77it/s] 70%|██████▉   | 71/102 [00:12<00:05,  5.77it/s] 71%|███████   | 72/102 [00:12<00:05,  5.77it/s] 72%|███████▏  | 73/102 [00:12<00:05,  5.77it/s] 73%|███████▎  | 74/102 [00:12<00:04,  5.77it/s] 74%|███████▎  | 75/102 [00:13<00:04,  5.77it/s] 75%|███████▍  | 76/102 [00:13<00:04,  5.77it/s] 75%|███████▌  | 77/102 [00:13<00:04,  5.77it/s] 76%|███████▋  | 78/102 [00:13<00:04,  5.77it/s] 77%|███████▋  | 79/102 [00:13<00:03,  5.77it/s] 78%|███████▊  | 80/102 [00:14<00:03,  5.77it/s] 79%|███████▉  | 81/102 [00:14<00:03,  5.77it/s] 80%|████████  | 82/102 [00:14<00:03,  5.77it/s] 81%|████████▏ | 83/102 [00:14<00:03,  5.77it/s] 82%|████████▏ | 84/102 [00:14<00:03,  5.77it/s] 83%|████████▎ | 85/102 [00:14<00:02,  5.77it/s] 84%|████████▍ | 86/102 [00:15<00:02,  5.77it/s] 85%|████████▌ | 87/102 [00:15<00:02,  5.77it/s] 86%|████████▋ | 88/102 [00:15<00:02,  5.77it/s] 87%|████████▋ | 89/102 [00:15<00:02,  5.77it/s] 88%|████████▊ | 90/102 [00:15<00:02,  5.77it/s] 89%|████████▉ | 91/102 [00:15<00:01,  5.77it/s] 90%|█████████ | 92/102 [00:16<00:01,  5.77it/s] 91%|█████████ | 93/102 [00:16<00:01,  5.77it/s] 92%|█████████▏| 94/102 [00:16<00:01,  5.77it/s] 93%|█████████▎| 95/102 [00:16<00:01,  5.77it/s] 94%|█████████▍| 96/102 [00:16<00:01,  5.77it/s] 95%|█████████▌| 97/102 [00:16<00:00,  5.77it/s] 96%|█████████▌| 98/102 [00:17<00:00,  5.78it/s] 97%|█████████▋| 99/102 [00:17<00:00,  5.77it/s] 98%|█████████▊| 100/102 [00:17<00:00,  5.77it/s] 99%|█████████▉| 101/102 [00:17<00:00,  5.77it/s]100%|██████████| 102/102 [00:17<00:00,  5.77it/s]100%|██████████| 102/102 [00:17<00:00,  5.73it/s]
+102
+Hit map:
+(2550, 5120)
+Tr_M_26_04_2024_02_00_00
+Testing checkpoint Tr_M_26_04_2024_02_00_00 at 21_05_2024_23_57_44
+[*]Initializing the model...
+self.discriminate_domain_targets: False
+self.num_domains: 2
+-------------------------------------
+Initializing DeepLab V3+ Architecture
+-------------------------------------
+Input data shape: (?, 64, 64, 14)
+Building backbone architecture...
+[*]Loading the feature extractor and classifier trained models...
+ [*] Reading checkpoint...
+./results/checkpoints/checkpoint_tr_Amazon_RO_to_Amazon_PA_domain_adaptation_DR_single_Amazon_PA_gamma_2.5_skipconn_True/Tr_M_26_04_2024_02_00_00
+ [*] Weights loaded successfuly
+  0%|          | 0/102 [00:00<?, ?it/s]  1%|          | 1/102 [00:00<00:32,  3.09it/s]  2%|▏         | 2/102 [00:00<00:23,  4.26it/s]  3%|▎         | 3/102 [00:00<00:20,  4.83it/s]  4%|▍         | 4/102 [00:00<00:18,  5.17it/s]  5%|▍         | 5/102 [00:01<00:18,  5.37it/s]  6%|▌         | 6/102 [00:01<00:17,  5.50it/s]  7%|▋         | 7/102 [00:01<00:17,  5.59it/s]  8%|▊         | 8/102 [00:01<00:16,  5.65it/s]  9%|▉         | 9/102 [00:01<00:16,  5.69it/s] 10%|▉         | 10/102 [00:01<00:16,  5.71it/s] 11%|█         | 11/102 [00:02<00:15,  5.73it/s] 12%|█▏        | 12/102 [00:02<00:15,  5.75it/s] 13%|█▎        | 13/102 [00:02<00:15,  5.75it/s] 14%|█▎        | 14/102 [00:02<00:15,  5.76it/s] 15%|█▍        | 15/102 [00:02<00:15,  5.77it/s] 16%|█▌        | 16/102 [00:02<00:14,  5.77it/s] 17%|█▋        | 17/102 [00:03<00:14,  5.77it/s] 18%|█▊        | 18/102 [00:03<00:14,  5.77it/s] 19%|█▊        | 19/102 [00:03<00:14,  5.77it/s] 20%|█▉        | 20/102 [00:03<00:14,  5.77it/s] 21%|██        | 21/102 [00:03<00:14,  5.77it/s] 22%|██▏       | 22/102 [00:03<00:13,  5.77it/s] 23%|██▎       | 23/102 [00:04<00:13,  5.77it/s] 24%|██▎       | 24/102 [00:04<00:13,  5.77it/s] 25%|██▍       | 25/102 [00:04<00:13,  5.77it/s] 25%|██▌       | 26/102 [00:04<00:13,  5.77it/s] 26%|██▋       | 27/102 [00:04<00:12,  5.77it/s] 27%|██▋       | 28/102 [00:04<00:12,  5.77it/s] 28%|██▊       | 29/102 [00:05<00:12,  5.77it/s] 29%|██▉       | 30/102 [00:05<00:12,  5.77it/s] 30%|███       | 31/102 [00:05<00:12,  5.77it/s] 31%|███▏      | 32/102 [00:05<00:12,  5.77it/s] 32%|███▏      | 33/102 [00:05<00:11,  5.77it/s] 33%|███▎      | 34/102 [00:06<00:11,  5.77it/s] 34%|███▍      | 35/102 [00:06<00:11,  5.77it/s] 35%|███▌      | 36/102 [00:06<00:11,  5.77it/s] 36%|███▋      | 37/102 [00:06<00:11,  5.77it/s] 37%|███▋      | 38/102 [00:06<00:11,  5.77it/s] 38%|███▊      | 39/102 [00:06<00:10,  5.77it/s] 39%|███▉      | 40/102 [00:07<00:10,  5.77it/s] 40%|████      | 41/102 [00:07<00:10,  5.77it/s] 41%|████      | 42/102 [00:07<00:10,  5.77it/s] 42%|████▏     | 43/102 [00:07<00:10,  5.77it/s] 43%|████▎     | 44/102 [00:07<00:10,  5.77it/s] 44%|████▍     | 45/102 [00:07<00:09,  5.77it/s] 45%|████▌     | 46/102 [00:08<00:09,  5.77it/s] 46%|████▌     | 47/102 [00:08<00:09,  5.77it/s] 47%|████▋     | 48/102 [00:08<00:09,  5.77it/s] 48%|████▊     | 49/102 [00:08<00:09,  5.77it/s] 49%|████▉     | 50/102 [00:08<00:09,  5.77it/s] 50%|█████     | 51/102 [00:08<00:08,  5.77it/s] 51%|█████     | 52/102 [00:09<00:08,  5.77it/s] 52%|█████▏    | 53/102 [00:09<00:08,  5.77it/s] 53%|█████▎    | 54/102 [00:09<00:08,  5.77it/s] 54%|█████▍    | 55/102 [00:09<00:08,  5.77it/s] 55%|█████▍    | 56/102 [00:09<00:07,  5.77it/s] 56%|█████▌    | 57/102 [00:10<00:07,  5.77it/s] 57%|█████▋    | 58/102 [00:10<00:07,  5.77it/s] 58%|█████▊    | 59/102 [00:10<00:07,  5.77it/s] 59%|█████▉    | 60/102 [00:10<00:07,  5.77it/s] 60%|█████▉    | 61/102 [00:10<00:07,  5.77it/s] 61%|██████    | 62/102 [00:10<00:06,  5.77it/s] 62%|██████▏   | 63/102 [00:11<00:06,  5.77it/s] 63%|██████▎   | 64/102 [00:11<00:06,  5.77it/s] 64%|██████▎   | 65/102 [00:11<00:06,  5.77it/s] 65%|██████▍   | 66/102 [00:11<00:06,  5.77it/s] 66%|██████▌   | 67/102 [00:11<00:06,  5.77it/s] 67%|██████▋   | 68/102 [00:11<00:05,  5.77it/s] 68%|██████▊   | 69/102 [00:12<00:05,  5.77it/s] 69%|██████▊   | 70/102 [00:12<00:05,  5.77it/s] 70%|██████▉   | 71/102 [00:12<00:05,  5.77it/s] 71%|███████   | 72/102 [00:12<00:05,  5.77it/s] 72%|███████▏  | 73/102 [00:12<00:05,  5.77it/s] 73%|███████▎  | 74/102 [00:12<00:04,  5.77it/s] 74%|███████▎  | 75/102 [00:13<00:04,  5.77it/s] 75%|███████▍  | 76/102 [00:13<00:04,  5.77it/s] 75%|███████▌  | 77/102 [00:13<00:04,  5.77it/s] 76%|███████▋  | 78/102 [00:13<00:04,  5.77it/s] 77%|███████▋  | 79/102 [00:13<00:03,  5.77it/s] 78%|███████▊  | 80/102 [00:14<00:03,  5.77it/s] 79%|███████▉  | 81/102 [00:14<00:03,  5.77it/s] 80%|████████  | 82/102 [00:14<00:03,  5.77it/s] 81%|████████▏ | 83/102 [00:14<00:03,  5.77it/s] 82%|████████▏ | 84/102 [00:14<00:03,  5.77it/s] 83%|████████▎ | 85/102 [00:14<00:02,  5.77it/s] 84%|████████▍ | 86/102 [00:15<00:02,  5.77it/s] 85%|████████▌ | 87/102 [00:15<00:02,  5.77it/s] 86%|████████▋ | 88/102 [00:15<00:02,  5.77it/s] 87%|████████▋ | 89/102 [00:15<00:02,  5.77it/s] 88%|████████▊ | 90/102 [00:15<00:02,  5.77it/s] 89%|████████▉ | 91/102 [00:15<00:01,  5.77it/s] 90%|█████████ | 92/102 [00:16<00:01,  5.77it/s] 91%|█████████ | 93/102 [00:16<00:01,  5.77it/s] 92%|█████████▏| 94/102 [00:16<00:01,  5.77it/s] 93%|█████████▎| 95/102 [00:16<00:01,  5.77it/s] 94%|█████████▍| 96/102 [00:16<00:01,  5.77it/s] 95%|█████████▌| 97/102 [00:16<00:00,  5.77it/s] 96%|█████████▌| 98/102 [00:17<00:00,  5.77it/s] 97%|█████████▋| 99/102 [00:17<00:00,  5.77it/s] 98%|█████████▊| 100/102 [00:17<00:00,  5.77it/s] 99%|█████████▉| 101/102 [00:17<00:00,  5.77it/s]100%|██████████| 102/102 [00:17<00:00,  5.77it/s]100%|██████████| 102/102 [00:17<00:00,  5.72it/s]
+102
+Hit map:
+(2550, 5120)
+Tr_M_26_04_2024_01_12_14
+Testing checkpoint Tr_M_26_04_2024_01_12_14 at 21_05_2024_23_58_03
+[*]Initializing the model...
+self.discriminate_domain_targets: False
+self.num_domains: 2
+-------------------------------------
+Initializing DeepLab V3+ Architecture
+-------------------------------------
+Input data shape: (?, 64, 64, 14)
+Building backbone architecture...
+[*]Loading the feature extractor and classifier trained models...
+ [*] Reading checkpoint...
+./results/checkpoints/checkpoint_tr_Amazon_RO_to_Amazon_PA_domain_adaptation_DR_single_Amazon_PA_gamma_2.5_skipconn_True/Tr_M_26_04_2024_01_12_14
+ [*] Weights loaded successfuly
+  0%|          | 0/102 [00:00<?, ?it/s]  1%|          | 1/102 [00:00<00:32,  3.14it/s]  2%|▏         | 2/102 [00:00<00:23,  4.29it/s]  3%|▎         | 3/102 [00:00<00:20,  4.85it/s]  4%|▍         | 4/102 [00:00<00:18,  5.16it/s]  5%|▍         | 5/102 [00:01<00:18,  5.36it/s]  6%|▌         | 6/102 [00:01<00:17,  5.49it/s]  7%|▋         | 7/102 [00:01<00:17,  5.58it/s]  8%|▊         | 8/102 [00:01<00:16,  5.64it/s]  9%|▉         | 9/102 [00:01<00:16,  5.67it/s] 10%|▉         | 10/102 [00:01<00:16,  5.70it/s] 11%|█         | 11/102 [00:02<00:15,  5.72it/s] 12%|█▏        | 12/102 [00:02<00:15,  5.73it/s] 13%|█▎        | 13/102 [00:02<00:15,  5.74it/s] 14%|█▎        | 14/102 [00:02<00:15,  5.75it/s] 15%|█▍        | 15/102 [00:02<00:15,  5.75it/s] 16%|█▌        | 16/102 [00:02<00:14,  5.75it/s] 17%|█▋        | 17/102 [00:03<00:14,  5.76it/s] 18%|█▊        | 18/102 [00:03<00:14,  5.76it/s] 19%|█▊        | 19/102 [00:03<00:14,  5.76it/s] 20%|█▉        | 20/102 [00:03<00:14,  5.76it/s] 21%|██        | 21/102 [00:03<00:14,  5.76it/s] 22%|██▏       | 22/102 [00:03<00:13,  5.76it/s] 23%|██▎       | 23/102 [00:04<00:13,  5.76it/s] 24%|██▎       | 24/102 [00:04<00:13,  5.77it/s] 25%|██▍       | 25/102 [00:04<00:13,  5.77it/s] 25%|██▌       | 26/102 [00:04<00:13,  5.77it/s] 26%|██▋       | 27/102 [00:04<00:13,  5.77it/s] 27%|██▋       | 28/102 [00:05<00:12,  5.77it/s] 28%|██▊       | 29/102 [00:05<00:12,  5.77it/s] 29%|██▉       | 30/102 [00:05<00:12,  5.77it/s] 30%|███       | 31/102 [00:05<00:12,  5.77it/s] 31%|███▏      | 32/102 [00:05<00:12,  5.77it/s] 32%|███▏      | 33/102 [00:05<00:11,  5.77it/s] 33%|███▎      | 34/102 [00:06<00:11,  5.77it/s] 34%|███▍      | 35/102 [00:06<00:11,  5.77it/s] 35%|███▌      | 36/102 [00:06<00:11,  5.77it/s] 36%|███▋      | 37/102 [00:06<00:11,  5.77it/s] 37%|███▋      | 38/102 [00:06<00:11,  5.77it/s] 38%|███▊      | 39/102 [00:06<00:10,  5.77it/s] 39%|███▉      | 40/102 [00:07<00:10,  5.77it/s] 40%|████      | 41/102 [00:07<00:10,  5.77it/s] 41%|████      | 42/102 [00:07<00:10,  5.76it/s] 42%|████▏     | 43/102 [00:07<00:10,  5.76it/s] 43%|████▎     | 44/102 [00:07<00:10,  5.76it/s] 44%|████▍     | 45/102 [00:07<00:09,  5.76it/s] 45%|████▌     | 46/102 [00:08<00:09,  5.75it/s] 46%|████▌     | 47/102 [00:08<00:09,  5.75it/s] 47%|████▋     | 48/102 [00:08<00:09,  5.75it/s] 48%|████▊     | 49/102 [00:08<00:09,  5.75it/s] 49%|████▉     | 50/102 [00:08<00:09,  5.75it/s] 50%|█████     | 51/102 [00:08<00:08,  5.75it/s] 51%|█████     | 52/102 [00:09<00:08,  5.75it/s] 52%|█████▏    | 53/102 [00:09<00:08,  5.75it/s] 53%|█████▎    | 54/102 [00:09<00:08,  5.75it/s] 54%|█████▍    | 55/102 [00:09<00:08,  5.75it/s] 55%|█████▍    | 56/102 [00:09<00:08,  5.75it/s] 56%|█████▌    | 57/102 [00:10<00:07,  5.75it/s] 57%|█████▋    | 58/102 [00:10<00:07,  5.75it/s] 58%|█████▊    | 59/102 [00:10<00:07,  5.75it/s] 59%|█████▉    | 60/102 [00:10<00:07,  5.75it/s] 60%|█████▉    | 61/102 [00:10<00:07,  5.75it/s] 61%|██████    | 62/102 [00:10<00:06,  5.75it/s] 62%|██████▏   | 63/102 [00:11<00:06,  5.75it/s] 63%|██████▎   | 64/102 [00:11<00:06,  5.75it/s] 64%|██████▎   | 65/102 [00:11<00:06,  5.75it/s] 65%|██████▍   | 66/102 [00:11<00:06,  5.75it/s] 66%|██████▌   | 67/102 [00:11<00:06,  5.75it/s] 67%|██████▋   | 68/102 [00:11<00:05,  5.75it/s] 68%|██████▊   | 69/102 [00:12<00:05,  5.75it/s] 69%|██████▊   | 70/102 [00:12<00:05,  5.75it/s] 70%|██████▉   | 71/102 [00:12<00:05,  5.75it/s] 71%|███████   | 72/102 [00:12<00:05,  5.75it/s] 72%|███████▏  | 73/102 [00:12<00:05,  5.75it/s] 73%|███████▎  | 74/102 [00:12<00:04,  5.75it/s] 74%|███████▎  | 75/102 [00:13<00:04,  5.75it/s] 75%|███████▍  | 76/102 [00:13<00:04,  5.75it/s] 75%|███████▌  | 77/102 [00:13<00:04,  5.75it/s] 76%|███████▋  | 78/102 [00:13<00:04,  5.75it/s] 77%|███████▋  | 79/102 [00:13<00:03,  5.75it/s] 78%|███████▊  | 80/102 [00:14<00:03,  5.75it/s] 79%|███████▉  | 81/102 [00:14<00:03,  5.75it/s] 80%|████████  | 82/102 [00:14<00:03,  5.75it/s] 81%|████████▏ | 83/102 [00:14<00:03,  5.75it/s] 82%|████████▏ | 84/102 [00:14<00:03,  5.75it/s] 83%|████████▎ | 85/102 [00:14<00:02,  5.75it/s] 84%|████████▍ | 86/102 [00:15<00:02,  5.75it/s] 85%|████████▌ | 87/102 [00:15<00:02,  5.75it/s] 86%|████████▋ | 88/102 [00:15<00:02,  5.75it/s] 87%|████████▋ | 89/102 [00:15<00:02,  5.75it/s] 88%|████████▊ | 90/102 [00:15<00:02,  5.75it/s] 89%|████████▉ | 91/102 [00:15<00:01,  5.75it/s] 90%|█████████ | 92/102 [00:16<00:01,  5.75it/s] 91%|█████████ | 93/102 [00:16<00:01,  5.75it/s] 92%|█████████▏| 94/102 [00:16<00:01,  5.75it/s] 93%|█████████▎| 95/102 [00:16<00:01,  5.75it/s] 94%|█████████▍| 96/102 [00:16<00:01,  5.76it/s] 95%|█████████▌| 97/102 [00:16<00:00,  5.75it/s] 96%|█████████▌| 98/102 [00:17<00:00,  5.75it/s] 97%|█████████▋| 99/102 [00:17<00:00,  5.75it/s] 98%|█████████▊| 100/102 [00:17<00:00,  5.75it/s] 99%|█████████▉| 101/102 [00:17<00:00,  5.75it/s]100%|██████████| 102/102 [00:17<00:00,  5.75it/s]100%|██████████| 102/102 [00:17<00:00,  5.71it/s]
+102
+Hit map:
+(2550, 5120)
+Phase compute_metrics
+Reference t2: REFERENCE_2017_EPSG32620_R232_67_RO
+/home/luizmoura/workspace/dataset/Amazonia_Legal/Organized/Images/18_07_2016_image_R232_67_RO.npy
+[*]Reading images...
+4203.0
+65535.0
+[*]Computing buffer regions...
+[*]Normalizing the images...
+-7.127954
+48.105057
+-7.155134
+67.27362
+[*]Defining the initial central patches coordinates...
+[*]The metrics computation has started...
+0.5
+65.98464099672412
+Accuracy
+[[95.3902948]]
+Fscore
+[[65.984641]]
+Recall
+[[69.07271552]]
+Precision
+[[63.16087079]]
+Confusion matrix
+[[1998852.   57332.]
+ [  44012.   98296.]]
+Alert_area
+[[7.07885223]]
+[*]Defining the initial central patches coordinates...
+[*]The metrics computation has started...
+0.5
+67.10515248877151
+Accuracy
+[[95.55413587]]
+Fscore
+[[67.10515249]]
+Recall
+[[70.09910733]]
+Precision
+[[64.35646759]]
+Confusion matrix
+[[2001730.   55235.]
+ [  42540.   99730.]]
+Alert_area
+[[7.04631383]]
+[*]Defining the initial central patches coordinates...
+[*]The metrics computation has started...
+0.5
+65.32735953744655
+Accuracy
+[[95.06999344]]
+Fscore
+[[65.32735954]]
+Recall
+[[71.70265641]]
+Precision
+[[59.99318653]]
+Confusion matrix
+[[1988646.   68112.]
+ [  40309.  102139.]]
+Alert_area
+[[7.74147579]]
+[*]Defining the initial central patches coordinates...
+[*]The metrics computation has started...
+0.5
+65.93409674830089
+Accuracy
+[[95.58129585]]
+Fscore
+[[65.93409675]]
+Recall
+[[66.02597403]]
+Precision
+[[65.84247482]]
+Confusion matrix
+[[2008248.   48793.]
+ [  48396.   94054.]]
+Alert_area
+[[6.49454806]]
+[*]Defining the initial central patches coordinates...
+[*]The metrics computation has started...
+0.5
+67.95888318206012
+Accuracy
+[[95.78739098]]
+Fscore
+[[67.95888318]]
+Recall
+[[69.04131523]]
+Precision
+[[66.90986803]]
+Confusion matrix
+[[2009572.   48619.]
+ [  44083.   98310.]]
+Alert_area
+[[6.67681852]]
+Phase compute_metrics
+Reference t2: REFERENCE_2017_EPSG32620_R232_67_RO
+/home/luizmoura/workspace/dataset/Amazonia_Legal/Organized/Images/18_07_2016_image_R232_67_RO.npy
+[*]Reading images...
+4203.0
+65535.0
+[*]Computing buffer regions...
+[*]Normalizing the images...
+-7.127954
+48.105057
+-7.155134
+67.27362
+Cleaning up ./results/results_avg/results_tr_Amazon_RO_to_Amazon_PA_domain_adaptation_DR_single_Amazon_RO_wrmp1_gamma_2.5_skipconn_True/
+Results file
+[*]Defining the initial central patches coordinates...
+Max probability value:
+1.0
+Thresholds:
+[1.         0.98989899 0.97979798 0.96969697 0.95959596 0.94949495
+ 0.93939394 0.92929293 0.91919192 0.90909091 0.8989899  0.88888889
+ 0.87878788 0.86868687 0.85858586 0.84848485 0.83838384 0.82828283
+ 0.81818182 0.80808081 0.7979798  0.78787879 0.77777778 0.76767677
+ 0.75757576 0.74747475 0.73737374 0.72727273 0.71717172 0.70707071
+ 0.6969697  0.68686869 0.67676768 0.66666667 0.65656566 0.64646465
+ 0.63636364 0.62626263 0.61616162 0.60606061 0.5959596  0.58585859
+ 0.57575758 0.56565657 0.55555556 0.54545455 0.53535354 0.52525253
+ 0.51515152 0.50505051 0.49494949 0.48484848 0.47474747 0.46464646
+ 0.45454545 0.44444444 0.43434343 0.42424242 0.41414141 0.4040404
+ 0.39393939 0.38383838 0.37373737 0.36363636 0.35353535 0.34343434
+ 0.33333333 0.32323232 0.31313131 0.3030303  0.29292929 0.28282828
+ 0.27272727 0.26262626 0.25252525 0.24242424 0.23232323 0.22222222
+ 0.21212121 0.2020202  0.19191919 0.18181818 0.17171717 0.16161616
+ 0.15151515 0.14141414 0.13131313 0.12121212 0.11111111 0.1010101
+ 0.09090909 0.08080808 0.07070707 0.06060606 0.05050505 0.04040404
+ 0.03030303 0.02020202 0.01010101 0.        ]
+[*]The metrics computation has started...
+1.0
+88.37569745815252
+2.019450760392982
+0.98989898989899
+82.40636333160639
+38.47166200709962
+0.9797979797979799
+81.77450132476697
+42.23262079478181
+0.9696969696969698
+81.06544861675422
+44.34793688547219
+0.9595959595959598
+80.56964543239346
+45.8531442802966
+0.9494949494949497
+80.22029783687815
+46.99705649269784
+0.9393939393939397
+79.87044230340442
+48.0605594119184
+0.9292929292929296
+79.62539237217004
+48.89088136454774
+0.9191919191919196
+79.26803183644981
+49.680382694098725
+0.9090909090909095
+79.0862483251946
+50.38304716488664
+0.8989898989898994
+78.83988086796198
+50.97014451662047
+0.8888888888888894
+78.64868933187105
+51.58533145275035
+0.8787878787878793
+78.41883739914974
+52.162537640778275
+0.8686868686868693
+78.21467414038317
+52.738760083488465
+0.8585858585858592
+77.93565296351329
+53.2734736485724
+0.8484848484848492
+77.80972774548792
+53.82748793769927
+0.8383838383838391
+77.51628599002734
+54.364256807253554
+0.8282828282828291
+77.32776659361147
+54.93170082212626
+0.818181818181819
+77.07074263138335
+55.533555060740156
+0.808080808080809
+76.74586240701228
+56.225971355743646
+0.7979797979797989
+76.10453740799403
+57.44758662887606
+0.7878787878787888
+75.5224532111093
+58.410702228224174
+0.7777777777777788
+75.14790780935331
+59.078211307743736
+0.7676767676767687
+74.83794047513909
+59.641331353242165
+0.7575757575757587
+74.48772543999442
+60.179126739555635
+0.7474747474747486
+74.24958465683616
+60.66819061016353
+0.7373737373737386
+74.06570544248429
+61.115723412039515
+0.7272727272727285
+73.74949406368052
+61.54024767801858
+0.7171717171717185
+73.5044233016191
+61.953868555631374
+0.7070707070707084
+73.3035116296376
+62.33844769150717
+0.6969696969696983
+73.0460076201401
+62.697536377638215
+0.6868686868686883
+72.88007416081187
+63.03673538286245
+0.6767676767676782
+72.67557531675648
+63.44382409608056
+0.6666666666666682
+72.46296917693303
+63.780457789810484
+0.6565656565656581
+72.28074347085166
+64.13866831714505
+0.6464646464646481
+72.13014215624607
+64.52016738755846
+0.636363636363638
+71.9380835840439
+64.89165740962076
+0.626262626262628
+71.6058906571832
+65.2632763118114
+0.6161616161616179
+71.32064806398142
+65.6554789078047
+0.6060606060606079
+71.01858083836863
+66.06355213821922
+0.5959595959595978
+70.43675839434486
+66.73091668835691
+0.5858585858585877
+70.09283430616256
+67.24848740678205
+0.5757575757575777
+69.77025743636588
+67.68433341772864
+0.5656565656565676
+69.45202136212242
+68.0596783950704
+0.5555555555555576
+69.18110191427027
+68.44230579826376
+0.5454545454545475
+68.85948853714865
+68.77522890617308
+0.5353535353535375
+68.56991399814464
+69.11708874108862
+0.5252525252525274
+68.28030936599325
+69.43351138599944
+0.5151515151515174
+68.10190365697105
+69.74170779375993
+0.5050505050505073
+67.90784252226207
+70.02784379350592
+0.49494949494949725
+67.62420786661082
+70.34153197470133
+0.4848484848484872
+67.37533019563674
+70.63441857849753
+0.47474747474747714
+67.15593644372288
+70.94456862497013
+0.4646464646464671
+66.92268609247051
+71.26435166317683
+0.45454545454545703
+66.6852141580639
+71.56988794042223
+0.444444444444447
+66.44808175508534
+71.88744582663116
+0.4343434343434369
+66.1784004940559
+72.24227528089887
+0.42424242424242686
+65.83107828467735
+72.5922753410519
+0.4141414141414168
+65.52683369919006
+72.94706683707147
+0.40404040404040675
+65.14709184819223
+73.3409177095184
+0.3939393939393967
+64.40184480628311
+73.94599150191382
+0.38383838383838664
+63.97446890738034
+74.36370783204413
+0.3737373737373766
+63.52703017418981
+74.68303778273872
+0.36363636363636653
+63.15721001744479
+74.96876360011792
+0.3535353535353565
+62.822735579401154
+75.28374593771277
+0.3434343434343464
+62.442106483494186
+75.58855105921648
+0.33333333333333637
+62.153258863637674
+75.85814926043392
+0.3232323232323263
+61.89930175246441
+76.12656540498824
+0.31313131313131626
+61.65257355022017
+76.42477776764352
+0.3030303030303062
+61.40878583133179
+76.73396116600168
+0.29292929292929615
+61.114604140816695
+77.01698290490415
+0.2828282828282861
+60.803266026701976
+77.27667928761744
+0.27272727272727604
+60.515779686047146
+77.5693202930557
+0.262626262626266
+60.222133041205254
+77.85981223224866
+0.2525252525252559
+59.89951908868649
+78.14486901782648
+0.24242424242424587
+59.51601067732981
+78.46652131545187
+0.23232323232323582
+59.15842105263158
+78.81097454091613
+0.22222222222222576
+58.737985270253404
+79.17052241944982
+0.2121212121212157
+58.22812073722321
+79.59761654398878
+0.20202020202020565
+57.35939529821288
+80.18426717337802
+0.1919191919191956
+55.496286195787334
+81.04928056545032
+0.18181818181818554
+54.716217043458606
+81.48285800438981
+0.1717171717171755
+54.12725789102778
+81.85291911182158
+0.16161616161616543
+53.66589178503441
+82.20767294980267
+0.15151515151515538
+53.24141048824593
+82.53267458565472
+0.14141414141414532
+52.82457081545064
+82.81038651575147
+0.13131313131313527
+52.43455462660436
+83.10932025227751
+0.12121212121212521
+51.98442525520907
+83.36510294756611
+0.11111111111111516
+51.56898749216911
+83.65151451438824
+0.1010101010101051
+51.10831341754866
+83.93044867751567
+0.09090909090909505
+50.65250929446379
+84.22369564607924
+0.08080808080808499
+50.19436305520411
+84.53402304651358
+0.07070707070707494
+49.670898750071814
+84.85453908166842
+0.06060606060606488
+49.15036326367242
+85.21291136578698
+0.05050505050505483
+48.52814420254452
+85.60687809184803
+0.04040404040404477
+47.893854312899705
+86.06676851060251
+0.030303030303034717
+46.98738818231607
+86.58686160035323
+0.020202020202024662
+45.78361543072098
+87.24432952849425
+0.010101010101014607
+43.828964212166746
+88.27081786209699
+0.0
+6.478794167103523
+100.0
+Accuracy
+[[93.70403171 95.54523672 95.69471624 95.76364625 95.81344913 95.85301732
+  95.88001508 95.90684208 95.92437278 95.94758839 95.96177237 95.97997755
+  95.99453524 96.00967242 96.01990095 96.0384158  96.04441562 96.05619679
+  96.06900586 96.07788461 96.08756487 96.09228894 96.097697   96.10150893
+  96.09898704 96.1017344  96.10831831 96.10364247 96.10184178 96.10130335
+  96.09738198 96.09860907 96.09843935 96.09555098 96.09599244 96.0988316
+  96.09664904 96.08449412 96.07662539 96.06822156 96.0431988  96.03236148
+  96.01834938 96.00381428 95.99314185 95.97389949 95.95770322 95.93995994
+  95.93412654 95.92526518 95.90602658 95.89168848 95.8798975  95.86517824
+  95.85000266 95.83446708 95.81628389 95.78936467 95.76750725 95.73728087
+  95.67026301 95.62971387 95.58617324 95.54870039 95.5156859  95.47528336
+  95.44536892 95.41882093 95.39411439 95.36714892 95.33452852 95.29855725
+  95.26550878 95.23157048 95.19152593 95.14396189 95.09967763 95.04396141
+  94.97486295 94.8511865  94.55441469 94.42338709 94.3199968  94.23642601
+  94.15695709 94.07873409 94.0032423  93.91540994 93.8322137  93.73761684
+  93.64177859 93.54278191 93.42766555 93.30745654 93.15849149 93.00219775
+  92.77202866 92.44504567 91.86694535  6.47879417]]
+Fscore
+[[ 3.94867143 52.45469139 55.69924446 57.33176542 58.44470898 59.27049637
+  60.01075714 60.58307635 61.07971426 61.5529136  61.9132476  62.30505183
+  62.65097999 62.99865229 63.28680118 63.63401353 63.90806694 64.23352253
+  64.55314653 64.90262696 65.47289363 65.87345025 66.15111882 66.38100199
+  66.57326873 66.77530734 66.97042939 67.09395808 67.23668691 67.37778116
+  67.47731178 67.60196866 67.74664649 67.84505425 67.96672952 68.11325728
+  68.23343289 68.28762286 68.37091117 68.45151321 68.53377741 68.64120756
+  68.71146809 68.74880095 68.80972084 68.81733293 68.84241412 68.85208198
+  68.91205207 68.95155149 68.9561102  68.96639284 68.9982841  69.025314
+  69.04126115 69.06082567 69.07751605 69.04655372 69.03814075 69.00160552
+  68.84470904 68.77897088 68.65478999 68.55796667 68.4910775  68.38927581
+  68.3252385  68.27968323 68.24847359 68.22130716 68.15041401 68.05730517
+  67.98949196 67.91451209 67.81644857 67.68993514 67.58502921 67.44061056
+  67.25622831 66.87797889 65.88180308 65.4693689  65.16352838 64.93902017
+  64.72746259 64.50288647 64.30095342 64.03697184 63.80428769 63.53055389
+  63.26010623 62.98793545 62.66177293 62.34211781 61.94270301 61.54150653
+  60.91728734 60.05295854 58.5741847  12.16917268]]
+Recall
+[[  2.01945076  38.47166201  42.23262079  44.34793689  45.85314428
+   46.99705649  48.06055941  48.89088136  49.68038269  50.38304716
+   50.97014452  51.58533145  52.16253764  52.73876008  53.27347365
+   53.82748794  54.36425681  54.93170082  55.53355506  56.22597136
+   57.44758663  58.41070223  59.07821131  59.64133135  60.17912674
+   60.66819061  61.11572341  61.54024768  61.95386856  62.33844769
+   62.69753638  63.03673538  63.4438241   63.78045779  64.13866832
+   64.52016739  64.89165741  65.26327631  65.65547891  66.06355214
+   66.73091669  67.24848741  67.68433342  68.0596784   68.4423058
+   68.77522891  69.11708874  69.43351139  69.74170779  70.02784379
+   70.34153197  70.63441858  70.94456862  71.26435166  71.56988794
+   71.88744583  72.24227528  72.59227534  72.94706684  73.34091771
+   73.9459915   74.36370783  74.68303778  74.9687636   75.28374594
+   75.58855106  75.85814926  76.1265654   76.42477777  76.73396117
+   77.0169829   77.27667929  77.56932029  77.85981223  78.14486902
+   78.46652132  78.81097454  79.17052242  79.59761654  80.18426717
+   81.04928057  81.482858    81.85291911  82.20767295  82.53267459
+   82.81038652  83.10932025  83.36510295  83.65151451  83.93044868
+   84.22369565  84.53402305  84.85453908  85.21291137  85.60687809
+   86.06676851  86.5868616   87.24432953  88.27081786 100.        ]]
+Precision
+[[88.37569746 82.40636333 81.77450132 81.06544862 80.56964543 80.22029784
+  79.8704423  79.62539237 79.26803184 79.08624833 78.83988087 78.64868933
+  78.4188374  78.21467414 77.93565296 77.80972775 77.51628599 77.32776659
+  77.07074263 76.74586241 76.10453741 75.52245321 75.14790781 74.83794048
+  74.48772544 74.24958466 74.06570544 73.74949406 73.5044233  73.30351163
+  73.04600762 72.88007416 72.67557532 72.46296918 72.28074347 72.13014216
+  71.93808358 71.60589066 71.32064806 71.01858084 70.43675839 70.09283431
+  69.77025744 69.45202136 69.18110191 68.85948854 68.569914   68.28030937
+  68.10190366 67.90784252 67.62420787 67.3753302  67.15593644 66.92268609
+  66.68521416 66.44808176 66.17840049 65.83107828 65.5268337  65.14709185
+  64.40184481 63.97446891 63.52703017 63.15721002 62.82273558 62.44210648
+  62.15325886 61.89930175 61.65257355 61.40878583 61.11460414 60.80326603
+  60.51577969 60.22213304 59.89951909 59.51601068 59.15842105 58.73798527
+  58.22812074 57.3593953  55.4962862  54.71621704 54.12725789 53.66589179
+  53.24141049 52.82457082 52.43455463 51.98442526 51.56898749 51.10831342
+  50.65250929 50.19436306 49.67089875 49.15036326 48.5281442  47.89385431
+  46.98738818 45.78361543 43.82896421  6.47879417]]
+Confusion matrix
+[[2.061461e+06 3.750000e+02]
+ [1.383260e+05 2.851000e+03]]
+Alert_area
+[[  0.14643581   2.98202      3.30972608   3.51088879   3.6540442
+    3.76138166   3.87048569   3.95044042   4.03447808   4.10173655
+    4.16317325   4.2242256    4.28401693   4.34314201   4.40168161
+    4.45449979   4.5178649    4.57968221   4.64432478   4.72523121
+    4.87425175   4.99383729   5.0741929    5.14284884   5.21517224
+    5.27597008   5.32684803   5.38613861   5.44169862   5.49247232
+    5.54243875   5.58497702   5.63810051   5.68439238   5.72998038
+    5.77656156   5.82741139   5.88738356   5.94564791   6.00608634
+    6.11751346   6.19518194   6.26623776   6.32891438   6.38876673
+    6.45171841   6.5126372    6.57192952   6.61710061   6.66275066
+    6.72371744   6.77544334   6.82725578   6.88422272   6.93926907
+    6.9965054    7.06119631   7.1337792    7.20127007   7.28251996
+    7.42800128   7.52456928   7.60897914   7.68389107   7.75799745
+    7.83858018   7.90363922   7.96554516   8.02897816   8.09788941
+    8.16742673   8.23715892   8.3085247    8.37998373   8.4577535
+    8.54681977   8.63540982   8.73837903   8.86316728   9.06230994
+    9.47392745   9.6618008    9.8146087    9.94592567  10.06958117
+   10.18438249  10.29982195  10.4208373   10.54152529  10.67263275
+   10.80678988  10.94648218  11.1029051   11.27093983  11.47309014
+   11.690356    11.98839315  12.40342287  13.11890767 100.        ]]
+Coming up!
+WARNING:tensorflow:From /home/luizmoura/.conda/envs/tf211env/lib/python3.8/site-packages/tensorflow/python/compat/v2_compat.py:107: disable_resource_variables (from tensorflow.python.ops.variable_scope) is deprecated and will be removed in a future version.
+Instructions for updating:
+non-resource variables are not supported in the long term
+/home/luizmoura/workspace/FC-DANN_DA_For_CD_MultiTarget_TF2/BaseModels.py:440: UserWarning: `tf.layers.conv2d` is deprecated and will be removed in a future version. Please Use `tf.keras.layers.Conv2D` instead.
+  conv = tf.compat.v1.layers.conv2d(input_data, filters, kernel_size, stride, padding, activation=None, kernel_initializer=slim.initializers.xavier_initializer())
+/home/luizmoura/workspace/FC-DANN_DA_For_CD_MultiTarget_TF2/BaseModels.py:445: UserWarning: `tf.layers.batch_normalization` is deprecated and will be removed in a future version. Please use `tf.keras.layers.BatchNormalization` instead. In particular, `tf.control_dependencies(tf.GraphKeys.UPDATE_OPS)` should not be used (consult the `tf.keras.layers.BatchNormalization` documentation).
+  conv = tf.compat.v1.layers.batch_normalization(conv, momentum=0.9)
+/home/luizmoura/.conda/envs/tf211env/lib/python3.8/site-packages/tensorflow/python/keras/engine/base_layer_v1.py:1694: UserWarning: `layer.apply` is deprecated and will be removed in a future version. Please use `layer.__call__` method instead.
+  warnings.warn('`layer.apply` is deprecated and '
+/home/luizmoura/workspace/FC-DANN_DA_For_CD_MultiTarget_TF2/BaseModels.py:373: UserWarning: `tf.layers.max_pooling2d` is deprecated and will be removed in a future version. Please use `tf.keras.layers.MaxPooling2D` instead.
+  Layers.append(tf.compat.v1.layers.max_pooling2d(Layers[-1], 2, 2, name=name + '_maxpooling_1'))
+/home/luizmoura/workspace/FC-DANN_DA_For_CD_MultiTarget_TF2/BaseModels.py:385: UserWarning: `tf.layers.max_pooling2d` is deprecated and will be removed in a future version. Please use `tf.keras.layers.MaxPooling2D` instead.
+  Layers.append(tf.compat.v1.layers.max_pooling2d(Layers[-1], 2, 2, name=name + '_maxpooling_1'))
+/home/luizmoura/workspace/FC-DANN_DA_For_CD_MultiTarget_TF2/Networks.py:334: UserWarning: `tf.layers.conv2d` is deprecated and will be removed in a future version. Please Use `tf.keras.layers.Conv2D` instead.
+  low_Level_Features =  tf.compat.v1.layers.conv2d(Encoder_Layers[14], 48, 1, 1, padding = 'SAME', activation=None, kernel_initializer=tf.compat.v1.keras.initializers.glorot_normal)
+WARNING:tensorflow:From /home/luizmoura/.conda/envs/tf211env/lib/python3.8/site-packages/keras/layers/normalization/batch_normalization.py:561: _colocate_with (from tensorflow.python.framework.ops) is deprecated and will be removed in a future version.
+Instructions for updating:
+Colocations handled automatically by placer.
+/home/luizmoura/workspace/FC-DANN_DA_For_CD_MultiTarget_TF2/Networks.py:158: UserWarning: `tf.layers.flatten` is deprecated and will be removed in a future version. Please use `tf.keras.layers.Flatten` instead.
+  Layers.append(tf.compat.v1.layers.flatten(input_data))
+/home/luizmoura/workspace/FC-DANN_DA_For_CD_MultiTarget_TF2/Networks.py:206: UserWarning: `tf.layers.dense` is deprecated and will be removed in a future version. Please use `tf.keras.layers.Dense` instead.
+  dense = tf.compat.v1.layers.dense(input_data, units, activation=None)
+/home/luizmoura/workspace/FC-DANN_DA_For_CD_MultiTarget_TF2/Networks.py:162: UserWarning: `tf.layers.dense` is deprecated and will be removed in a future version. Please use `tf.keras.layers.Dense` instead.
+  Layers.append(tf.compat.v1.layers.dense(Layers[-1], units=self.args.num_domains, activation=None))
+WARNING:tensorflow:From /home/luizmoura/.conda/envs/tf211env/lib/python3.8/site-packages/tensorflow/python/util/tf_should_use.py:243: initialize_all_variables (from tensorflow.python.ops.variables) is deprecated and will be removed after 2017-03-02.
+Instructions for updating:
+Use `tf.global_variables_initializer` instead.
+Namespace(DR_Localization=55, batch_size=500, beta1=0.9, buffer=False, checkpoint_dir='checkpoint_tr_Amazon_RO_to_Cerrado_MA_domain_adaptation_DR_single_Cerrado_MA_gamma_2.5_skipconn_True', checkpoint_results_main_path='./results/', classifier_type='DeepLab', compute_ndvi=False, da_type='DR', data_t1_name=None, data_t1_year='2016', data_t2_name=None, data_t2_year='2017', data_type='.npy', dataset='Cerrado_MA', dataset_main_path='/media/lvc/Dados/PEDROWORK/Trabajo_Domain_Adaptation/Dataset/', discriminate_domain_targets=False, domain_regressor_type='FC', horizontal_blocks=10, image_channels=7, images_section='Organized/Images/', num_classes=2, num_domains=None, overlap=0.75, patches_dimension=64, phase='test', reference_section='Organized/References/', reference_t1_name=None, reference_t2_name=None, results_dir='results_tr_Amazon_RO_to_Cerrado_MA_domain_adaptation_DR_single_Cerrado_MA_wrmp1_gamma_2.5_skipconn_True', skip_connections=True, training_type='domain_adaptation', vertical_blocks=10)
+Cleaning up ./results/results/results_tr_Amazon_RO_to_Cerrado_MA_domain_adaptation_DR_single_Cerrado_MA_wrmp1_gamma_2.5_skipconn_True/
+Phase test
+Reference t2: REFERENCE_2018_EPSG4674_R220_63_MA
+[*]Reading images...
+[*]Normalizing the images...
+-8.551488
+44.59927
+-8.381254
+48.35453
+[*]Defining the central patches coordinates...
+(2, 1700, 1440, 7)
+[*] Iterating over checkpoint_files...
+Tr_M_26_04_2024_06_38_51
+Testing checkpoint Tr_M_26_04_2024_06_38_51 at 22_05_2024_00_13_03
+[*]Initializing the model...
+self.discriminate_domain_targets: False
+self.num_domains: 2
+-------------------------------------
+Initializing DeepLab V3+ Architecture
+-------------------------------------
+Input data shape: (?, 64, 64, 14)
+Building backbone architecture...
+[*]Loading the feature extractor and classifier trained models...
+ [*] Reading checkpoint...
+./results/checkpoints/checkpoint_tr_Amazon_RO_to_Cerrado_MA_domain_adaptation_DR_single_Cerrado_MA_gamma_2.5_skipconn_True/Tr_M_26_04_2024_06_38_51
+ [*] Weights loaded successfuly
+  0%|          | 0/19 [00:00<?, ?it/s]  5%|▌         | 1/19 [00:03<01:04,  3.59s/it] 11%|█         | 2/19 [00:03<00:26,  1.58s/it] 16%|█▌        | 3/19 [00:03<00:14,  1.07it/s] 21%|██        | 4/19 [00:04<00:09,  1.57it/s] 26%|██▋       | 5/19 [00:04<00:06,  2.13it/s] 32%|███▏      | 6/19 [00:04<00:04,  2.72it/s] 37%|███▋      | 7/19 [00:04<00:03,  3.29it/s] 42%|████▏     | 8/19 [00:04<00:02,  3.82it/s] 47%|████▋     | 9/19 [00:04<00:02,  4.27it/s] 53%|█████▎    | 10/19 [00:05<00:01,  4.65it/s] 58%|█████▊    | 11/19 [00:05<00:01,  4.95it/s] 63%|██████▎   | 12/19 [00:05<00:01,  5.18it/s] 68%|██████▊   | 13/19 [00:05<00:01,  5.35it/s] 74%|███████▎  | 14/19 [00:05<00:00,  5.47it/s] 79%|███████▉  | 15/19 [00:06<00:00,  5.57it/s] 84%|████████▍ | 16/19 [00:06<00:00,  5.64it/s] 89%|████████▉ | 17/19 [00:06<00:00,  5.68it/s] 95%|█████████▍| 18/19 [00:06<00:00,  5.71it/s]100%|██████████| 19/19 [00:06<00:00,  5.74it/s]100%|██████████| 19/19 [00:06<00:00,  2.84it/s]
+19
+Hit map:
+(1700, 1440)
+Tr_M_26_04_2024_05_09_31
+Testing checkpoint Tr_M_26_04_2024_05_09_31 at 22_05_2024_00_13_16
+[*]Initializing the model...
+self.discriminate_domain_targets: False
+self.num_domains: 2
+-------------------------------------
+Initializing DeepLab V3+ Architecture
+-------------------------------------
+Input data shape: (?, 64, 64, 14)
+Building backbone architecture...
+[*]Loading the feature extractor and classifier trained models...
+ [*] Reading checkpoint...
+./results/checkpoints/checkpoint_tr_Amazon_RO_to_Cerrado_MA_domain_adaptation_DR_single_Cerrado_MA_gamma_2.5_skipconn_True/Tr_M_26_04_2024_05_09_31
+ [*] Weights loaded successfuly
+  0%|          | 0/19 [00:00<?, ?it/s]  5%|▌         | 1/19 [00:00<00:05,  3.11it/s] 11%|█         | 2/19 [00:00<00:03,  4.27it/s] 16%|█▌        | 3/19 [00:00<00:03,  4.86it/s] 21%|██        | 4/19 [00:00<00:02,  5.20it/s] 26%|██▋       | 5/19 [00:01<00:02,  5.40it/s] 32%|███▏      | 6/19 [00:01<00:02,  5.53it/s] 37%|███▋      | 7/19 [00:01<00:02,  5.62it/s] 42%|████▏     | 8/19 [00:01<00:01,  5.67it/s] 47%|████▋     | 9/19 [00:01<00:01,  5.71it/s] 53%|█████▎    | 10/19 [00:01<00:01,  5.74it/s] 58%|█████▊    | 11/19 [00:02<00:01,  5.76it/s] 63%|██████▎   | 12/19 [00:02<00:01,  5.77it/s] 68%|██████▊   | 13/19 [00:02<00:01,  5.78it/s] 74%|███████▎  | 14/19 [00:02<00:00,  5.78it/s] 79%|███████▉  | 15/19 [00:02<00:00,  5.79it/s] 84%|████████▍ | 16/19 [00:02<00:00,  5.79it/s] 89%|████████▉ | 17/19 [00:03<00:00,  5.79it/s] 95%|█████████▍| 18/19 [00:03<00:00,  5.79it/s]100%|██████████| 19/19 [00:03<00:00,  5.79it/s]100%|██████████| 19/19 [00:03<00:00,  5.55it/s]
+19
+Hit map:
+(1700, 1440)
+Tr_M_26_04_2024_05_42_42
+Testing checkpoint Tr_M_26_04_2024_05_42_42 at 22_05_2024_00_13_24
+[*]Initializing the model...
+self.discriminate_domain_targets: False
+self.num_domains: 2
+-------------------------------------
+Initializing DeepLab V3+ Architecture
+-------------------------------------
+Input data shape: (?, 64, 64, 14)
+Building backbone architecture...
+[*]Loading the feature extractor and classifier trained models...
+ [*] Reading checkpoint...
+./results/checkpoints/checkpoint_tr_Amazon_RO_to_Cerrado_MA_domain_adaptation_DR_single_Cerrado_MA_gamma_2.5_skipconn_True/Tr_M_26_04_2024_05_42_42
+ [*] Weights loaded successfuly
+  0%|          | 0/19 [00:00<?, ?it/s]  5%|▌         | 1/19 [00:00<00:05,  3.13it/s] 11%|█         | 2/19 [00:00<00:03,  4.30it/s] 16%|█▌        | 3/19 [00:00<00:03,  4.88it/s] 21%|██        | 4/19 [00:00<00:02,  5.22it/s] 26%|██▋       | 5/19 [00:01<00:02,  5.42it/s] 32%|███▏      | 6/19 [00:01<00:02,  5.55it/s] 37%|███▋      | 7/19 [00:01<00:02,  5.63it/s] 42%|████▏     | 8/19 [00:01<00:01,  5.69it/s] 47%|████▋     | 9/19 [00:01<00:01,  5.72it/s] 53%|█████▎    | 10/19 [00:01<00:01,  5.75it/s] 58%|█████▊    | 11/19 [00:02<00:01,  5.77it/s] 63%|██████▎   | 12/19 [00:02<00:01,  5.78it/s] 68%|██████▊   | 13/19 [00:02<00:01,  5.79it/s] 74%|███████▎  | 14/19 [00:02<00:00,  5.79it/s] 79%|███████▉  | 15/19 [00:02<00:00,  5.80it/s] 84%|████████▍ | 16/19 [00:02<00:00,  5.79it/s] 89%|████████▉ | 17/19 [00:03<00:00,  5.80it/s] 95%|█████████▍| 18/19 [00:03<00:00,  5.80it/s]100%|██████████| 19/19 [00:03<00:00,  5.80it/s]100%|██████████| 19/19 [00:03<00:00,  5.56it/s]
+19
+Hit map:
+(1700, 1440)
+Tr_M_26_04_2024_04_25_33
+Testing checkpoint Tr_M_26_04_2024_04_25_33 at 22_05_2024_00_13_31
+[*]Initializing the model...
+self.discriminate_domain_targets: False
+self.num_domains: 2
+-------------------------------------
+Initializing DeepLab V3+ Architecture
+-------------------------------------
+Input data shape: (?, 64, 64, 14)
+Building backbone architecture...
+[*]Loading the feature extractor and classifier trained models...
+ [*] Reading checkpoint...
+./results/checkpoints/checkpoint_tr_Amazon_RO_to_Cerrado_MA_domain_adaptation_DR_single_Cerrado_MA_gamma_2.5_skipconn_True/Tr_M_26_04_2024_04_25_33
+ [*] Weights loaded successfuly
+  0%|          | 0/19 [00:00<?, ?it/s]  5%|▌         | 1/19 [00:00<00:05,  3.11it/s] 11%|█         | 2/19 [00:00<00:03,  4.28it/s] 16%|█▌        | 3/19 [00:00<00:03,  4.87it/s] 21%|██        | 4/19 [00:00<00:02,  5.20it/s] 26%|██▋       | 5/19 [00:01<00:02,  5.41it/s] 32%|███▏      | 6/19 [00:01<00:02,  5.53it/s] 37%|███▋      | 7/19 [00:01<00:02,  5.61it/s] 42%|████▏     | 8/19 [00:01<00:01,  5.67it/s] 47%|████▋     | 9/19 [00:01<00:01,  5.70it/s] 53%|█████▎    | 10/19 [00:01<00:01,  5.73it/s] 58%|█████▊    | 11/19 [00:02<00:01,  5.76it/s] 63%|██████▎   | 12/19 [00:02<00:01,  5.77it/s] 68%|██████▊   | 13/19 [00:02<00:01,  5.78it/s] 74%|███████▎  | 14/19 [00:02<00:00,  5.79it/s] 79%|███████▉  | 15/19 [00:02<00:00,  5.79it/s] 84%|████████▍ | 16/19 [00:02<00:00,  5.80it/s] 89%|████████▉ | 17/19 [00:03<00:00,  5.80it/s] 95%|█████████▍| 18/19 [00:03<00:00,  5.79it/s]100%|██████████| 19/19 [00:03<00:00,  5.79it/s]100%|██████████| 19/19 [00:03<00:00,  5.55it/s]
+19
+Hit map:
+(1700, 1440)
+Tr_M_26_04_2024_03_48_29
+Testing checkpoint Tr_M_26_04_2024_03_48_29 at 22_05_2024_00_13_40
+[*]Initializing the model...
+self.discriminate_domain_targets: False
+self.num_domains: 2
+-------------------------------------
+Initializing DeepLab V3+ Architecture
+-------------------------------------
+Input data shape: (?, 64, 64, 14)
+Building backbone architecture...
+[*]Loading the feature extractor and classifier trained models...
+ [*] Reading checkpoint...
+./results/checkpoints/checkpoint_tr_Amazon_RO_to_Cerrado_MA_domain_adaptation_DR_single_Cerrado_MA_gamma_2.5_skipconn_True/Tr_M_26_04_2024_03_48_29
+ [*] Weights loaded successfuly
+  0%|          | 0/19 [00:00<?, ?it/s]  5%|▌         | 1/19 [00:00<00:05,  3.10it/s] 11%|█         | 2/19 [00:00<00:04,  4.23it/s] 16%|█▌        | 3/19 [00:00<00:03,  4.84it/s] 21%|██        | 4/19 [00:00<00:02,  5.18it/s] 26%|██▋       | 5/19 [00:01<00:02,  5.40it/s] 32%|███▏      | 6/19 [00:01<00:02,  5.54it/s] 37%|███▋      | 7/19 [00:01<00:02,  5.62it/s] 42%|████▏     | 8/19 [00:01<00:01,  5.68it/s] 47%|████▋     | 9/19 [00:01<00:01,  5.72it/s] 53%|█████▎    | 10/19 [00:01<00:01,  5.75it/s] 58%|█████▊    | 11/19 [00:02<00:01,  5.77it/s] 63%|██████▎   | 12/19 [00:02<00:01,  5.78it/s] 68%|██████▊   | 13/19 [00:02<00:01,  5.79it/s] 74%|███████▎  | 14/19 [00:02<00:00,  5.79it/s] 79%|███████▉  | 15/19 [00:02<00:00,  5.80it/s] 84%|████████▍ | 16/19 [00:02<00:00,  5.80it/s] 89%|████████▉ | 17/19 [00:03<00:00,  5.80it/s] 95%|█████████▍| 18/19 [00:03<00:00,  5.80it/s]100%|██████████| 19/19 [00:03<00:00,  5.81it/s]100%|██████████| 19/19 [00:03<00:00,  5.55it/s]
+19
+Hit map:
+(1700, 1440)
+Phase compute_metrics
+Reference t2: REFERENCE_2018_EPSG4674_R220_63_MA
+[*]Reading images...
+[*]Computing buffer regions...
+[*]Normalizing the images...
+-8.551488
+44.59927
+-8.381254
+48.35453
+[*]Defining the initial central patches coordinates...
+[*]The metrics computation has started...
+0.5
+46.73656142051997
+Accuracy
+[[94.33181305]]
+Fscore
+[[46.73656142]]
+Recall
+[[61.31730433]]
+Precision
+[[37.75801966]]
+Confusion matrix
+[[712067.  31782.]
+ [ 12163.  19280.]]
+Alert_area
+[[6.58616366]]
+[*]Defining the initial central patches coordinates...
+[*]The metrics computation has started...
+0.5
+45.59169425759187
+Accuracy
+[[95.31511426]]
+Fscore
+[[45.59169426]]
+Recall
+[[48.41388527]]
+Precision
+[[43.0804077]]
+Confusion matrix
+[[723662.  20104.]
+ [ 16213.  15216.]]
+Alert_area
+[[4.55627294]]
+[*]Defining the initial central patches coordinates...
+[*]The metrics computation has started...
+0.5
+43.01728707929817
+Accuracy
+[[94.31561243]]
+Fscore
+[[43.01728708]]
+Recall
+[[52.92040466]]
+Precision
+[[36.23630383]]
+Confusion matrix
+[[714593.  29272.]
+ [ 14799.  16635.]]
+Alert_area
+[[5.92119943]]
+[*]Defining the initial central patches coordinates...
+[*]The metrics computation has started...
+0.5
+47.43750740433598
+Accuracy
+[[94.27818286]]
+Fscore
+[[47.4375074]]
+Recall
+[[63.67394969]]
+Precision
+[[37.79900693]]
+Confusion matrix
+[[711029.  32946.]
+ [ 11422.  20021.]]
+Alert_area
+[[6.83076741]]
+[*]Defining the initial central patches coordinates...
+[*]The metrics computation has started...
+0.5
+55.96121268765698
+Accuracy
+[[96.11036372]]
+Fscore
+[[55.96121269]]
+Recall
+[[60.9589259]]
+Precision
+[[51.72088001]]
+Confusion matrix
+[[725975.  17885.]
+ [ 12271.  19160.]]
+Alert_area
+[[4.77820586]]
+Phase compute_metrics
+Reference t2: REFERENCE_2018_EPSG4674_R220_63_MA
+[*]Reading images...
+[*]Computing buffer regions...
+[*]Normalizing the images...
+-8.551488
+44.59927
+-8.381254
+48.35453
+Cleaning up ./results/results_avg/results_tr_Amazon_RO_to_Cerrado_MA_domain_adaptation_DR_single_Cerrado_MA_wrmp1_gamma_2.5_skipconn_True/
+Results file
+[*]Defining the initial central patches coordinates...
+Max probability value:
+1.0
+Thresholds:
+[1.         0.98989899 0.97979798 0.96969697 0.95959596 0.94949495
+ 0.93939394 0.92929293 0.91919192 0.90909091 0.8989899  0.88888889
+ 0.87878788 0.86868687 0.85858586 0.84848485 0.83838384 0.82828283
+ 0.81818182 0.80808081 0.7979798  0.78787879 0.77777778 0.76767677
+ 0.75757576 0.74747475 0.73737374 0.72727273 0.71717172 0.70707071
+ 0.6969697  0.68686869 0.67676768 0.66666667 0.65656566 0.64646465
+ 0.63636364 0.62626263 0.61616162 0.60606061 0.5959596  0.58585859
+ 0.57575758 0.56565657 0.55555556 0.54545455 0.53535354 0.52525253
+ 0.51515152 0.50505051 0.49494949 0.48484848 0.47474747 0.46464646
+ 0.45454545 0.44444444 0.43434343 0.42424242 0.41414141 0.4040404
+ 0.39393939 0.38383838 0.37373737 0.36363636 0.35353535 0.34343434
+ 0.33333333 0.32323232 0.31313131 0.3030303  0.29292929 0.28282828
+ 0.27272727 0.26262626 0.25252525 0.24242424 0.23232323 0.22222222
+ 0.21212121 0.2020202  0.19191919 0.18181818 0.17171717 0.16161616
+ 0.15151515 0.14141414 0.13131313 0.12121212 0.11111111 0.1010101
+ 0.09090909 0.08080808 0.07070707 0.06060606 0.05050505 0.04040404
+ 0.03030303 0.02020202 0.01010101 0.        ]
+[*]The metrics computation has started...
+1.0
+5.157593123209169
+0.057224606580829764
+0.98989898989899
+72.69741343916792
+16.923125935837398
+0.9797979797979799
+73.23292220113852
+19.660596026490065
+0.9696969696969698
+73.86138613861387
+21.38216560509554
+0.9595959595959598
+73.89412617839014
+22.702100572883513
+0.9494949494949497
+73.88850381225865
+23.741648106904233
+0.9393939393939397
+73.79310344827587
+24.517853733053276
+0.9292929292929296
+73.7799220634626
+25.315972111680622
+0.9191919191919196
+73.82816014394962
+26.110474735904287
+0.9090909090909095
+73.6823704221659
+26.821508113267576
+0.8989898989898994
+73.49233390119251
+27.45584725536993
+0.8888888888888894
+73.36604024613338
+28.08888605902391
+0.8787878787878793
+73.32091063760836
+28.803309993634628
+0.8686868686868693
+73.34442332065906
+29.470367305366352
+0.8585858585858592
+73.28851800339979
+30.190661107043958
+0.8484848484848492
+73.12495269810036
+30.771680626771552
+0.8383838383838391
+73.10431814809318
+31.390977443609025
+0.8282828282828291
+73.09083019959502
+32.19199898076188
+0.818181818181819
+73.0091613812544
+32.99047861669267
+0.808080808080809
+72.76389457872456
+33.94057135577566
+0.7979797979797989
+72.13073059070389
+36.14004906177323
+0.7878787878787888
+71.59151985667364
+38.17834394904459
+0.7777777777777788
+71.16126432149231
+39.349272547833564
+0.7676767676767687
+70.77198678833344
+40.24192264841636
+0.7575757575757587
+70.34411299558269
+41.06784679550447
+0.7474747474747486
+69.87971045348095
+41.81609707933879
+0.7373737373737386
+69.65617989252361
+42.532653711373044
+0.7272727272727285
+69.42583976685924
+43.23283135407049
+0.7171717171717185
+69.15756786537113
+43.9437336897715
+0.7070707070707084
+68.98045586570176
+44.60147695441813
+0.6969696969696983
+68.71613777089783
+45.201425571183094
+0.6868686868686883
+68.4603317963588
+45.815174168919995
+0.6767676767676782
+68.2832156385914
+46.4452714953717
+0.6666666666666682
+68.0902905479956
+47.12076864342072
+0.6565656565656581
+67.80778610784934
+47.7726867761232
+0.6464646464646481
+67.63162575595874
+48.379298279097874
+0.636363636363638
+67.292822506662
+49.01205892646918
+0.626262626262628
+67.00836371434698
+49.71519490851233
+0.6161616161616179
+66.58818583140635
+50.391345847916
+0.6060606060606079
+66.15378302970623
+51.30465219881627
+0.5959595959595978
+65.13930915235588
+52.75620623806493
+0.5858585858585877
+64.60582020672032
+53.89093917027233
+0.5757575757575777
+64.15719873346993
+54.79622029206834
+0.5656565656565676
+63.62441108798072
+55.43675417661098
+0.5555555555555576
+63.20020095453403
+56.05168517870214
+0.5454545454545475
+62.65981051667665
+56.635787731194085
+0.5353535353535375
+61.90919754364176
+57.14604165339787
+0.5252525252525274
+61.39590038963239
+57.699165764503604
+0.5151515151515174
+60.98283204684589
+58.33731181768993
+0.5050505050505073
+60.45378755680518
+58.84543169016325
+0.49494949494949725
+60.03020468493943
+59.44948289578361
+0.4848484848484872
+59.533516639802784
+59.950351675630955
+0.47474747474747714
+59.058376898182715
+60.40804634286078
+0.4646464646464671
+58.62575335760394
+61.00340623308821
+0.45454545454545703
+58.01416736703086
+61.511043218127426
+0.444444444444447
+57.45076070291309
+62.016614150673156
+0.4343434343434369
+56.81437402507367
+62.59308764559862
+0.42424242424242686
+56.21209544861985
+63.132599146985804
+0.4141414141414168
+55.48290574610739
+63.72430471584038
+0.40404040404040675
+54.46889797675419
+64.4170803105511
+0.3939393939393967
+52.50977086366772
+65.39415919068524
+0.38383838383838664
+51.20562130177515
+66.05495833598371
+0.3737373737373766
+50.162874251497
+66.61683313187862
+0.36363636363636653
+49.150332883281344
+67.17144402379664
+0.3535353535353565
+48.24048913043478
+67.78134843615769
+0.3434343434343464
+47.45541443554454
+68.24821002386635
+0.33333333333333637
+46.65040790779989
+68.7587479323069
+0.3232323232323263
+45.98512382723354
+69.23737711176864
+0.31313131313131626
+45.24286688291564
+69.6456968386235
+0.3030303030303062
+44.59680844608943
+70.13358778625954
+0.29292929292929615
+43.97561747941735
+70.67879636109167
+0.2828282828282861
+43.25799210465207
+71.11634269716541
+0.27272727272727604
+42.493302644983586
+71.62755199389429
+0.262626262626266
+41.72849962255813
+72.07046777117054
+0.2525252525252559
+40.998940735022174
+72.60587561999236
+0.24242424242424587
+40.1531805017621
+73.17499682055195
+0.23232323232323582
+39.30999492643328
+73.90309042350248
+0.22222222222222576
+38.27011315948466
+74.52857188285051
+0.2121212121212157
+37.027369210810136
+75.34189937026908
+0.20202020202020565
+35.23746798390048
+76.5800438945259
+0.1919191919191956
+31.39863163517054
+78.54802277860847
+0.18181818181818554
+29.812486580623617
+79.49933201857624
+0.1717171717171755
+28.728614711711508
+80.23795889800851
+0.16161616161616543
+27.758357002403322
+80.8540427021351
+0.15151515151515538
+26.992856691320565
+81.49891843746023
+0.14141414141414532
+26.27043544690604
+82.03244274809161
+0.13131313131313527
+25.577567514291346
+82.5465996564667
+0.12121212121212521
+24.894968990844916
+83.13026880865277
+0.11111111111111516
+24.22764527459965
+83.58460559796438
+0.1010101010101051
+23.618965933152857
+84.09199351083119
+0.09090909090909505
+22.95772580909711
+84.6026595406248
+0.08080808080808499
+22.29464471764951
+85.07633587786259
+0.07070707070707494
+21.60697511982466
+85.59025569265997
+0.06060606060606488
+20.89579877319548
+86.11950265526124
+0.05050505050505483
+20.113770685579198
+86.58842985720192
+0.04040404040404477
+19.299332999950696
+87.1422210914642
+0.030303030303034717
+18.322610598925515
+87.8573927424228
+0.020202020202024662
+17.133998465080584
+88.76272264631044
+0.010101010101014607
+15.45047547465769
+90.18884720544287
+0.0
+4.053232252694725
+100.0
+Accuracy
+[[95.90691873 96.3827073  96.45783483 96.51288051 96.54583689 96.57190937
+  96.5913264  96.61306325 96.63293286 96.64843413 96.66160713 96.676743
+  96.69329588 96.71121041 96.72858842 96.74150166 96.75791997 96.77724874
+  96.79492301 96.81319205 96.8520294  96.88536991 96.89935667 96.90786616
+  96.91381412 96.91653629 96.92573963 96.93159822 96.93660583 96.94511386
+  96.94737154 96.94992925 96.95627464 96.96340935 96.96601035 96.97048585
+  96.96990004 96.97212223 96.96633442 96.96456902 96.94351791 96.93588863
+  96.92828849 96.91089231 96.89772976 96.87704258 96.84198721 96.81865058
+  96.80085699 96.77363632 96.75377579 96.72715694 96.70025796 96.67720805
+  96.63751794 96.60106435 96.55744531 96.51479093 96.45872118 96.37638838
+  96.2000343  96.07138666 95.96303772 95.85176606 95.74592946 95.65002605
+  95.54504803 95.45540737 95.34975225 95.2543147  95.15816664 95.04492357
+  94.9155473  94.78270519 94.64706285 94.48488376 94.30991564 94.08760829
+  93.80026533 93.33889157 92.16344335 91.56886345 91.11579535 90.6811383
+  90.29718191 89.91889434 89.53473799 89.12919897 88.71452658 88.30731859
+  87.84282309 87.34916255 86.8004258  86.19283885 85.488173   84.67549715
+  83.5996688  82.10817179 79.54256195  4.05323225]]
+Fscore
+[[ 0.11319331 27.45503411 30.99899598 33.16374413 34.73327977 35.93633365
+  36.80665042 37.69703003 38.5774393  39.32728418 39.97683308 40.62435251
+  41.359139   42.0462286  42.76471516 43.31569981 43.92190077 44.69750575
+  45.44557279 46.2894994  48.15349351 49.79956382 50.67650677 51.30890052
+  51.85944599 52.32240709 52.81563384 53.28441375 53.7401728  54.17464092
+  54.53184383 54.89403873 55.28587656 55.69720217 56.05376143 56.40797404
+  56.71575847 57.08074534 57.36846871 57.79060181 58.29743085 58.76394165
+  59.10838081 59.24905622 59.41168533 59.49570277 59.43233755 59.49015939
+  59.6307442  59.63876794 59.73843251 59.74120707 59.72558769 59.79095164
+  59.71145232 59.64643759 59.56390067 59.47169585 59.31872038 59.02676541
+  58.24797042 57.69006416 57.23069356 56.76493124 56.36534416 55.98350279
+  55.58698727 55.26506254 54.85264832 54.52320018 54.21760242 53.79441456
+  53.34154313 52.85447761 52.40559489 51.85310353 51.32145459 50.57181081
+  49.65258491 48.26590754 44.86358309 43.3635228  42.30885362 41.32816121
+  40.55401662 39.79631987 39.05401135 38.31559192 37.56638338 36.87955135
+  36.11524176 35.3307136  34.50362498 33.63137372 32.6444968  31.60019144
+  30.32165652 28.72346448 26.38147494  7.79068976]]
+Recall
+[[5.72246066e-02 1.69231259e+01 1.96605960e+01 2.13821656e+01
+  2.27021006e+01 2.37416481e+01 2.45178537e+01 2.53159721e+01
+  2.61104747e+01 2.68215081e+01 2.74558473e+01 2.80888861e+01
+  2.88033100e+01 2.94703673e+01 3.01906611e+01 3.07716806e+01
+  3.13909774e+01 3.21919990e+01 3.29904786e+01 3.39405714e+01
+  3.61400491e+01 3.81783439e+01 3.93492725e+01 4.02419226e+01
+  4.10678468e+01 4.18160971e+01 4.25326537e+01 4.32328314e+01
+  4.39437337e+01 4.46014770e+01 4.52014256e+01 4.58151742e+01
+  4.64452715e+01 4.71207686e+01 4.77726868e+01 4.83792983e+01
+  4.90120589e+01 4.97151949e+01 5.03913458e+01 5.13046522e+01
+  5.27562062e+01 5.38909392e+01 5.47962203e+01 5.54367542e+01
+  5.60516852e+01 5.66357877e+01 5.71460417e+01 5.76991658e+01
+  5.83373118e+01 5.88454317e+01 5.94494829e+01 5.99503517e+01
+  6.04080463e+01 6.10034062e+01 6.15110432e+01 6.20166142e+01
+  6.25930876e+01 6.31325991e+01 6.37243047e+01 6.44170803e+01
+  6.53941592e+01 6.60549583e+01 6.66168331e+01 6.71714440e+01
+  6.77813484e+01 6.82482100e+01 6.87587479e+01 6.92373771e+01
+  6.96456968e+01 7.01335878e+01 7.06787964e+01 7.11163427e+01
+  7.16275520e+01 7.20704678e+01 7.26058756e+01 7.31749968e+01
+  7.39030904e+01 7.45285719e+01 7.53418994e+01 7.65800439e+01
+  7.85480228e+01 7.94993320e+01 8.02379589e+01 8.08540427e+01
+  8.14989184e+01 8.20324427e+01 8.25465997e+01 8.31302688e+01
+  8.35846056e+01 8.40919935e+01 8.46026595e+01 8.50763359e+01
+  8.55902557e+01 8.61195027e+01 8.65884299e+01 8.71422211e+01
+  8.78573927e+01 8.87627226e+01 9.01888472e+01 1.00000000e+02]]
+Precision
+[[ 5.15759312 72.69741344 73.2329222  73.86138614 73.89412618 73.88850381
+  73.79310345 73.77992206 73.82816014 73.68237042 73.4923339  73.36604025
+  73.32091064 73.34442332 73.288518   73.1249527  73.10431815 73.0908302
+  73.00916138 72.76389458 72.13073059 71.59151986 71.16126432 70.77198679
+  70.344113   69.87971045 69.65617989 69.42583977 69.15756787 68.98045587
+  68.71613777 68.4603318  68.28321564 68.09029055 67.80778611 67.63162576
+  67.29282251 67.00836371 66.58818583 66.15378303 65.13930915 64.60582021
+  64.15719873 63.62441109 63.20020095 62.65981052 61.90919754 61.39590039
+  60.98283205 60.45378756 60.03020468 59.53351664 59.0583769  58.62575336
+  58.01416737 57.4507607  56.81437403 56.21209545 55.48290575 54.46889798
+  52.50977086 51.2056213  50.16287425 49.15033288 48.24048913 47.45541444
+  46.65040791 45.98512383 45.24286688 44.59680845 43.97561748 43.2579921
+  42.49330264 41.72849962 40.99894074 40.1531805  39.30999493 38.27011316
+  37.02736921 35.23746798 31.39863164 29.81248658 28.72861471 27.758357
+  26.99285669 26.27043545 25.57756751 24.89496899 24.22764527 23.61896593
+  22.95772581 22.29464472 21.60697512 20.89579877 20.11377069 19.299333
+  18.3226106  17.13399847 15.45047547  4.05323225]]
+Confusion matrix
+[[7.44353e+05 3.31000e+02]
+ [3.14370e+04 1.80000e+01]]
+Alert_area
+[[4.49661723e-02 9.41563044e-01 1.08648733e+00 1.17130723e+00
+  1.24381828e+00 1.30126996e+00 1.34522388e+00 1.38879225e+00
+  1.43220509e+00 1.47419419e+00 1.51270726e+00 1.54959050e+00
+  1.59040833e+00 1.62661337e+00 1.66759655e+00 1.70256796e+00
+  1.73675496e+00 1.78185543e+00 1.82849043e+00 1.88726656e+00
+  2.02669615e+00 2.15790810e+00 2.23836550e+00 2.30202495e+00
+  2.36309464e+00 2.42120266e+00 2.47010473e+00 2.52057414e+00
+  2.57293151e+00 2.61775584e+00 2.66396215e+00 2.71101649e+00
+  2.75569394e+00 2.80332399e+00 2.85356380e+00 2.89818837e+00
+  2.95006882e+00 3.00480847e+00 3.06536964e+00 3.14111429e+00
+  3.27970903e+00 3.37937728e+00 3.46034811e+00 3.52958010e+00
+  3.59254341e+00 3.66042479e+00 3.73655640e+00 3.80475417e+00
+  3.87449903e+00 3.94297530e+00 4.01182367e+00 4.07893600e+00
+  4.14285475e+00 4.21401802e+00 4.29508674e+00 4.37239907e+00
+  4.46279053e+00 4.54905257e+00 4.65337548e+00 4.79194466e+00
+  5.04792349e+00 5.23058551e+00 5.38442193e+00 5.54052276e+00
+  5.69565397e+00 5.82928755e+00 5.97613621e+00 6.10451879e+00
+  6.24397707e+00 6.37905876e+00 6.51943069e+00 6.66801723e+00
+  6.83957212e+00 7.00848172e+00 7.18805291e+00 7.39624317e+00
+  7.63039615e+00 7.90327805e+00 8.25628994e+00 8.81810884e+00
+  1.01540659e+01 1.08264544e+01 1.13395537e+01 1.18237570e+01
+  1.22611274e+01 1.26832564e+01 1.31093571e+01 1.35618863e+01
+  1.40139148e+01 1.44623475e+01 1.49681162e+01 1.55004057e+01
+  1.60910141e+01 1.67416092e+01 1.74837866e+01 1.83420945e+01
+  1.94755790e+01 2.10405089e+01 2.37241882e+01 1.00000000e+02]]
+Coming up!
+WARNING:tensorflow:From /home/luizmoura/.conda/envs/tf211env/lib/python3.8/site-packages/tensorflow/python/compat/v2_compat.py:107: disable_resource_variables (from tensorflow.python.ops.variable_scope) is deprecated and will be removed in a future version.
+Instructions for updating:
+non-resource variables are not supported in the long term
+/home/luizmoura/workspace/FC-DANN_DA_For_CD_MultiTarget_TF2/BaseModels.py:440: UserWarning: `tf.layers.conv2d` is deprecated and will be removed in a future version. Please Use `tf.keras.layers.Conv2D` instead.
+  conv = tf.compat.v1.layers.conv2d(input_data, filters, kernel_size, stride, padding, activation=None, kernel_initializer=slim.initializers.xavier_initializer())
+/home/luizmoura/workspace/FC-DANN_DA_For_CD_MultiTarget_TF2/BaseModels.py:445: UserWarning: `tf.layers.batch_normalization` is deprecated and will be removed in a future version. Please use `tf.keras.layers.BatchNormalization` instead. In particular, `tf.control_dependencies(tf.GraphKeys.UPDATE_OPS)` should not be used (consult the `tf.keras.layers.BatchNormalization` documentation).
+  conv = tf.compat.v1.layers.batch_normalization(conv, momentum=0.9)
+/home/luizmoura/.conda/envs/tf211env/lib/python3.8/site-packages/tensorflow/python/keras/engine/base_layer_v1.py:1694: UserWarning: `layer.apply` is deprecated and will be removed in a future version. Please use `layer.__call__` method instead.
+  warnings.warn('`layer.apply` is deprecated and '
+/home/luizmoura/workspace/FC-DANN_DA_For_CD_MultiTarget_TF2/BaseModels.py:373: UserWarning: `tf.layers.max_pooling2d` is deprecated and will be removed in a future version. Please use `tf.keras.layers.MaxPooling2D` instead.
+  Layers.append(tf.compat.v1.layers.max_pooling2d(Layers[-1], 2, 2, name=name + '_maxpooling_1'))
+/home/luizmoura/workspace/FC-DANN_DA_For_CD_MultiTarget_TF2/BaseModels.py:385: UserWarning: `tf.layers.max_pooling2d` is deprecated and will be removed in a future version. Please use `tf.keras.layers.MaxPooling2D` instead.
+  Layers.append(tf.compat.v1.layers.max_pooling2d(Layers[-1], 2, 2, name=name + '_maxpooling_1'))
+/home/luizmoura/workspace/FC-DANN_DA_For_CD_MultiTarget_TF2/Networks.py:334: UserWarning: `tf.layers.conv2d` is deprecated and will be removed in a future version. Please Use `tf.keras.layers.Conv2D` instead.
+  low_Level_Features =  tf.compat.v1.layers.conv2d(Encoder_Layers[14], 48, 1, 1, padding = 'SAME', activation=None, kernel_initializer=tf.compat.v1.keras.initializers.glorot_normal)
+WARNING:tensorflow:From /home/luizmoura/.conda/envs/tf211env/lib/python3.8/site-packages/keras/layers/normalization/batch_normalization.py:561: _colocate_with (from tensorflow.python.framework.ops) is deprecated and will be removed in a future version.
+Instructions for updating:
+Colocations handled automatically by placer.
+/home/luizmoura/workspace/FC-DANN_DA_For_CD_MultiTarget_TF2/Networks.py:158: UserWarning: `tf.layers.flatten` is deprecated and will be removed in a future version. Please use `tf.keras.layers.Flatten` instead.
+  Layers.append(tf.compat.v1.layers.flatten(input_data))
+/home/luizmoura/workspace/FC-DANN_DA_For_CD_MultiTarget_TF2/Networks.py:206: UserWarning: `tf.layers.dense` is deprecated and will be removed in a future version. Please use `tf.keras.layers.Dense` instead.
+  dense = tf.compat.v1.layers.dense(input_data, units, activation=None)
+/home/luizmoura/workspace/FC-DANN_DA_For_CD_MultiTarget_TF2/Networks.py:162: UserWarning: `tf.layers.dense` is deprecated and will be removed in a future version. Please use `tf.keras.layers.Dense` instead.
+  Layers.append(tf.compat.v1.layers.dense(Layers[-1], units=self.args.num_domains, activation=None))
+WARNING:tensorflow:From /home/luizmoura/.conda/envs/tf211env/lib/python3.8/site-packages/tensorflow/python/util/tf_should_use.py:243: initialize_all_variables (from tensorflow.python.ops.variables) is deprecated and will be removed after 2017-03-02.
+Instructions for updating:
+Use `tf.global_variables_initializer` instead.
+Namespace(DR_Localization=55, batch_size=500, beta1=0.9, buffer=False, checkpoint_dir='checkpoint_tr_Amazon_RO_to_Cerrado_MA_domain_adaptation_DR_single_Cerrado_MA_gamma_2.5_skipconn_True', checkpoint_results_main_path='./results/', classifier_type='DeepLab', compute_ndvi=False, da_type='DR', data_t1_name=None, data_t1_year='2016', data_t2_name=None, data_t2_year='2017', data_type='.npy', dataset='Amazon_RO', dataset_main_path='/media/lvc/Dados/PEDROWORK/Trabajo_Domain_Adaptation/Dataset/', discriminate_domain_targets=False, domain_regressor_type='FC', horizontal_blocks=10, image_channels=7, images_section='Organized/Images/', num_classes=2, num_domains=None, overlap=0.75, patches_dimension=64, phase='test', reference_section='Organized/References/', reference_t1_name=None, reference_t2_name=None, results_dir='results_tr_Amazon_RO_to_Cerrado_MA_domain_adaptation_DR_single_Amazon_RO_wrmp1_gamma_2.5_skipconn_True', skip_connections=True, training_type='domain_adaptation', vertical_blocks=10)
+Cleaning up ./results/results/results_tr_Amazon_RO_to_Cerrado_MA_domain_adaptation_DR_single_Amazon_RO_wrmp1_gamma_2.5_skipconn_True/
+Phase test
+Reference t2: REFERENCE_2017_EPSG32620_R232_67_RO
+/home/luizmoura/workspace/dataset/Amazonia_Legal/Organized/Images/18_07_2016_image_R232_67_RO.npy
+[*]Reading images...
+4203.0
+65535.0
+[*]Normalizing the images...
+-7.127954
+48.105057
+-7.155134
+67.27362
+[*]Defining the central patches coordinates...
+(2, 2550, 5120, 7)
+[*] Iterating over checkpoint_files...
+Tr_M_26_04_2024_06_38_51
+Testing checkpoint Tr_M_26_04_2024_06_38_51 at 22_05_2024_00_16_35
+[*]Initializing the model...
+self.discriminate_domain_targets: False
+self.num_domains: 2
+-------------------------------------
+Initializing DeepLab V3+ Architecture
+-------------------------------------
+Input data shape: (?, 64, 64, 14)
+Building backbone architecture...
+[*]Loading the feature extractor and classifier trained models...
+ [*] Reading checkpoint...
+./results/checkpoints/checkpoint_tr_Amazon_RO_to_Cerrado_MA_domain_adaptation_DR_single_Cerrado_MA_gamma_2.5_skipconn_True/Tr_M_26_04_2024_06_38_51
+ [*] Weights loaded successfuly
+  0%|          | 0/102 [00:00<?, ?it/s]  1%|          | 1/102 [00:03<06:02,  3.59s/it]  2%|▏         | 2/102 [00:03<02:37,  1.58s/it]  3%|▎         | 3/102 [00:03<01:32,  1.07it/s]  4%|▍         | 4/102 [00:04<01:02,  1.58it/s]  5%|▍         | 5/102 [00:04<00:45,  2.14it/s]  6%|▌         | 6/102 [00:04<00:35,  2.72it/s]  7%|▋         | 7/102 [00:04<00:28,  3.29it/s]  8%|▊         | 8/102 [00:04<00:24,  3.82it/s]  9%|▉         | 9/102 [00:04<00:21,  4.27it/s] 10%|▉         | 10/102 [00:05<00:19,  4.65it/s] 11%|█         | 11/102 [00:05<00:18,  4.95it/s] 12%|█▏        | 12/102 [00:05<00:17,  5.19it/s] 13%|█▎        | 13/102 [00:05<00:16,  5.36it/s] 14%|█▎        | 14/102 [00:05<00:16,  5.49it/s] 15%|█▍        | 15/102 [00:05<00:15,  5.58it/s] 16%|█▌        | 16/102 [00:06<00:15,  5.65it/s] 17%|█▋        | 17/102 [00:06<00:14,  5.69it/s] 18%|█▊        | 18/102 [00:06<00:14,  5.73it/s] 19%|█▊        | 19/102 [00:06<00:14,  5.75it/s] 20%|█▉        | 20/102 [00:06<00:14,  5.77it/s] 21%|██        | 21/102 [00:07<00:14,  5.78it/s] 22%|██▏       | 22/102 [00:07<00:13,  5.79it/s] 23%|██▎       | 23/102 [00:07<00:13,  5.80it/s] 24%|██▎       | 24/102 [00:07<00:13,  5.80it/s] 25%|██▍       | 25/102 [00:07<00:13,  5.80it/s] 25%|██▌       | 26/102 [00:07<00:13,  5.80it/s] 26%|██▋       | 27/102 [00:08<00:12,  5.80it/s] 27%|██▋       | 28/102 [00:08<00:12,  5.80it/s] 28%|██▊       | 29/102 [00:08<00:12,  5.80it/s] 29%|██▉       | 30/102 [00:08<00:12,  5.81it/s] 30%|███       | 31/102 [00:08<00:12,  5.80it/s] 31%|███▏      | 32/102 [00:08<00:12,  5.81it/s] 32%|███▏      | 33/102 [00:09<00:11,  5.80it/s] 33%|███▎      | 34/102 [00:09<00:11,  5.80it/s] 34%|███▍      | 35/102 [00:09<00:11,  5.80it/s] 35%|███▌      | 36/102 [00:09<00:11,  5.80it/s] 36%|███▋      | 37/102 [00:09<00:11,  5.80it/s] 37%|███▋      | 38/102 [00:09<00:11,  5.80it/s] 38%|███▊      | 39/102 [00:10<00:10,  5.80it/s] 39%|███▉      | 40/102 [00:10<00:10,  5.80it/s] 40%|████      | 41/102 [00:10<00:10,  5.80it/s] 41%|████      | 42/102 [00:10<00:10,  5.80it/s] 42%|████▏     | 43/102 [00:10<00:10,  5.80it/s] 43%|████▎     | 44/102 [00:10<00:10,  5.80it/s] 44%|████▍     | 45/102 [00:11<00:09,  5.80it/s] 45%|████▌     | 46/102 [00:11<00:09,  5.79it/s] 46%|████▌     | 47/102 [00:11<00:09,  5.79it/s] 47%|████▋     | 48/102 [00:11<00:09,  5.79it/s] 48%|████▊     | 49/102 [00:11<00:09,  5.78it/s] 49%|████▉     | 50/102 [00:12<00:08,  5.78it/s] 50%|█████     | 51/102 [00:12<00:08,  5.78it/s] 51%|█████     | 52/102 [00:12<00:08,  5.79it/s] 52%|█████▏    | 53/102 [00:12<00:08,  5.79it/s] 53%|█████▎    | 54/102 [00:12<00:08,  5.79it/s] 54%|█████▍    | 55/102 [00:12<00:08,  5.79it/s] 55%|█████▍    | 56/102 [00:13<00:07,  5.79it/s] 56%|█████▌    | 57/102 [00:13<00:07,  5.79it/s] 57%|█████▋    | 58/102 [00:13<00:07,  5.79it/s] 58%|█████▊    | 59/102 [00:13<00:07,  5.79it/s] 59%|█████▉    | 60/102 [00:13<00:07,  5.79it/s] 60%|█████▉    | 61/102 [00:13<00:07,  5.79it/s] 61%|██████    | 62/102 [00:14<00:06,  5.79it/s] 62%|██████▏   | 63/102 [00:14<00:06,  5.79it/s] 63%|██████▎   | 64/102 [00:14<00:06,  5.79it/s] 64%|██████▎   | 65/102 [00:14<00:06,  5.79it/s] 65%|██████▍   | 66/102 [00:14<00:06,  5.78it/s] 66%|██████▌   | 67/102 [00:14<00:06,  5.78it/s] 67%|██████▋   | 68/102 [00:15<00:05,  5.79it/s] 68%|██████▊   | 69/102 [00:15<00:05,  5.79it/s] 69%|██████▊   | 70/102 [00:15<00:05,  5.79it/s] 70%|██████▉   | 71/102 [00:15<00:05,  5.79it/s] 71%|███████   | 72/102 [00:15<00:05,  5.79it/s] 72%|███████▏  | 73/102 [00:16<00:05,  5.79it/s] 73%|███████▎  | 74/102 [00:16<00:04,  5.79it/s] 74%|███████▎  | 75/102 [00:16<00:04,  5.75it/s] 75%|███████▍  | 76/102 [00:16<00:04,  5.76it/s] 75%|███████▌  | 77/102 [00:16<00:04,  5.76it/s] 76%|███████▋  | 78/102 [00:16<00:04,  5.77it/s] 77%|███████▋  | 79/102 [00:17<00:03,  5.78it/s] 78%|███████▊  | 80/102 [00:17<00:03,  5.79it/s] 79%|███████▉  | 81/102 [00:17<00:03,  5.79it/s] 80%|████████  | 82/102 [00:17<00:03,  5.79it/s] 81%|████████▏ | 83/102 [00:17<00:03,  5.79it/s] 82%|████████▏ | 84/102 [00:17<00:03,  5.79it/s] 83%|████████▎ | 85/102 [00:18<00:02,  5.79it/s] 84%|████████▍ | 86/102 [00:18<00:02,  5.79it/s] 85%|████████▌ | 87/102 [00:18<00:02,  5.79it/s] 86%|████████▋ | 88/102 [00:18<00:02,  5.79it/s] 87%|████████▋ | 89/102 [00:18<00:02,  5.79it/s] 88%|████████▊ | 90/102 [00:18<00:02,  5.79it/s] 89%|████████▉ | 91/102 [00:19<00:01,  5.79it/s] 90%|█████████ | 92/102 [00:19<00:01,  5.79it/s] 91%|█████████ | 93/102 [00:19<00:01,  5.79it/s] 92%|█████████▏| 94/102 [00:19<00:01,  5.79it/s] 93%|█████████▎| 95/102 [00:19<00:01,  5.79it/s] 94%|█████████▍| 96/102 [00:19<00:01,  5.79it/s] 95%|█████████▌| 97/102 [00:20<00:00,  5.79it/s] 96%|█████████▌| 98/102 [00:20<00:00,  5.79it/s] 97%|█████████▋| 99/102 [00:20<00:00,  5.79it/s] 98%|█████████▊| 100/102 [00:20<00:00,  5.79it/s] 99%|█████████▉| 101/102 [00:20<00:00,  5.78it/s]100%|██████████| 102/102 [00:21<00:00,  5.78it/s]100%|██████████| 102/102 [00:21<00:00,  4.85it/s]
+102
+Hit map:
+(2550, 5120)
+Tr_M_26_04_2024_05_09_31
+Testing checkpoint Tr_M_26_04_2024_05_09_31 at 22_05_2024_00_16_59
+[*]Initializing the model...
+self.discriminate_domain_targets: False
+self.num_domains: 2
+-------------------------------------
+Initializing DeepLab V3+ Architecture
+-------------------------------------
+Input data shape: (?, 64, 64, 14)
+Building backbone architecture...
+[*]Loading the feature extractor and classifier trained models...
+ [*] Reading checkpoint...
+./results/checkpoints/checkpoint_tr_Amazon_RO_to_Cerrado_MA_domain_adaptation_DR_single_Cerrado_MA_gamma_2.5_skipconn_True/Tr_M_26_04_2024_05_09_31
+ [*] Weights loaded successfuly
+  0%|          | 0/102 [00:00<?, ?it/s]  1%|          | 1/102 [00:00<00:32,  3.14it/s]  2%|▏         | 2/102 [00:00<00:23,  4.30it/s]  3%|▎         | 3/102 [00:00<00:20,  4.87it/s]  4%|▍         | 4/102 [00:00<00:18,  5.20it/s]  5%|▍         | 5/102 [00:01<00:17,  5.41it/s]  6%|▌         | 6/102 [00:01<00:17,  5.54it/s]  7%|▋         | 7/102 [00:01<00:16,  5.62it/s]  8%|▊         | 8/102 [00:01<00:16,  5.68it/s]  9%|▉         | 9/102 [00:01<00:16,  5.72it/s] 10%|▉         | 10/102 [00:01<00:16,  5.74it/s] 11%|█         | 11/102 [00:02<00:15,  5.75it/s] 12%|█▏        | 12/102 [00:02<00:15,  5.76it/s] 13%|█▎        | 13/102 [00:02<00:15,  5.77it/s] 14%|█▎        | 14/102 [00:02<00:15,  5.77it/s] 15%|█▍        | 15/102 [00:02<00:15,  5.77it/s] 16%|█▌        | 16/102 [00:02<00:14,  5.78it/s] 17%|█▋        | 17/102 [00:03<00:14,  5.78it/s] 18%|█▊        | 18/102 [00:03<00:14,  5.78it/s] 19%|█▊        | 19/102 [00:03<00:14,  5.78it/s] 20%|█▉        | 20/102 [00:03<00:14,  5.78it/s] 21%|██        | 21/102 [00:03<00:14,  5.78it/s] 22%|██▏       | 22/102 [00:03<00:13,  5.78it/s] 23%|██▎       | 23/102 [00:04<00:13,  5.78it/s] 24%|██▎       | 24/102 [00:04<00:13,  5.79it/s] 25%|██▍       | 25/102 [00:04<00:13,  5.79it/s] 25%|██▌       | 26/102 [00:04<00:13,  5.79it/s] 26%|██▋       | 27/102 [00:04<00:12,  5.79it/s] 27%|██▋       | 28/102 [00:04<00:12,  5.79it/s] 28%|██▊       | 29/102 [00:05<00:12,  5.78it/s] 29%|██▉       | 30/102 [00:05<00:12,  5.78it/s] 30%|███       | 31/102 [00:05<00:12,  5.78it/s] 31%|███▏      | 32/102 [00:05<00:12,  5.78it/s] 32%|███▏      | 33/102 [00:05<00:11,  5.78it/s] 33%|███▎      | 34/102 [00:06<00:11,  5.78it/s] 34%|███▍      | 35/102 [00:06<00:11,  5.78it/s] 35%|███▌      | 36/102 [00:06<00:11,  5.79it/s] 36%|███▋      | 37/102 [00:06<00:11,  5.79it/s] 37%|███▋      | 38/102 [00:06<00:11,  5.79it/s] 38%|███▊      | 39/102 [00:06<00:10,  5.79it/s] 39%|███▉      | 40/102 [00:07<00:10,  5.79it/s] 40%|████      | 41/102 [00:07<00:10,  5.79it/s] 41%|████      | 42/102 [00:07<00:10,  5.78it/s] 42%|████▏     | 43/102 [00:07<00:10,  5.78it/s] 43%|████▎     | 44/102 [00:07<00:10,  5.79it/s] 44%|████▍     | 45/102 [00:07<00:09,  5.79it/s] 45%|████▌     | 46/102 [00:08<00:09,  5.79it/s] 46%|████▌     | 47/102 [00:08<00:09,  5.79it/s] 47%|████▋     | 48/102 [00:08<00:09,  5.79it/s] 48%|████▊     | 49/102 [00:08<00:09,  5.79it/s] 49%|████▉     | 50/102 [00:08<00:08,  5.79it/s] 50%|█████     | 51/102 [00:08<00:08,  5.79it/s] 51%|█████     | 52/102 [00:09<00:08,  5.79it/s] 52%|█████▏    | 53/102 [00:09<00:08,  5.79it/s] 53%|█████▎    | 54/102 [00:09<00:08,  5.79it/s] 54%|█████▍    | 55/102 [00:09<00:08,  5.79it/s] 55%|█████▍    | 56/102 [00:09<00:07,  5.79it/s] 56%|█████▌    | 57/102 [00:09<00:07,  5.78it/s] 57%|█████▋    | 58/102 [00:10<00:07,  5.78it/s] 58%|█████▊    | 59/102 [00:10<00:07,  5.78it/s] 59%|█████▉    | 60/102 [00:10<00:07,  5.78it/s] 60%|█████▉    | 61/102 [00:10<00:07,  5.78it/s] 61%|██████    | 62/102 [00:10<00:06,  5.78it/s] 62%|██████▏   | 63/102 [00:11<00:06,  5.79it/s] 63%|██████▎   | 64/102 [00:11<00:06,  5.79it/s] 64%|██████▎   | 65/102 [00:11<00:06,  5.79it/s] 65%|██████▍   | 66/102 [00:11<00:06,  5.79it/s] 66%|██████▌   | 67/102 [00:11<00:06,  5.79it/s] 67%|██████▋   | 68/102 [00:11<00:05,  5.79it/s] 68%|██████▊   | 69/102 [00:12<00:05,  5.79it/s] 69%|██████▊   | 70/102 [00:12<00:05,  5.79it/s] 70%|██████▉   | 71/102 [00:12<00:05,  5.79it/s] 71%|███████   | 72/102 [00:12<00:05,  5.79it/s] 72%|███████▏  | 73/102 [00:12<00:05,  5.79it/s] 73%|███████▎  | 74/102 [00:12<00:04,  5.78it/s] 74%|███████▎  | 75/102 [00:13<00:04,  5.78it/s] 75%|███████▍  | 76/102 [00:13<00:04,  5.78it/s] 75%|███████▌  | 77/102 [00:13<00:04,  5.79it/s] 76%|███████▋  | 78/102 [00:13<00:04,  5.79it/s] 77%|███████▋  | 79/102 [00:13<00:03,  5.79it/s] 78%|███████▊  | 80/102 [00:13<00:03,  5.78it/s] 79%|███████▉  | 81/102 [00:14<00:03,  5.79it/s] 80%|████████  | 82/102 [00:14<00:03,  5.79it/s] 81%|████████▏ | 83/102 [00:14<00:03,  5.79it/s] 82%|████████▏ | 84/102 [00:14<00:03,  5.79it/s] 83%|████████▎ | 85/102 [00:14<00:02,  5.78it/s] 84%|████████▍ | 86/102 [00:15<00:02,  5.78it/s] 85%|████████▌ | 87/102 [00:15<00:02,  5.78it/s] 86%|████████▋ | 88/102 [00:15<00:02,  5.78it/s] 87%|████████▋ | 89/102 [00:15<00:02,  5.78it/s] 88%|████████▊ | 90/102 [00:15<00:02,  5.79it/s] 89%|████████▉ | 91/102 [00:15<00:01,  5.78it/s] 90%|█████████ | 92/102 [00:16<00:01,  5.78it/s] 91%|█████████ | 93/102 [00:16<00:01,  5.78it/s] 92%|█████████▏| 94/102 [00:16<00:01,  5.78it/s] 93%|█████████▎| 95/102 [00:16<00:01,  5.78it/s] 94%|█████████▍| 96/102 [00:16<00:01,  5.78it/s] 95%|█████████▌| 97/102 [00:16<00:00,  5.78it/s] 96%|█████████▌| 98/102 [00:17<00:00,  5.78it/s] 97%|█████████▋| 99/102 [00:17<00:00,  5.78it/s] 98%|█████████▊| 100/102 [00:17<00:00,  5.78it/s] 99%|█████████▉| 101/102 [00:17<00:00,  5.78it/s]100%|██████████| 102/102 [00:17<00:00,  5.79it/s]100%|██████████| 102/102 [00:17<00:00,  5.74it/s]
+102
+Hit map:
+(2550, 5120)
+Tr_M_26_04_2024_05_42_42
+Testing checkpoint Tr_M_26_04_2024_05_42_42 at 22_05_2024_00_17_18
+[*]Initializing the model...
+self.discriminate_domain_targets: False
+self.num_domains: 2
+-------------------------------------
+Initializing DeepLab V3+ Architecture
+-------------------------------------
+Input data shape: (?, 64, 64, 14)
+Building backbone architecture...
+[*]Loading the feature extractor and classifier trained models...
+ [*] Reading checkpoint...
+./results/checkpoints/checkpoint_tr_Amazon_RO_to_Cerrado_MA_domain_adaptation_DR_single_Cerrado_MA_gamma_2.5_skipconn_True/Tr_M_26_04_2024_05_42_42
+ [*] Weights loaded successfuly
+  0%|          | 0/102 [00:00<?, ?it/s]  1%|          | 1/102 [00:00<00:32,  3.15it/s]  2%|▏         | 2/102 [00:00<00:23,  4.30it/s]  3%|▎         | 3/102 [00:00<00:20,  4.87it/s]  4%|▍         | 4/102 [00:00<00:18,  5.20it/s]  5%|▍         | 5/102 [00:01<00:18,  5.35it/s]  6%|▌         | 6/102 [00:01<00:17,  5.40it/s]  7%|▋         | 7/102 [00:01<00:17,  5.52it/s]  8%|▊         | 8/102 [00:01<00:16,  5.61it/s]  9%|▉         | 9/102 [00:01<00:16,  5.66it/s] 10%|▉         | 10/102 [00:01<00:16,  5.71it/s] 11%|█         | 11/102 [00:02<00:15,  5.73it/s] 12%|█▏        | 12/102 [00:02<00:15,  5.75it/s] 13%|█▎        | 13/102 [00:02<00:15,  5.76it/s] 14%|█▎        | 14/102 [00:02<00:15,  5.76it/s] 15%|█▍        | 15/102 [00:02<00:15,  5.77it/s] 16%|█▌        | 16/102 [00:02<00:14,  5.77it/s] 17%|█▋        | 17/102 [00:03<00:14,  5.72it/s] 18%|█▊        | 18/102 [00:03<00:14,  5.74it/s] 19%|█▊        | 19/102 [00:03<00:14,  5.75it/s] 20%|█▉        | 20/102 [00:03<00:14,  5.76it/s] 21%|██        | 21/102 [00:03<00:14,  5.76it/s] 22%|██▏       | 22/102 [00:03<00:13,  5.77it/s] 23%|██▎       | 23/102 [00:04<00:13,  5.77it/s] 24%|██▎       | 24/102 [00:04<00:13,  5.77it/s] 25%|██▍       | 25/102 [00:04<00:13,  5.77it/s] 25%|██▌       | 26/102 [00:04<00:13,  5.78it/s] 26%|██▋       | 27/102 [00:04<00:12,  5.78it/s] 27%|██▋       | 28/102 [00:05<00:12,  5.78it/s] 28%|██▊       | 29/102 [00:05<00:12,  5.78it/s] 29%|██▉       | 30/102 [00:05<00:12,  5.78it/s] 30%|███       | 31/102 [00:05<00:12,  5.78it/s] 31%|███▏      | 32/102 [00:05<00:12,  5.78it/s] 32%|███▏      | 33/102 [00:05<00:11,  5.78it/s] 33%|███▎      | 34/102 [00:06<00:11,  5.78it/s] 34%|███▍      | 35/102 [00:06<00:11,  5.78it/s] 35%|███▌      | 36/102 [00:06<00:11,  5.78it/s] 36%|███▋      | 37/102 [00:06<00:11,  5.78it/s] 37%|███▋      | 38/102 [00:06<00:11,  5.78it/s] 38%|███▊      | 39/102 [00:06<00:10,  5.78it/s] 39%|███▉      | 40/102 [00:07<00:10,  5.78it/s] 40%|████      | 41/102 [00:07<00:10,  5.78it/s] 41%|████      | 42/102 [00:07<00:10,  5.78it/s] 42%|████▏     | 43/102 [00:07<00:10,  5.78it/s] 43%|████▎     | 44/102 [00:07<00:10,  5.78it/s] 44%|████▍     | 45/102 [00:07<00:09,  5.78it/s] 45%|████▌     | 46/102 [00:08<00:09,  5.78it/s] 46%|████▌     | 47/102 [00:08<00:09,  5.78it/s] 47%|████▋     | 48/102 [00:08<00:09,  5.78it/s] 48%|████▊     | 49/102 [00:08<00:09,  5.78it/s] 49%|████▉     | 50/102 [00:08<00:08,  5.78it/s] 50%|█████     | 51/102 [00:08<00:08,  5.78it/s] 51%|█████     | 52/102 [00:09<00:08,  5.78it/s] 52%|█████▏    | 53/102 [00:09<00:08,  5.78it/s] 53%|█████▎    | 54/102 [00:09<00:08,  5.78it/s] 54%|█████▍    | 55/102 [00:09<00:08,  5.78it/s] 55%|█████▍    | 56/102 [00:09<00:07,  5.78it/s] 56%|█████▌    | 57/102 [00:10<00:07,  5.78it/s] 57%|█████▋    | 58/102 [00:10<00:07,  5.78it/s] 58%|█████▊    | 59/102 [00:10<00:07,  5.78it/s] 59%|█████▉    | 60/102 [00:10<00:07,  5.78it/s] 60%|█████▉    | 61/102 [00:10<00:07,  5.78it/s] 61%|██████    | 62/102 [00:10<00:06,  5.78it/s] 62%|██████▏   | 63/102 [00:11<00:06,  5.78it/s] 63%|██████▎   | 64/102 [00:11<00:06,  5.78it/s] 64%|██████▎   | 65/102 [00:11<00:06,  5.78it/s] 65%|██████▍   | 66/102 [00:11<00:06,  5.78it/s] 66%|██████▌   | 67/102 [00:11<00:06,  5.78it/s] 67%|██████▋   | 68/102 [00:11<00:05,  5.78it/s] 68%|██████▊   | 69/102 [00:12<00:05,  5.78it/s] 69%|██████▊   | 70/102 [00:12<00:05,  5.78it/s] 70%|██████▉   | 71/102 [00:12<00:05,  5.78it/s] 71%|███████   | 72/102 [00:12<00:05,  5.78it/s] 72%|███████▏  | 73/102 [00:12<00:05,  5.78it/s] 73%|███████▎  | 74/102 [00:12<00:04,  5.78it/s] 74%|███████▎  | 75/102 [00:13<00:04,  5.78it/s] 75%|███████▍  | 76/102 [00:13<00:04,  5.78it/s] 75%|███████▌  | 77/102 [00:13<00:04,  5.78it/s] 76%|███████▋  | 78/102 [00:13<00:04,  5.78it/s] 77%|███████▋  | 79/102 [00:13<00:03,  5.78it/s] 78%|███████▊  | 80/102 [00:14<00:03,  5.77it/s] 79%|███████▉  | 81/102 [00:14<00:03,  5.77it/s] 80%|████████  | 82/102 [00:14<00:03,  5.78it/s] 81%|████████▏ | 83/102 [00:14<00:03,  5.78it/s] 82%|████████▏ | 84/102 [00:14<00:03,  5.78it/s] 83%|████████▎ | 85/102 [00:14<00:02,  5.79it/s] 84%|████████▍ | 86/102 [00:15<00:02,  5.79it/s] 85%|████████▌ | 87/102 [00:15<00:02,  5.79it/s] 86%|████████▋ | 88/102 [00:15<00:02,  5.79it/s] 87%|████████▋ | 89/102 [00:15<00:02,  5.80it/s] 88%|████████▊ | 90/102 [00:15<00:02,  5.80it/s] 89%|████████▉ | 91/102 [00:15<00:01,  5.80it/s] 90%|█████████ | 92/102 [00:16<00:01,  5.80it/s] 91%|█████████ | 93/102 [00:16<00:01,  5.80it/s] 92%|█████████▏| 94/102 [00:16<00:01,  5.80it/s] 93%|█████████▎| 95/102 [00:16<00:01,  5.80it/s] 94%|█████████▍| 96/102 [00:16<00:01,  5.80it/s] 95%|█████████▌| 97/102 [00:16<00:00,  5.80it/s] 96%|█████████▌| 98/102 [00:17<00:00,  5.80it/s] 97%|█████████▋| 99/102 [00:17<00:00,  5.80it/s] 98%|█████████▊| 100/102 [00:17<00:00,  5.79it/s] 99%|█████████▉| 101/102 [00:17<00:00,  5.79it/s]100%|██████████| 102/102 [00:17<00:00,  5.79it/s]100%|██████████| 102/102 [00:17<00:00,  5.73it/s]
+102
+Hit map:
+(2550, 5120)
+Tr_M_26_04_2024_04_25_33
+Testing checkpoint Tr_M_26_04_2024_04_25_33 at 22_05_2024_00_17_37
+[*]Initializing the model...
+self.discriminate_domain_targets: False
+self.num_domains: 2
+-------------------------------------
+Initializing DeepLab V3+ Architecture
+-------------------------------------
+Input data shape: (?, 64, 64, 14)
+Building backbone architecture...
+[*]Loading the feature extractor and classifier trained models...
+ [*] Reading checkpoint...
+./results/checkpoints/checkpoint_tr_Amazon_RO_to_Cerrado_MA_domain_adaptation_DR_single_Cerrado_MA_gamma_2.5_skipconn_True/Tr_M_26_04_2024_04_25_33
+ [*] Weights loaded successfuly
+  0%|          | 0/102 [00:00<?, ?it/s]  1%|          | 1/102 [00:00<00:32,  3.14it/s]  2%|▏         | 2/102 [00:00<00:23,  4.29it/s]  3%|▎         | 3/102 [00:00<00:20,  4.85it/s]  4%|▍         | 4/102 [00:00<00:18,  5.18it/s]  5%|▍         | 5/102 [00:01<00:18,  5.37it/s]  6%|▌         | 6/102 [00:01<00:17,  5.51it/s]  7%|▋         | 7/102 [00:01<00:16,  5.59it/s]  8%|▊         | 8/102 [00:01<00:16,  5.64it/s]  9%|▉         | 9/102 [00:01<00:16,  5.65it/s] 10%|▉         | 10/102 [00:01<00:16,  5.68it/s] 11%|█         | 11/102 [00:02<00:15,  5.71it/s] 12%|█▏        | 12/102 [00:02<00:15,  5.73it/s] 13%|█▎        | 13/102 [00:02<00:15,  5.74it/s] 14%|█▎        | 14/102 [00:02<00:15,  5.75it/s] 15%|█▍        | 15/102 [00:02<00:15,  5.76it/s] 16%|█▌        | 16/102 [00:02<00:14,  5.76it/s] 17%|█▋        | 17/102 [00:03<00:14,  5.76it/s] 18%|█▊        | 18/102 [00:03<00:14,  5.76it/s] 19%|█▊        | 19/102 [00:03<00:14,  5.76it/s] 20%|█▉        | 20/102 [00:03<00:14,  5.77it/s] 21%|██        | 21/102 [00:03<00:14,  5.77it/s] 22%|██▏       | 22/102 [00:03<00:13,  5.77it/s] 23%|██▎       | 23/102 [00:04<00:13,  5.77it/s] 24%|██▎       | 24/102 [00:04<00:13,  5.77it/s] 25%|██▍       | 25/102 [00:04<00:13,  5.77it/s] 25%|██▌       | 26/102 [00:04<00:13,  5.77it/s] 26%|██▋       | 27/102 [00:04<00:13,  5.77it/s] 27%|██▋       | 28/102 [00:05<00:12,  5.77it/s] 28%|██▊       | 29/102 [00:05<00:12,  5.77it/s] 29%|██▉       | 30/102 [00:05<00:12,  5.77it/s] 30%|███       | 31/102 [00:05<00:12,  5.77it/s] 31%|███▏      | 32/102 [00:05<00:12,  5.77it/s] 32%|███▏      | 33/102 [00:05<00:11,  5.77it/s] 33%|███▎      | 34/102 [00:06<00:11,  5.77it/s] 34%|███▍      | 35/102 [00:06<00:11,  5.77it/s] 35%|███▌      | 36/102 [00:06<00:11,  5.77it/s] 36%|███▋      | 37/102 [00:06<00:11,  5.77it/s] 37%|███▋      | 38/102 [00:06<00:11,  5.77it/s] 38%|███▊      | 39/102 [00:06<00:10,  5.77it/s] 39%|███▉      | 40/102 [00:07<00:10,  5.77it/s] 40%|████      | 41/102 [00:07<00:10,  5.77it/s] 41%|████      | 42/102 [00:07<00:10,  5.77it/s] 42%|████▏     | 43/102 [00:07<00:10,  5.77it/s] 43%|████▎     | 44/102 [00:07<00:10,  5.77it/s] 44%|████▍     | 45/102 [00:07<00:09,  5.77it/s] 45%|████▌     | 46/102 [00:08<00:09,  5.77it/s] 46%|████▌     | 47/102 [00:08<00:09,  5.77it/s] 47%|████▋     | 48/102 [00:08<00:09,  5.78it/s] 48%|████▊     | 49/102 [00:08<00:09,  5.78it/s] 49%|████▉     | 50/102 [00:08<00:09,  5.78it/s] 50%|█████     | 51/102 [00:08<00:08,  5.78it/s] 51%|█████     | 52/102 [00:09<00:08,  5.78it/s] 52%|█████▏    | 53/102 [00:09<00:08,  5.78it/s] 53%|█████▎    | 54/102 [00:09<00:08,  5.78it/s] 54%|█████▍    | 55/102 [00:09<00:08,  5.78it/s] 55%|█████▍    | 56/102 [00:09<00:07,  5.77it/s] 56%|█████▌    | 57/102 [00:10<00:07,  5.77it/s] 57%|█████▋    | 58/102 [00:10<00:07,  5.77it/s] 58%|█████▊    | 59/102 [00:10<00:07,  5.77it/s] 59%|█████▉    | 60/102 [00:10<00:07,  5.77it/s] 60%|█████▉    | 61/102 [00:10<00:07,  5.77it/s] 61%|██████    | 62/102 [00:10<00:06,  5.75it/s] 62%|██████▏   | 63/102 [00:11<00:06,  5.75it/s] 63%|██████▎   | 64/102 [00:11<00:06,  5.76it/s] 64%|██████▎   | 65/102 [00:11<00:06,  5.76it/s] 65%|██████▍   | 66/102 [00:11<00:06,  5.77it/s] 66%|██████▌   | 67/102 [00:11<00:06,  5.77it/s] 67%|██████▋   | 68/102 [00:11<00:05,  5.77it/s] 68%|██████▊   | 69/102 [00:12<00:05,  5.77it/s] 69%|██████▊   | 70/102 [00:12<00:05,  5.77it/s] 70%|██████▉   | 71/102 [00:12<00:05,  5.77it/s] 71%|███████   | 72/102 [00:12<00:05,  5.77it/s] 72%|███████▏  | 73/102 [00:12<00:05,  5.77it/s] 73%|███████▎  | 74/102 [00:12<00:04,  5.77it/s] 74%|███████▎  | 75/102 [00:13<00:04,  5.77it/s] 75%|███████▍  | 76/102 [00:13<00:04,  5.78it/s] 75%|███████▌  | 77/102 [00:13<00:04,  5.78it/s] 76%|███████▋  | 78/102 [00:13<00:04,  5.78it/s] 77%|███████▋  | 79/102 [00:13<00:03,  5.77it/s] 78%|███████▊  | 80/102 [00:14<00:03,  5.77it/s] 79%|███████▉  | 81/102 [00:14<00:03,  5.77it/s] 80%|████████  | 82/102 [00:14<00:03,  5.77it/s] 81%|████████▏ | 83/102 [00:14<00:03,  5.77it/s] 82%|████████▏ | 84/102 [00:14<00:03,  5.77it/s] 83%|████████▎ | 85/102 [00:14<00:02,  5.77it/s] 84%|████████▍ | 86/102 [00:15<00:02,  5.78it/s] 85%|████████▌ | 87/102 [00:15<00:02,  5.78it/s] 86%|████████▋ | 88/102 [00:15<00:02,  5.78it/s] 87%|████████▋ | 89/102 [00:15<00:02,  5.78it/s] 88%|████████▊ | 90/102 [00:15<00:02,  5.78it/s] 89%|████████▉ | 91/102 [00:15<00:01,  5.78it/s] 90%|█████████ | 92/102 [00:16<00:01,  5.77it/s] 91%|█████████ | 93/102 [00:16<00:01,  5.77it/s] 92%|█████████▏| 94/102 [00:16<00:01,  5.77it/s] 93%|█████████▎| 95/102 [00:16<00:01,  5.77it/s] 94%|█████████▍| 96/102 [00:16<00:01,  5.77it/s] 95%|█████████▌| 97/102 [00:16<00:00,  5.77it/s] 96%|█████████▌| 98/102 [00:17<00:00,  5.77it/s] 97%|█████████▋| 99/102 [00:17<00:00,  5.77it/s] 98%|█████████▊| 100/102 [00:17<00:00,  5.77it/s] 99%|█████████▉| 101/102 [00:17<00:00,  5.76it/s]100%|██████████| 102/102 [00:17<00:00,  5.77it/s]100%|██████████| 102/102 [00:17<00:00,  5.72it/s]
+102
+Hit map:
+(2550, 5120)
+Tr_M_26_04_2024_03_48_29
+Testing checkpoint Tr_M_26_04_2024_03_48_29 at 22_05_2024_00_17_56
+[*]Initializing the model...
+self.discriminate_domain_targets: False
+self.num_domains: 2
+-------------------------------------
+Initializing DeepLab V3+ Architecture
+-------------------------------------
+Input data shape: (?, 64, 64, 14)
+Building backbone architecture...
+[*]Loading the feature extractor and classifier trained models...
+ [*] Reading checkpoint...
+./results/checkpoints/checkpoint_tr_Amazon_RO_to_Cerrado_MA_domain_adaptation_DR_single_Cerrado_MA_gamma_2.5_skipconn_True/Tr_M_26_04_2024_03_48_29
+ [*] Weights loaded successfuly
+  0%|          | 0/102 [00:00<?, ?it/s]  1%|          | 1/102 [00:00<00:32,  3.14it/s]  2%|▏         | 2/102 [00:00<00:23,  4.29it/s]  3%|▎         | 3/102 [00:00<00:20,  4.86it/s]  4%|▍         | 4/102 [00:00<00:18,  5.18it/s]  5%|▍         | 5/102 [00:01<00:18,  5.38it/s]  6%|▌         | 6/102 [00:01<00:17,  5.51it/s]  7%|▋         | 7/102 [00:01<00:17,  5.59it/s]  8%|▊         | 8/102 [00:01<00:16,  5.64it/s]  9%|▉         | 9/102 [00:01<00:16,  5.68it/s] 10%|▉         | 10/102 [00:01<00:16,  5.70it/s] 11%|█         | 11/102 [00:02<00:15,  5.72it/s] 12%|█▏        | 12/102 [00:02<00:15,  5.73it/s] 13%|█▎        | 13/102 [00:02<00:15,  5.74it/s] 14%|█▎        | 14/102 [00:02<00:15,  5.74it/s] 15%|█▍        | 15/102 [00:02<00:15,  5.75it/s] 16%|█▌        | 16/102 [00:02<00:14,  5.75it/s] 17%|█▋        | 17/102 [00:03<00:14,  5.75it/s] 18%|█▊        | 18/102 [00:03<00:14,  5.75it/s] 19%|█▊        | 19/102 [00:03<00:14,  5.75it/s] 20%|█▉        | 20/102 [00:03<00:14,  5.75it/s] 21%|██        | 21/102 [00:03<00:14,  5.75it/s] 22%|██▏       | 22/102 [00:03<00:13,  5.75it/s] 23%|██▎       | 23/102 [00:04<00:13,  5.75it/s] 24%|██▎       | 24/102 [00:04<00:13,  5.75it/s] 25%|██▍       | 25/102 [00:04<00:13,  5.75it/s] 25%|██▌       | 26/102 [00:04<00:13,  5.75it/s] 26%|██▋       | 27/102 [00:04<00:13,  5.75it/s] 27%|██▋       | 28/102 [00:05<00:12,  5.71it/s] 28%|██▊       | 29/102 [00:05<00:12,  5.72it/s] 29%|██▉       | 30/102 [00:05<00:12,  5.73it/s] 30%|███       | 31/102 [00:05<00:12,  5.73it/s] 31%|███▏      | 32/102 [00:05<00:12,  5.74it/s] 32%|███▏      | 33/102 [00:05<00:12,  5.75it/s] 33%|███▎      | 34/102 [00:06<00:11,  5.75it/s] 34%|███▍      | 35/102 [00:06<00:11,  5.75it/s] 35%|███▌      | 36/102 [00:06<00:11,  5.75it/s] 36%|███▋      | 37/102 [00:06<00:11,  5.75it/s] 37%|███▋      | 38/102 [00:06<00:11,  5.75it/s] 38%|███▊      | 39/102 [00:06<00:10,  5.75it/s] 39%|███▉      | 40/102 [00:07<00:10,  5.75it/s] 40%|████      | 41/102 [00:07<00:10,  5.75it/s] 41%|████      | 42/102 [00:07<00:10,  5.75it/s] 42%|████▏     | 43/102 [00:07<00:10,  5.75it/s] 43%|████▎     | 44/102 [00:07<00:10,  5.75it/s] 44%|████▍     | 45/102 [00:07<00:09,  5.75it/s] 45%|████▌     | 46/102 [00:08<00:09,  5.75it/s] 46%|████▌     | 47/102 [00:08<00:09,  5.75it/s] 47%|████▋     | 48/102 [00:08<00:09,  5.75it/s] 48%|████▊     | 49/102 [00:08<00:09,  5.75it/s] 49%|████▉     | 50/102 [00:08<00:09,  5.75it/s] 50%|█████     | 51/102 [00:09<00:08,  5.75it/s] 51%|█████     | 52/102 [00:09<00:08,  5.76it/s] 52%|█████▏    | 53/102 [00:09<00:08,  5.76it/s] 53%|█████▎    | 54/102 [00:09<00:08,  5.76it/s] 54%|█████▍    | 55/102 [00:09<00:08,  5.76it/s] 55%|█████▍    | 56/102 [00:09<00:07,  5.76it/s] 56%|█████▌    | 57/102 [00:10<00:07,  5.75it/s] 57%|█████▋    | 58/102 [00:10<00:07,  5.76it/s] 58%|█████▊    | 59/102 [00:10<00:07,  5.75it/s] 59%|█████▉    | 60/102 [00:10<00:07,  5.75it/s] 60%|█████▉    | 61/102 [00:10<00:07,  5.75it/s] 61%|██████    | 62/102 [00:10<00:06,  5.76it/s] 62%|██████▏   | 63/102 [00:11<00:06,  5.76it/s] 63%|██████▎   | 64/102 [00:11<00:06,  5.76it/s] 64%|██████▎   | 65/102 [00:11<00:06,  5.76it/s] 65%|██████▍   | 66/102 [00:11<00:06,  5.76it/s] 66%|██████▌   | 67/102 [00:11<00:06,  5.76it/s] 67%|██████▋   | 68/102 [00:11<00:05,  5.76it/s] 68%|██████▊   | 69/102 [00:12<00:05,  5.76it/s] 69%|██████▊   | 70/102 [00:12<00:05,  5.76it/s] 70%|██████▉   | 71/102 [00:12<00:05,  5.76it/s] 71%|███████   | 72/102 [00:12<00:05,  5.75it/s] 72%|███████▏  | 73/102 [00:12<00:05,  5.74it/s] 73%|███████▎  | 74/102 [00:13<00:04,  5.74it/s] 74%|███████▎  | 75/102 [00:13<00:04,  5.74it/s] 75%|███████▍  | 76/102 [00:13<00:04,  5.74it/s] 75%|███████▌  | 77/102 [00:13<00:04,  5.75it/s] 76%|███████▋  | 78/102 [00:13<00:04,  5.76it/s] 77%|███████▋  | 79/102 [00:13<00:03,  5.76it/s] 78%|███████▊  | 80/102 [00:14<00:03,  5.76it/s] 79%|███████▉  | 81/102 [00:14<00:03,  5.76it/s] 80%|████████  | 82/102 [00:14<00:03,  5.76it/s] 81%|████████▏ | 83/102 [00:14<00:03,  5.76it/s] 82%|████████▏ | 84/102 [00:14<00:03,  5.76it/s] 83%|████████▎ | 85/102 [00:14<00:02,  5.76it/s] 84%|████████▍ | 86/102 [00:15<00:02,  5.77it/s] 85%|████████▌ | 87/102 [00:15<00:02,  5.77it/s] 86%|████████▋ | 88/102 [00:15<00:02,  5.77it/s] 87%|████████▋ | 89/102 [00:15<00:02,  5.77it/s] 88%|████████▊ | 90/102 [00:15<00:02,  5.77it/s] 89%|████████▉ | 91/102 [00:15<00:01,  5.76it/s] 90%|█████████ | 92/102 [00:16<00:01,  5.76it/s] 91%|█████████ | 93/102 [00:16<00:01,  5.76it/s] 92%|█████████▏| 94/102 [00:16<00:01,  5.76it/s] 93%|█████████▎| 95/102 [00:16<00:01,  5.76it/s] 94%|█████████▍| 96/102 [00:16<00:01,  5.76it/s] 95%|█████████▌| 97/102 [00:16<00:00,  5.76it/s] 96%|█████████▌| 98/102 [00:17<00:00,  5.76it/s] 97%|█████████▋| 99/102 [00:17<00:00,  5.76it/s] 98%|█████████▊| 100/102 [00:17<00:00,  5.76it/s] 99%|█████████▉| 101/102 [00:17<00:00,  5.76it/s]100%|██████████| 102/102 [00:17<00:00,  5.76it/s]100%|██████████| 102/102 [00:17<00:00,  5.71it/s]
+102
+Hit map:
+(2550, 5120)
+Phase compute_metrics
+Reference t2: REFERENCE_2017_EPSG32620_R232_67_RO
+/home/luizmoura/workspace/dataset/Amazonia_Legal/Organized/Images/18_07_2016_image_R232_67_RO.npy
+[*]Reading images...
+4203.0
+65535.0
+[*]Computing buffer regions...
+[*]Normalizing the images...
+-7.127954
+48.105057
+-7.155134
+67.27362
+[*]Defining the initial central patches coordinates...
+[*]The metrics computation has started...
+0.5
+62.906744765811496
+Accuracy
+[[94.57284634]]
+Fscore
+[[62.90674477]]
+Recall
+[[70.87900912]]
+Precision
+[[56.54655327]]
+Confusion matrix
+[[1975772.   77660.]
+ [  41521.  101060.]]
+Alert_area
+[[8.13838534]]
+[*]Defining the initial central patches coordinates...
+[*]The metrics computation has started...
+0.5
+65.67430721861102
+Accuracy
+[[95.43670033]]
+Fscore
+[[65.67430722]]
+Recall
+[[67.43599472]]
+Precision
+[[64.0023205]]
+Confusion matrix
+[[2002399.   53985.]
+ [  46349.   95983.]]
+Alert_area
+[[6.82070809]]
+[*]Defining the initial central patches coordinates...
+[*]The metrics computation has started...
+0.5
+66.31712975307983
+Accuracy
+[[95.40315321]]
+Fscore
+[[66.31712975]]
+Recall
+[[69.83671234]]
+Precision
+[[63.13528128]]
+Confusion matrix
+[[1997798.   58087.]
+ [  42967.   99481.]]
+Alert_area
+[[7.16761291]]
+[*]Defining the initial central patches coordinates...
+[*]The metrics computation has started...
+0.5
+66.3414194884593
+Accuracy
+[[95.23637865]]
+Fscore
+[[66.34141949]]
+Recall
+[[72.43524917]]
+Precision
+[[61.19334801]]
+Confusion matrix
+[[1989246.   65409.]
+ [  39250.  103142.]]
+Alert_area
+[[7.67170661]]
+[*]Defining the initial central patches coordinates...
+[*]The metrics computation has started...
+0.5
+65.0443211001574
+Accuracy
+[[95.39341227]]
+Fscore
+[[65.0443211]]
+Recall
+[[66.22618035]]
+Precision
+[[63.90390472]]
+Confusion matrix
+[[2002844.   53219.]
+ [  48049.   94218.]]
+Alert_area
+[[6.70677287]]
+Phase compute_metrics
+Reference t2: REFERENCE_2017_EPSG32620_R232_67_RO
+/home/luizmoura/workspace/dataset/Amazonia_Legal/Organized/Images/18_07_2016_image_R232_67_RO.npy
+[*]Reading images...
+4203.0
+65535.0
+[*]Computing buffer regions...
+[*]Normalizing the images...
+-7.127954
+48.105057
+-7.155134
+67.27362
+Cleaning up ./results/results_avg/results_tr_Amazon_RO_to_Cerrado_MA_domain_adaptation_DR_single_Amazon_RO_wrmp1_gamma_2.5_skipconn_True/
+Results file
+[*]Defining the initial central patches coordinates...
+Max probability value:
+1.0
+Thresholds:
+[1.         0.98989899 0.97979798 0.96969697 0.95959596 0.94949495
+ 0.93939394 0.92929293 0.91919192 0.90909091 0.8989899  0.88888889
+ 0.87878788 0.86868687 0.85858586 0.84848485 0.83838384 0.82828283
+ 0.81818182 0.80808081 0.7979798  0.78787879 0.77777778 0.76767677
+ 0.75757576 0.74747475 0.73737374 0.72727273 0.71717172 0.70707071
+ 0.6969697  0.68686869 0.67676768 0.66666667 0.65656566 0.64646465
+ 0.63636364 0.62626263 0.61616162 0.60606061 0.5959596  0.58585859
+ 0.57575758 0.56565657 0.55555556 0.54545455 0.53535354 0.52525253
+ 0.51515152 0.50505051 0.49494949 0.48484848 0.47474747 0.46464646
+ 0.45454545 0.44444444 0.43434343 0.42424242 0.41414141 0.4040404
+ 0.39393939 0.38383838 0.37373737 0.36363636 0.35353535 0.34343434
+ 0.33333333 0.32323232 0.31313131 0.3030303  0.29292929 0.28282828
+ 0.27272727 0.26262626 0.25252525 0.24242424 0.23232323 0.22222222
+ 0.21212121 0.2020202  0.19191919 0.18181818 0.17171717 0.16161616
+ 0.15151515 0.14141414 0.13131313 0.12121212 0.11111111 0.1010101
+ 0.09090909 0.08080808 0.07070707 0.06060606 0.05050505 0.04040404
+ 0.03030303 0.02020202 0.01010101 0.        ]
+[*]The metrics computation has started...
+1.0
+94.00413507925569
+0.9629300181431828
+0.98989898989899
+83.12053453294523
+35.778967451661586
+0.9797979797979799
+81.98101405548606
+39.572321682296106
+0.9696969696969698
+80.92700679804985
+41.85840016479965
+0.9595959595959598
+80.34161247355638
+43.607445104404405
+0.9494949494949497
+79.79573377553328
+44.98066763918592
+0.9393939393939397
+79.520697167756
+46.1799984449989
+0.9292929292929296
+79.05564123858109
+47.1342175066313
+0.9191919191919196
+78.6383972439625
+48.089104431185135
+0.9090909090909095
+78.32552454675087
+48.90543959072345
+0.8989898989898994
+77.99780222219755
+49.65340342992814
+0.8888888888888894
+77.80236792185423
+50.413252331166994
+0.8787878787878793
+77.50216974359525
+51.09491113559944
+0.8686868686868693
+77.20837992362708
+51.721043296375605
+0.8585858585858592
+76.94676912547055
+52.41782229977464
+0.8484848484848492
+76.75672364148747
+53.08823321704496
+0.8383838383838391
+76.49219190211704
+53.69055942821225
+0.8282828282828291
+76.14616297468353
+54.35786293169175
+0.818181818181819
+75.83256266731566
+54.98740002964699
+0.808080808080809
+75.46045711006981
+55.69562179292626
+0.7979797979797989
+74.86911482495854
+56.70730846845321
+0.7878787878787888
+74.42984292240767
+57.65191033413224
+0.7777777777777788
+74.08797947562731
+58.40074410214493
+0.7676767676767687
+73.78468094848157
+59.03637375566249
+0.7575757575757587
+73.48947637491659
+59.656601039622416
+0.7474747474747486
+73.12439103605067
+60.17936273475417
+0.7373737373737386
+72.76491322753107
+60.693812380865296
+0.7272727272727285
+72.55294147061029
+61.194837693832504
+0.7171717171717185
+72.30809795326456
+61.6814153071911
+0.7070707070707084
+72.05159354591483
+62.1130759931401
+0.6969696969696983
+71.81452230943603
+62.556743918035785
+0.6868686868686883
+71.59347813930451
+62.98050569930709
+0.6767676767676782
+71.35408437351872
+63.42919344078093
+0.6666666666666682
+71.13402868522155
+63.84981142146775
+0.6565656565656581
+70.80830443398564
+64.25244968917923
+0.6464646464646481
+70.52355740129185
+64.65732831291446
+0.636363636363638
+70.27451396842976
+65.08985906389198
+0.626262626262628
+69.95902069980036
+65.50064297610096
+0.6161616161616179
+69.69230883543985
+65.91656593483822
+0.6060606060606079
+69.4569986110805
+66.38548039305205
+0.5959595959595978
+69.1119691119691
+66.88111023710529
+0.5858585858585877
+68.7503585977394
+67.3245074972785
+0.5757575757575777
+68.32444227186103
+67.72802606814798
+0.5656565656565676
+68.02661002572677
+68.15273651756807
+0.5555555555555576
+67.74433012578136
+68.54322998195971
+0.5454545454545475
+67.49425887982838
+68.90561057958908
+0.5353535353535375
+67.1515918195235
+69.2998771714336
+0.5252525252525274
+66.93454790823212
+69.63880796096738
+0.5151515151515174
+66.66733547351524
+69.99382083222156
+0.5050505050505073
+66.32063292396305
+70.33456205020187
+0.49494949494949725
+66.0551482412555
+70.6655993483741
+0.4848484848484872
+65.79332695574081
+70.98672246368162
+0.47474747474747714
+65.49273521084979
+71.30369455015236
+0.4646464646464671
+65.23340109700435
+71.64763870750306
+0.45454545454545703
+64.9608444421917
+71.99311870238387
+0.444444444444447
+64.70197055151603
+72.3674331464498
+0.4343434343434369
+64.39126544207203
+72.7170015228177
+0.42424242424242686
+64.06193291216329
+73.05935752720232
+0.4141414141414168
+63.642167085159805
+73.44123816940639
+0.40404040404040675
+63.26894877280704
+73.84802081945018
+0.3939393939393967
+62.56497802561316
+74.28669621815733
+0.38383838383838664
+62.096520187114315
+74.68449445453844
+0.3737373737373766
+61.644814569345584
+75.05227409871034
+0.36363636363636653
+61.182592457642556
+75.39516055480331
+0.3535353535353565
+60.85028455513608
+75.73638735377452
+0.3434343434343464
+60.51733369026904
+76.07529708697024
+0.33333333333333637
+60.17615063916729
+76.40254076868068
+0.3232323232323263
+59.77960980993122
+76.70898677116999
+0.31313131313131626
+59.45708950174565
+77.00623234228108
+0.3030303030303062
+59.11412143588205
+77.34650521990928
+0.29292929292929615
+58.75199626479623
+77.64595341270844
+0.2828282828282861
+58.333245938774866
+77.98293761785592
+0.27272727272727604
+58.00485000804873
+78.29481814804691
+0.262626262626266
+57.5660409302421
+78.63289790884117
+0.2525252525252559
+57.18381763374506
+78.9754767628486
+0.24242424242424587
+56.7533548632981
+79.32835193181181
+0.23232323232323582
+56.26475201765542
+79.68910972968806
+0.22222222222222576
+55.71866965248403
+80.03616154962052
+0.2121212121212157
+55.07840991976659
+80.43941411451398
+0.20202020202020565
+54.282801135188976
+80.9366680678156
+0.1919191919191956
+52.86804014983453
+81.5026876257087
+0.18181818181818554
+52.0561001572194
+81.9244679956262
+0.1717171717171755
+51.423790730577004
+82.30856598006085
+0.16161616161616543
+50.68316044928377
+82.70346799742073
+0.15151515151515538
+50.126688296031844
+83.05974543007738
+0.14141414141414532
+49.56694537137715
+83.3835587637536
+0.13131313131313527
+48.978746611882706
+83.70217238962859
+0.12121212121212521
+48.491833375794116
+84.04224749970214
+0.11111111111111516
+47.96390725838579
+84.38334466397068
+0.1010101010101051
+47.35988466390341
+84.7225045028629
+0.09090909090909505
+46.75365187687023
+85.07845514496157
+0.08080808080808499
+46.13905678158222
+85.4345662746857
+0.07070707070707494
+45.401395448849605
+85.8052717871106
+0.06060606060606488
+44.608356747938004
+86.21689988858601
+0.05050505050505483
+43.66998778412501
+86.6674140612957
+0.04040404040404477
+42.60059291108388
+87.1798464383792
+0.030303030303034717
+41.43416156047777
+87.81248030034531
+0.020202020202024662
+39.7584870552959
+88.60248795248235
+0.010101010101014607
+37.100218772788836
+89.81022900014712
+0.0
+6.478794167103523
+100.0
+Accuracy
+[[93.6303455  95.43673777 95.5783568  95.64968263 95.70146303 95.73990807
+  95.77688392 95.80291084 95.82533515 95.84572024 95.86336458 95.88673299
+  95.90166615 95.91532406 95.93099996 95.94883262 95.96061494 95.96798331
+  95.97613861 95.98361854 95.98798949 95.99529093 96.00194219 96.00644833
+  96.00532502 96.00050687 95.99512397 95.9969134  95.99742927 95.99470945
+  95.99290903 95.99217121 95.98790034 95.98654642 95.97582854 95.96773681
+  95.9632465  95.95216229 95.94451028 95.93836046 95.92453605 95.90689767
+  95.88118515 95.86766234 95.8517863  95.83921538 95.81839709 95.80832746
+  95.79352215 95.76876853 95.75176555 95.73382337 95.71129113 95.69358291
+  95.67406886 95.65340687 95.62888144 95.59963515 95.56192204 95.52785947
+  95.45371707 95.40595552 95.35863771 95.30666688 95.26884692 95.23027161
+  95.19097307 95.14269984 95.10321665 95.06151171 95.01510389 94.95880662
+  94.91424149 94.85260248 94.79913253 94.7370288  94.66270483 94.57697198
+  94.47356932 94.33670647 94.07760899 93.92174315 93.79568364 93.64233165
+  93.5224446  93.39802646 93.26387128 93.14871838 93.02056588 92.87058769
+  92.71475341 92.55071635 92.34662878 92.12005567 91.83991285 91.50129966
+  91.10321017 90.49087442 89.38845119  6.47879417]]
+Fscore
+[[ 1.90633255 50.02488404 53.37869241 55.17716019 56.5311673  57.53115716
+  58.42872474 59.05745242 59.68160103 60.21402471 60.67872717 61.18241129
+  61.58719076 61.94548709 62.3568169  62.76530016 63.09451188 63.4331801
+  63.74922256 64.08878818 64.534753   64.97525244 65.31564368 65.59170926
+  65.85447289 66.02333585 66.18345816 66.3916142  66.57335655 66.71422694
+  66.86671649 67.0113692  67.15865787 67.29537867 67.37126633 67.46315917
+  67.58289656 67.65646265 67.75187359 67.88651463 67.97824194 68.02996271
+  68.02492691 68.08961486 68.14143853 68.19263299 68.20882324 68.25990469
+  68.29009297 68.26864756 68.28263775 68.29143081 68.27479335 68.2902345
+  68.29643593 68.32036037 68.30134828 68.26545528 68.19147134 68.15037789
+  67.9238386  67.81127088 67.69103227 67.54938165 67.48214386 67.4102858
+  67.32544814 67.19437979 67.10325363 67.01230698 66.89037153 66.74186088
+  66.63962201 66.47018924 66.33582057 66.16833686 65.9589649  65.69944371
+  65.38586427 64.9827881  64.13431605 63.66099756 63.29984121 62.8499751
+  62.52153245 62.17454126 61.79679072 61.49908967 61.16265897 60.75674535
+  60.34536751 59.91885323 59.38233412 58.79589808 58.07642104 57.23378911
+  56.30222098 54.88741216 52.50913857 12.16917268]]
+Recall
+[[  0.96293002  35.77896745  39.57232168  41.85840016  43.6074451
+   44.98066764  46.17999844  47.13421751  48.08910443  48.90543959
+   49.65340343  50.41325233  51.09491114  51.7210433   52.4178223
+   53.08823322  53.69055943  54.35786293  54.98740003  55.69562179
+   56.70730847  57.65191033  58.4007441   59.03637376  59.65660104
+   60.17936273  60.69381238  61.19483769  61.68141531  62.11307599
+   62.55674392  62.9805057   63.42919344  63.84981142  64.25244969
+   64.65732831  65.08985906  65.50064298  65.91656593  66.38548039
+   66.88111024  67.3245075   67.72802607  68.15273652  68.54322998
+   68.90561058  69.29987717  69.63880796  69.99382083  70.33456205
+   70.66559935  70.98672246  71.30369455  71.64763871  71.9931187
+   72.36743315  72.71700152  73.05935753  73.44123817  73.84802082
+   74.28669622  74.68449445  75.0522741   75.39516055  75.73638735
+   76.07529709  76.40254077  76.70898677  77.00623234  77.34650522
+   77.64595341  77.98293762  78.29481815  78.63289791  78.97547676
+   79.32835193  79.68910973  80.03616155  80.43941411  80.93666807
+   81.50268763  81.924468    82.30856598  82.703468    83.05974543
+   83.38355876  83.70217239  84.0422475   84.38334466  84.7225045
+   85.07845514  85.43456627  85.80527179  86.21689989  86.66741406
+   87.17984644  87.8124803   88.60248795  89.810229   100.        ]]
+Precision
+[[94.00413508 83.12053453 81.98101406 80.9270068  80.34161247 79.79573378
+  79.52069717 79.05564124 78.63839724 78.32552455 77.99780222 77.80236792
+  77.50216974 77.20837992 76.94676913 76.75672364 76.4921919  76.14616297
+  75.83256267 75.46045711 74.86911482 74.42984292 74.08797948 73.78468095
+  73.48947637 73.12439104 72.76491323 72.55294147 72.30809795 72.05159355
+  71.81452231 71.59347814 71.35408437 71.13402869 70.80830443 70.5235574
+  70.27451397 69.9590207  69.69230884 69.45699861 69.11196911 68.7503586
+  68.32444227 68.02661003 67.74433013 67.49425888 67.15159182 66.93454791
+  66.66733547 66.32063292 66.05514824 65.79332696 65.49273521 65.2334011
+  64.96084444 64.70197055 64.39126544 64.06193291 63.64216709 63.26894877
+  62.56497803 62.09652019 61.64481457 61.18259246 60.85028456 60.51733369
+  60.17615064 59.77960981 59.4570895  59.11412144 58.75199626 58.33324594
+  58.00485001 57.56604093 57.18381763 56.75335486 56.26475202 55.71866965
+  55.07840992 54.28280114 52.86804015 52.05610016 51.42379073 50.68316045
+  50.1266883  49.56694537 48.97874661 48.49183338 47.96390726 47.35988466
+  46.75365188 46.13905678 45.40139545 44.60835675 43.66998778 42.60059291
+  41.43416156 39.75848706 37.10021877  6.47879417]]
+Confusion matrix
+[[2.062055e+06 8.700000e+01]
+ [1.402870e+05 1.364000e+03]]
+Alert_area
+[[6.58410295e-02 2.74770044e+00 3.08762034e+00 3.30870041e+00
+  3.47904545e+00 3.61611292e+00 3.73212262e+00 3.82899836e+00
+  3.92910969e+00 4.01356296e+00 4.09207684e+00 4.16641117e+00
+  4.23914041e+00 4.30592713e+00 4.37990718e+00 4.44841725e+00
+  4.51407514e+00 4.59275832e+00 4.66567895e+00 4.74938663e+00
+  4.87550977e+00 4.99076172e+00 5.08106669e+00 5.15880316e+00
+  5.24176754e+00 5.31409633e+00 5.38588812e+00 5.44973694e+00
+  5.51226092e+00 5.57083441e+00 5.63031187e+00 5.68577808e+00
+  5.74915464e+00 5.80479596e+00 5.86727951e+00 5.92755997e+00
+  5.98779577e+00 6.05161299e+00 6.11287167e+00 6.18089603e+00
+  6.25919598e+00 6.33438897e+00 6.41243118e+00 6.48090728e+00
+  6.54852228e+00 6.60827559e+00 6.68021492e+00 6.73386598e+00
+  6.79419876e+00 6.86310815e+00 6.92285182e+00 6.98259022e+00
+  7.04627156e+00 7.10856021e+00 7.17278639e+00 7.24388258e+00
+  7.31348066e+00 7.38800825e+00 7.47491833e+00 7.56238550e+00
+  7.69369559e+00 7.79284414e+00 7.88727490e+00 7.98402540e+00
+  8.06754426e+00 8.15134894e+00 8.23327124e+00 8.32140323e+00
+  8.39977939e+00 8.48546054e+00 8.57063084e+00 8.67136734e+00
+  8.75715412e+00 8.86313091e+00 8.96092244e+00 9.06851822e+00
+  9.19021964e+00 9.32119606e+00 9.47684360e+00 9.68040667e+00
+  1.00157903e+01 1.02276972e+01 1.04048190e+01 1.06108503e+01
+  1.07785395e+01 1.09466193e+01 1.11234316e+01 1.12842035e+01
+  1.14580980e+01 1.16531298e+01 1.18562877e+01 1.20681072e+01
+  1.23224165e+01 1.26032777e+01 1.29426505e+01 1.33493034e+01
+  1.38328269e+01 1.45497574e+01 1.58123769e+01 1.00000000e+02]]
+Coming up!

@@ -12,6 +12,7 @@ parser = argparse.ArgumentParser(description='')
 parser.add_argument('--train', dest='train', type=eval, choices=[True, False], default=True, help='whether to run train script or not')
 parser.add_argument('--test', dest='test', type=eval, choices=[True, False], default=True, help='whether to run test script or not')
 parser.add_argument('--metrics', dest='metrics', type=eval, choices=[True, False], default=True, help='whether to run metrics script or not')
+parser.add_argument('--discriminate_domain_targets', dest='discriminate_domain_targets', type=eval, choices=[True, False], default=False, help='Applies for Multi-target training. Decides whether each target dataset will be assigned a different domain label or every target dataset will get the same label.')
 
 parser.add_argument('--running_in', dest='running_in', type=str, default='Datarmor_Interactive', help='Decide wether the script will be running')
 #parser.add_argument('--phase', dest = 'phase', type = str, default = 'train', help = 'Decide wether the phase: Train|Test will be running')
@@ -39,7 +40,6 @@ training_type = SharedParameters.TRAINING_TYPE_DOMAIN_ADAPTATION
 #Deforastation / No Deforastation
 num_classes = "2"
 
-discriminate_domain_targets = str(False)
 
 source_dataset = CERRADO_MA.DATASET + "_" + AMAZON_PA.DATASET
 target_dataset = AMAZON_RO.DATASET 
@@ -62,7 +62,7 @@ for dr_localization in DR_LOCALIZATION:
         for da in DA_TYPES:
             
             
-            checkpoint_dir_param = checkpoint_dir + training_type + "_" + da + "_" + domain_regressor_type + "_multi_source_discriminate_target_" + discriminate_domain_targets
+            checkpoint_dir_param = checkpoint_dir + training_type + "_" + da + "_" + domain_regressor_type + "_multi_source_discriminate_target_" + args.discriminate_domain_targets
 
             if args.train:
                 
@@ -90,7 +90,7 @@ for dr_localization in DR_LOCALIZATION:
                                 "--porcent_of_positive_pixels_in_actual_reference_s 2 "
                                 "--porcent_of_positive_pixels_in_actual_reference_t 2 "
                                 "--num_classes " + num_classes + " "
-                                "--discriminate_domain_targets " + discriminate_domain_targets + " "
+                                "--discriminate_domain_targets " + str(args.discriminate_domain_targets) + " "
                                 "--phase train "
                                 "--training_type " + training_type + " "
                                 "--da_type " + da + " "
@@ -104,7 +104,7 @@ for dr_localization in DR_LOCALIZATION:
 
             for target_ds in TARGET_DATASETS:
                 
-                results_dir_param = results_dir + training_type + "_" + da + "_" + domain_regressor_type + "_multi_source_discriminate_target_" + discriminate_domain_targets
+                results_dir_param = results_dir + training_type + "_" + da + "_" + domain_regressor_type + "_multi_source_discriminate_target_" + args.discriminate_domain_targets
 
                 if args.test:                    
                     Schedule.append("python " + Test_MAIN_COMMAND + " "
@@ -119,7 +119,7 @@ for dr_localization in DR_LOCALIZATION:
                                 "--patches_dimension 64 "
                                 "--compute_ndvi False "
                                 "--num_classes " + num_classes + " " 
-                                "--discriminate_domain_targets " + discriminate_domain_targets + " "                              
+                                "--discriminate_domain_targets " + str(args.discriminate_domain_targets) + " "                              
                                 "--phase test "
                                 "--training_type " + training_type + " "
                                 "--da_type " + da + " "

@@ -36,10 +36,12 @@ class Models():
         self.loss_dr_threshold = 1.
 
         if self.args.discriminate_domain_targets:
-            self.num_domains = len(self.dataset_s) + len(self.dataset_t)
             self.loss_dr_threshold = 1.5
+            if self.args.phase == PHASE_TRAIN:
+                self.num_domains = len(self.dataset_s) + len(self.dataset_t)
+            else:
+                self.num_domains = 3
         else:
-            #source + target
             self.num_domains = 2
 
         self.args.num_domains = self.num_domains
