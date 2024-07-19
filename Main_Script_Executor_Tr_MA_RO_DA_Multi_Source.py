@@ -61,7 +61,7 @@ for dr_localization in DR_LOCALIZATION:
         for da in DA_TYPES:
             
             
-            checkpoint_dir_param = checkpoint_dir + training_type + "_" + da + "_" + domain_regressor_type + "_multi_source_discriminate_target_" + args.discriminate_domain_targets
+            checkpoint_dir_param = checkpoint_dir + training_type + "_" + da + "_" + domain_regressor_type + "_multi_source_discriminate_target_" + str(args.discriminate_domain_targets)
 
             if args.train:
                 
@@ -103,7 +103,7 @@ for dr_localization in DR_LOCALIZATION:
 
             for target_ds in TARGET_DATASETS:
                 
-                results_dir_param = results_dir + training_type + "_" + da + "_" + domain_regressor_type + "_multi_source_discriminate_target_" + args.discriminate_domain_targets
+                results_dir_param = results_dir + training_type + "_" + da + "_" + domain_regressor_type + "_multi_source_discriminate_target_" + str(args.discriminate_domain_targets)
 
                 if args.test:                    
                     Schedule.append("python " + Test_MAIN_COMMAND + " "
@@ -137,7 +137,8 @@ for dr_localization in DR_LOCALIZATION:
                                 "--overlap 0.75 "
                                 "--image_channels 7 "
                                 "--buffer True "                                
-                                "--eliminate_regions True "                                
+                                "--eliminate_regions True " 
+                                "--Npoints 100 "                               
                                 "--compute_ndvi False "
                                 "--phase compute_metrics "
                                 "--training_type " + training_type + " "

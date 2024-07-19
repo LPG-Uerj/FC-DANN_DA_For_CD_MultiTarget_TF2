@@ -62,7 +62,7 @@ for i in range(0, len(result_path)):
     title = titles + "DA multi-target " + SharedParameters.EXPERIMENTS_LABELS[i]
     if args.mapchart:   
         file_title = map_file+str(cont)        
-        map_list = Charts.create_map_chart(result_path_,labels_,main_path,path_to_export_chart,file_title,title,num_samples,(7,7))
+        map_list = Charts.create_map_chart(result_path_,labels_,SharedParameters.AVG_MAIN_PATH,path_to_export_chart,file_title,title,num_samples,(7,7))
     if args.f1chart:
         file_title = metrics_file+str(cont)        
         Charts.create_chart(args,labels_,target,result_path_,checkpoint_list_,map_list,path_to_export_chart,file_title,title)

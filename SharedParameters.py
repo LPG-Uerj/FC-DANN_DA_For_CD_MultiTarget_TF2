@@ -9,6 +9,10 @@ Test_MAIN_COMMAND = "Main_Test_FC114.py"
 Metrics_05_MAIN_COMMAND = "Main_Compute_Metrics_05.py"
 Metrics_th_MAIN_COMMAND = "Main_Compute_Average_Metrics_MT.py"
 
+AVG_MAIN_PATH = "./results/results_avg/"
+
+RESULTS_MAIN_PATH = "./results/results/"
+
 ROLE_SOURCE = "S"
 ROLE_TARGET = "T"
 

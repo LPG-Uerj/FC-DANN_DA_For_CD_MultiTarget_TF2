@@ -32,6 +32,7 @@ parser.add_argument('--compute_ndvi', dest='compute_ndvi', type=eval, choices=[T
 parser.add_argument('--phase', dest='phase', default='compute_metrics', help='train, test, compute_metrics')
 parser.add_argument('--training_type', dest='training_type', type=str, default='classification', help='classification|domain_adaptation')
 parser.add_argument('--save_result_text', dest='save_result_text', type=eval, choices=[True, False], default = True, help='decide if a text file results is saved')
+parser.add_argument('--Npoints', dest='Npoints', type=float, default=50, help='Number of thresholds used to compute the curves')
 #Checkpoint dir
 parser.add_argument('--checkpoint_dir', dest='checkpoint_dir', default='./DA_prove_1', help='Domain adaptation checkpoints')
 #Results dir
@@ -75,6 +76,26 @@ def Main():
     if os.path.exists(os.path.join(args.results_dir, "Results.txt")):
         os.remove(os.path.join(args.results_dir, "Results.txt"))
 
+
+    '''
+    counter = 0
+    files = os.listdir(args.results_dir)
+    initial_flag = True
+    for i in range(0, len(files)):
+        if files[i] != 'Results.txt':
+            Hit_map_path = args.results_dir + files[i] + '/hit_map.npy'
+            if os.path.exists(Hit_map_path):
+                hit_map = np.load(Hit_map_path)
+                counter += 1
+                if initial_flag:
+                    HIT_MAP = np.zeros_like(hit_map)
+                    initial_flag = False
+                HIT_MAP += hit_map
+    Avg_hit_map = HIT_MAP/counter
+    '''
+
+    initial_flag = True
+
     counter = 0
     files = os.listdir(args.results_dir)
     for i in range(0, len(files)):
@@ -82,6 +103,12 @@ def Main():
         args.file = files[i]
         if os.path.exists(Hit_map_path):
             hit_map = np.load(Hit_map_path)
+
+            if initial_flag:
+                HIT_MAP = np.zeros_like(hit_map)
+                initial_flag = False
+            HIT_MAP += hit_map
+
             fields_file = files[i].split('_')
             checkpoint_name = fields_file[0] + '_' + fields_file[3] + '_' + fields_file[1] + '_' + fields_file[4] + '_' + fields_file[5] + '_' + fields_file[6] + '_' + fields_file[7] + '_'+ fields_file[8] + '_' + fields_file[9] + '_' + fields_file[10] + '_' + fields_file[11]
             args.save_checkpoint_path = args.checkpoint_dir + '/' + checkpoint_name + '/'
@@ -103,13 +130,16 @@ def Main():
 
             args.create_classification_map = True
 
-            ACCURACY, FSCORE, RECALL, PRECISION, CONFUSION_MATRIX, ALERT_AREA = Metrics_For_Test(hit_map,
-                                                                                                 dataset.references[0], dataset.references[1],
+            ACCURACY, FSCORE, RECALL, PRECISION, _, ALERT_AREA = Metrics_For_Test(hit_map,dataset.references[0], dataset.references[1],
                                                                                                  dataset.Train_tiles, dataset.Valid_tiles, dataset.Undesired_tiles,
                                                                                                  Thresholds,
                                                                                                 args)
+
+            _, _, RECALL_for_mAP, PRECISION_for_mAP, _, _ = Metrics_For_Test(hit_map, dataset.references[0], 
+                                                                             dataset.references[1],dataset.Train_tiles, dataset.Valid_tiles, dataset.Undesired_tiles,
+                                                                            None, args)
             
-            _,_,mAP = Charts.computeMap(100, RECALL, PRECISION)
+            _,_,mAP = Charts.computeMap(100, RECALL_for_mAP, PRECISION_for_mAP)
 
             if args.save_result_text:
                 ACCURACY_.append(ACCURACY[0,0])
@@ -119,12 +149,13 @@ def Main():
                 ALERT_AREA_.append(ALERT_AREA[0,0])
                 mAP_.append(mAP)
                 
-                f.write("Run: %d Accuracy: %.2f%% F1-Score: %.2f%% Recall: %.2f%% Precision: %.2f%% Area: %.2f%% mAP: %.2f%% File Name: %s\n" % (counter, ACCURACY, FSCORE, RECALL, PRECISION, ALERT_AREA, mAP, args.file))
+                f.write("Run: %d Accuracy: %.2f%% F1-Score: %.2f%% Recall: %.2f%% Precision: %.2f%% Area: %.2f%% mAP: %.2f%% File Name: %s\n" % (counter, ACCURACY[0,0], FSCORE[0,0], RECALL[0,0], PRECISION[0,0], ALERT_AREA[0,0], mAP, args.file))
                 f.close()
             else:
                 print('Coming up!')
                 
-            counter += 1    
+            counter += 1   
+
     if args.save_result_text:
         f = open(args.results_dir + "/Results.txt","a")
         ACCURACY_m = np.mean(ACCURACY_)
@@ -141,6 +172,7 @@ def Main():
         PRECISION_s = np.std(PRECISION_)
         ALERT_AREA_s = np.std(ALERT_AREA_)
         mAP_s = np.std(mAP_)
+
 
         #histories.sendLoss(loss = FSCORE_m, epoch = i + 1, total_epochs = len(files) + 1)
         f.write("Mean: %d Accuracy: %f%% F1-Score: %f%% Recall: %f%% Precision: %f%% Area: %f%% mAP: %f%% \n" % ( 0, ACCURACY_m, FSCORE_m, RECALL_m, PRECISION_m, ALERT_AREA_m, mAP_m))

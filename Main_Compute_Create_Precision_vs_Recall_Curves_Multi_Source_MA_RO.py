@@ -14,7 +14,6 @@ args = parser.parse_args()
 
 num_samples = 100
 
-main_path = "./results/results_avg/"
 #MA RO -> PA
 baseline_paths = [
     'results_tr_Amazon_PA_classification_S_Amazon_PA_T_Amazon_PA/',
@@ -67,7 +66,7 @@ for i in range(0, len(result_path)):
     title = titles + SharedParameters.DA_MULTI_SOURCE_TITLE + SharedParameters.MULTI_SOURCE_EXPERIMENTS_LABELS[i]
     if args.mapchart:
         file_title = map_file+str(cont)
-        map_list = Charts.create_map_chart(result_path_,labels_,main_path,path_to_export_chart,file_title,title,num_samples,(8,8))
+        map_list = Charts.create_map_chart(result_path_,labels_,SharedParameters.AVG_MAIN_PATH,path_to_export_chart,file_title,title,num_samples,(8,8))
     if args.f1chart:
         file_title = metrics_file+str(cont)
         Charts.create_chart(args,labels_,target,result_path_,checkpoint_list_,map_list,path_to_export_chart,file_title,title)

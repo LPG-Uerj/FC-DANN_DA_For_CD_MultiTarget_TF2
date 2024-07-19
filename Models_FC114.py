@@ -1055,7 +1055,7 @@ def Metrics_For_Test(hit_map,
 
     save_path = args.results_dir + args.file + '/'
     print('[*]Defining the initial central patches coordinates...')
-    mask_init = mask_creation(reference_t1.shape[0], reference_t1.shape[1], args.horizontal_blocks, args.vertical_blocks, [], [], [])
+    #mask_init = mask_creation(reference_t1.shape[0], reference_t1.shape[1], args.horizontal_blocks, args.vertical_blocks, [], [], [])
     mask_final = mask_creation(reference_t1.shape[0], reference_t1.shape[1], args.horizontal_blocks, args.vertical_blocks, Train_tiles, Valid_tiles, Undesired_tiles)
 
     #mask_final = mask_final_.copy()
@@ -1064,7 +1064,18 @@ def Metrics_For_Test(hit_map,
     mask_final[mask_final == 2] = 1
 
     Probs_init = hit_map
-    positive_map_init = np.zeros_like(Probs_init)
+
+    if Thresholds is None:
+        reference_t1_copy_ = reference_t1.copy()
+        reference_t1_copy_ = reference_t1_copy_ - 1
+        reference_t1_copy_[reference_t1_copy_ == -1] = 1
+        reference_t1_copy_[reference_t2 == 2] = 0
+        mask_f_ = mask_final * reference_t1_copy_
+        # Raul Implementation
+        min_array = np.zeros((1 , ))
+        Pmax = np.max(Probs_init[mask_f_ == 1])
+        probs_list = np.arange(Pmax, 0, -Pmax/(args.Npoints - 1))
+        Thresholds = np.concatenate((probs_list , min_array))
 
     # Metrics containers
     ACCURACY = np.zeros((1, len(Thresholds)))
@@ -1105,8 +1116,7 @@ def Metrics_For_Test(hit_map,
 
         #central_pixels_coordinates_ts, y_test = Central_Pixel_Definition_For_Test(mask_final_, reference_t1_copy, reference_t2, args.patches_dimension, 1, 'metrics')
         central_pixels_coordinates_ts_ = np.transpose(np.array(np.where(mask_f == 1)))
-        #print(np.shape(central_pixels_coordinates_ts))
-        #print(np.shape(central_pixels_coordinates_ts_))
+        
         y_test = reference_t2[central_pixels_coordinates_ts_[:,0].astype('int'), central_pixels_coordinates_ts_[:,1].astype('int')]
 
         #print(np.shape(central_pixels_coordinates_ts))
@@ -1172,7 +1182,7 @@ def Metrics_For_Test_M(hit_map,
 
     save_path = args.results_dir + args.file + '/'
     print('[*]Defining the initial central patches coordinates...')
-    mask_init = mask_creation(reference_t1.shape[0], reference_t1.shape[1], args.horizontal_blocks, args.vertical_blocks, [], [], [])
+    #mask_init = mask_creation(reference_t1.shape[0], reference_t1.shape[1], args.horizontal_blocks, args.vertical_blocks, [], [], [])
     mask_final = mask_creation(reference_t1.shape[0], reference_t1.shape[1], args.horizontal_blocks, args.vertical_blocks, Train_tiles, Valid_tiles, Undesired_tiles)
 
     #mask_final = mask_final_.copy()

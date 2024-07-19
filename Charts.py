@@ -2,6 +2,7 @@ import os
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import rcParams
+import re
 
 from Tools import *
 from Models_FC114 import Metrics_For_Test
@@ -206,7 +207,7 @@ def Area_under_the_curve(X, Y):
 
     return area
 
-def create_map_chart(result_path,labels,main_path,path_to_export_chart,file_title,title,num_samples,chartsize=(7,7), displayChart = True):
+def create_map_chart(result_path,labels,main_path,output_directory,file_title,title,num_samples,chartsize=(7,7), displayChart = True):
     if len(result_path) != len(set(result_path)):        
         raise Exception("Duplicates found in the result list.")
     
@@ -248,7 +249,7 @@ def create_map_chart(result_path,labels,main_path,path_to_export_chart,file_titl
             if result_folder_name != 'Results.txt':
                 recall_i, precision_i, mAP = computeMap(num_samples,None, None, result_folder_path)
                 print(f"mAP: {mAP}")
-                map_list.append(np.round(mAP,1))
+                map_list.append(np.round(mAP,2))
         if displayChart:
             ax.plot(recall_i[0,:], precision_i[0,:], color=colors[rf], label=labels[rf] + ' - mAP:' + str(np.round(mAP,1)))
 
@@ -264,7 +265,7 @@ def create_map_chart(result_path,labels,main_path,path_to_export_chart,file_titl
         ##rcParams['axes.titlepad'] = 10 
         plt.ylabel('Precision')
         plt.xlabel('Recall')
-        plt.savefig(path_to_export_chart + 'Recall_vs_Precision_5_runs_' + file_title + '_DeepLab_Xception.png', format="png")
+        plt.savefig(output_directory + 'Recall_vs_Precision_5_runs_' + file_title + '_DeepLab_Xception.png', format="png")
         init += 1
     
     return map_list
@@ -318,3 +319,97 @@ def computeMap(num_samples,recall, precision, result_folder_path=None):
     mAP = Area_under_the_curve(recall__, precision__)
     
     return recall_i, precision_i, mAP
+
+
+def create_map_f1_boxplot(result_path,labels,base_path, output_directory, file_title):
+    if len(result_path) != len(set(result_path)):        
+        raise Exception("Duplicates found in the result list.")
+    
+    if len(result_path) != len(labels):
+        raise Exception("Lists are not the same length. Please verify.")
+
+    map_list = []
+    f1_list = []
+    
+    for rf in range(len(result_path)):
+
+        result_folder = os.path.join(base_path,result_path[rf])
+
+        if not os.path.exists(result_folder):
+            continue
+
+        map_values, f1_values = extract_map_and_f1(os.path.join(result_folder,'Results.txt'))
+
+        map_list.append(map_values)
+        f1_list.append(f1_values)
+
+    generate_combined_boxplot(output_directory,map_list,'mAP',labels, file_title, "Comparison of mAP metrics Across Experiments")
+    generate_combined_boxplot(output_directory,f1_list,'F1',labels, file_title, "Comparison of F1 metrics Across Experiments")
+
+
+def generate_combined_boxplot(output_directory, data_list, metric, labels, file_title, title):
+    """
+    Generate combined boxplots for the provided data lists and annotate the mean, upper bound, and lower bound.
+    """
+    fig, ax = plt.subplots(figsize=(12, 8))
+    
+    # Create the boxplots
+    box = ax.boxplot(data_list, vert=True, patch_artist=True, labels=labels)
+
+    for median in box['medians']:
+        median.set(color ='orange', linewidth = 2)
+    
+    # Annotate statistics for each boxplot
+    for i, data in enumerate(data_list):
+        mean_val = np.mean(data)
+        lower_bound = np.min(data)
+        upper_bound = np.max(data)
+        
+        # Annotate the mean
+        ax.scatter(i + 1, mean_val, color='red', zorder=3)
+        ax.text(i + 1.05, mean_val, f'Mean: {mean_val:.2f}%', verticalalignment='center')
+        
+        # Annotate the lower and upper bounds
+        ax.scatter(i + 1, lower_bound, color='blue', zorder=3)
+        ax.text(i + 1.05, lower_bound, f'Lower Bound: {lower_bound:.2f}%', verticalalignment='center')
+        
+        ax.scatter(i + 1, upper_bound, color='blue', zorder=3)
+        ax.text(i + 1.05, upper_bound, f'Upper Bound: {upper_bound:.2f}%', verticalalignment='center')
+    
+    # Set plot title and labels
+    ax.set_title(title)
+    ax.set_ylabel(f"{metric} (%)")
+    ax.grid(True)
+    
+    #plt.show()
+    plt.savefig(output_directory + 'Boxplot_5_runs_'+ file_title +'_DeepLab_Xception.png', format="png")
+    #plt.close(fig)
+
+#Usage: 
+#map_values, f1_values = extract_map_and_f1('Results.txt')   
+def extract_map_and_f1(file_path):
+    """
+    Extract mAP values from the file.
+    
+    Parameters:
+    - file_path: path to the file containing the results
+    
+    Returns:
+    - A dictionary where keys are experiment identifiers and values are lists of mAP values
+    """
+    with open(file_path, 'r') as file:
+        content = file.read()
+
+    # Regular expression to match the experiment identifier and mAP values
+
+    experiment_pattern = re.compile(r"Run: \d+ Accuracy: [\d.]+% F1-Score: ([\d.]+)% Recall: [\d.]+% Precision: [\d.]+% Area: [\d.]+% mAP: ([\d.]+)%")
+    
+    map_values = []
+    f1_values = []
+    
+    for match in experiment_pattern.findall(content):
+        f1_score, map_score = match
+        f1_values.append(float(f1_score))
+        map_values.append(float(map_score))
+    
+    return map_values, f1_values
