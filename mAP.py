@@ -26,13 +26,22 @@ REFERENCES = [
 ]
 
 REFERENCES = [
-    'Main_Compute_Create_Precision_vs_Recall_Curves_Multi_Source_MA_PA.py  2>&1 | tee Main_Compute_Create_Precision_vs_Recall_Curves_Multi_Source_MA_PA.txt',
-    'Main_Compute_Create_Precision_vs_Recall_Curves_Multi_Source_MA_RO.py  2>&1 | tee Main_Compute_Create_Precision_vs_Recall_Curves_Multi_Source_MA_RO.txt',
-    'Main_Compute_Create_Precision_vs_Recall_Curves_Multi_Source_PA_RO.py  2>&1 | tee Main_Compute_Create_Precision_vs_Recall_Curves_Multi_Source_PA_RO.txt'
+    'Main_Compute_Create_Precision_vs_Recall_Curves_Multi_Source_MA_PA.py ',
+    'Main_Compute_Create_Precision_vs_Recall_Curves_Multi_Source_MA_RO.py ',
+    'Main_Compute_Create_Precision_vs_Recall_Curves_Multi_Source_PA_RO.py '
+]
+
+REFERENCES = [
+    'Main_Compute_Create_Precision_vs_Recall_Curves_Multi_Target_MA-PA.py',
+    'Main_Compute_Create_Precision_vs_Recall_Curves_Multi_Target_MA-RO.py',
+    'Main_Compute_Create_Precision_vs_Recall_Curves_Multi_Target_PA-MA.py',
+    'Main_Compute_Create_Precision_vs_Recall_Curves_Multi_Target_PA-RO.py',
+    'Main_Compute_Create_Precision_vs_Recall_Curves_Multi_Target_RO-MA.py',
+    'Main_Compute_Create_Precision_vs_Recall_Curves_Multi_Target_RO-PA.py'
 ]
 
 for reference in REFERENCES:
-    Schedule.append("python " + reference + " ")
+    Schedule.append("python " + reference + " 2>&1 | tee mAP.txt ")
 
 for i in range(len(Schedule)):
     try:

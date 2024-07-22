@@ -68,6 +68,7 @@ for i in range(0, len(result_path)):
     if args.mapchart:
         file_title = map_file+str(cont)
         map_list = Charts.create_map_chart(result_path_,labels_,SharedParameters.AVG_MAIN_PATH,path_to_export_chart,file_title,title,num_samples,(8,8))
+        Charts.create_map_f1_boxplot(result_path_,labels_,SharedParameters.RESULTS_MAIN_PATH, path_to_export_chart, file_title)
     if args.f1chart:
         file_title = metrics_file+str(cont)
         Charts.create_chart(args,labels_,target,result_path_,checkpoint_list_,map_list,path_to_export_chart,file_title,title)

@@ -12,7 +12,7 @@ from Cerrado_Biome_MA import CERRADO_MA
 import SharedParameters
 
 
-colors = ["#dba237", "#70b2e4", "#469b76", "#eee461", "#c17da5", "#ffa300", "#dc0ab4", "#b3d4ff", "#00bfa0"]
+colors = ["#dba237", "#70b2e4", "#469b76", "#eee461", "#c17da5", "#00bfa0", "#ffa300", "#dc0ab4", "#b3d4ff"]
 
 
 def get_metrics(args):
@@ -123,10 +123,10 @@ def create_chart(args, experiments, target, result_list,checkpoint_list, mAP_lis
             print(e)
             continue
         
-        accuracy_list.append(round(float(accuracy), 1))
-        fscore_list.append(round(float(fscore), 1))
-        recall_list.append(round(float(recall), 1))
-        precision_list.append(round(float(precision), 1))
+        accuracy_list.append(accuracy)
+        fscore_list.append(fscore)
+        recall_list.append(recall)
+        precision_list.append(precision)
         _experiments.append(experiments[i])    
 
     x = np.arange(len(_experiments))   
@@ -158,11 +158,11 @@ def create_chart(args, experiments, target, result_list,checkpoint_list, mAP_lis
     rcParams['axes.titlepad'] = 20 
     plt.xticks(x, _experiments)
 
-    plt.bar_label(bar0,fmt='%.1f%%', padding=3)
-    plt.bar_label(bar1,fmt='%.1f%%', padding=3)
-    plt.bar_label(bar2,fmt='%.1f%%', padding=3)
-    plt.bar_label(bar3,fmt='%.1f%%', padding=3)
-    plt.bar_label(bar4,fmt='%.1f%%', padding=3)
+    plt.bar_label(bar0,fmt='%.2f%%', padding=3)
+    plt.bar_label(bar1,fmt='%.2f%%', padding=3)
+    plt.bar_label(bar2,fmt='%.2f%%', padding=3)
+    plt.bar_label(bar3,fmt='%.2f%%', padding=3)
+    plt.bar_label(bar4,fmt='%.2f%%', padding=3)
 
     plt.legend(prop={'size': 14})
     plt.legend(bbox_to_anchor=(1.05, 1.05), loc='upper right')
@@ -174,6 +174,8 @@ def create_chart(args, experiments, target, result_list,checkpoint_list, mAP_lis
     plt.tight_layout()
 
     plt.savefig(full_chart_path, format="png")
+    plt.close()
+    
 
     print(f"Done! {full_chart_path} has been saved.")
 
@@ -248,10 +250,10 @@ def create_map_chart(result_path,labels,main_path,output_directory,file_title,ti
 
             if result_folder_name != 'Results.txt':
                 recall_i, precision_i, mAP = computeMap(num_samples,None, None, result_folder_path)
-                print(f"mAP: {mAP}")
-                map_list.append(np.round(mAP,2))
+                print(f"mAP: {mAP:.2f}")
+                map_list.append(mAP)
         if displayChart:
-            ax.plot(recall_i[0,:], precision_i[0,:], color=colors[rf], label=labels[rf] + ' - mAP:' + str(np.round(mAP,1)))
+            ax.plot(recall_i[0,:], precision_i[0,:], color=colors[rf], label= f'{labels[rf]} - mAP:{mAP:.2f}')
 
     if displayChart:
         ax.legend(prop={'size': 14})
@@ -266,6 +268,7 @@ def create_map_chart(result_path,labels,main_path,output_directory,file_title,ti
         plt.ylabel('Precision')
         plt.xlabel('Recall')
         plt.savefig(output_directory + 'Recall_vs_Precision_5_runs_' + file_title + '_DeepLab_Xception.png', format="png")
+        plt.close()
         init += 1
     
     return map_list
@@ -321,7 +324,7 @@ def computeMap(num_samples,recall, precision, result_folder_path=None):
     return recall_i, precision_i, mAP
 
 
-def create_map_f1_boxplot(result_path,labels,base_path, output_directory, file_title):
+def create_map_f1_boxplot(result_path,labels,base_path, output_directory, file_title, title):
     if len(result_path) != len(set(result_path)):        
         raise Exception("Duplicates found in the result list.")
     
@@ -343,18 +346,20 @@ def create_map_f1_boxplot(result_path,labels,base_path, output_directory, file_t
         map_list.append(map_values)
         f1_list.append(f1_values)
 
-    generate_combined_boxplot(output_directory,map_list,'mAP',labels, file_title, "Comparison of mAP metrics Across Experiments")
-    generate_combined_boxplot(output_directory,f1_list,'F1',labels, file_title, "Comparison of F1 metrics Across Experiments")
+    generate_combined_boxplot(output_directory,map_list,'mAP',labels, file_title, f'{title} - Comparison of mAP metrics Across Experiments')
+    generate_combined_boxplot(output_directory,f1_list,'F1',labels, file_title, f'{title} - Comparison of F1 metrics Across Experiments')
 
 
 def generate_combined_boxplot(output_directory, data_list, metric, labels, file_title, title):
     """
     Generate combined boxplots for the provided data lists and annotate the mean, upper bound, and lower bound.
     """
-    fig, ax = plt.subplots(figsize=(12, 8))
+    _, ax = plt.subplots(figsize=(16, 8))
+
+    fontsize = 11
     
     # Create the boxplots
-    box = ax.boxplot(data_list, vert=True, patch_artist=True, labels=labels)
+    box = ax.boxplot(data_list, vert=True, whis=(0,100), patch_artist=True, labels=labels)
 
     for median in box['medians']:
         median.set(color ='orange', linewidth = 2)
@@ -367,23 +372,23 @@ def generate_combined_boxplot(output_directory, data_list, metric, labels, file_
         
         # Annotate the mean
         ax.scatter(i + 1, mean_val, color='red', zorder=3)
-        ax.text(i + 1.05, mean_val, f'Mean: {mean_val:.2f}%', verticalalignment='center')
+        ax.text(i + 1.15, mean_val, f'Mean: {mean_val:.2f}%', verticalalignment='center', fontsize=fontsize)
         
         # Annotate the lower and upper bounds
         ax.scatter(i + 1, lower_bound, color='blue', zorder=3)
-        ax.text(i + 1.05, lower_bound, f'Lower Bound: {lower_bound:.2f}%', verticalalignment='center')
+        ax.text(i + 1.15, lower_bound - 1.5, f'Lower Bound: {lower_bound:.2f}%', verticalalignment='center', fontsize=fontsize)
         
         ax.scatter(i + 1, upper_bound, color='blue', zorder=3)
-        ax.text(i + 1.05, upper_bound, f'Upper Bound: {upper_bound:.2f}%', verticalalignment='center')
+        ax.text(i + 1.15, upper_bound + 1.5, f'Upper Bound: {upper_bound:.2f}%', verticalalignment='center', fontsize=fontsize)
     
     # Set plot title and labels
     ax.set_title(title)
     ax.set_ylabel(f"{metric} (%)")
+    ax.set_ylim(10, 100)
     ax.grid(True)
     
-    #plt.show()
-    plt.savefig(output_directory + 'Boxplot_5_runs_'+ file_title +'_DeepLab_Xception.png', format="png")
-    #plt.close(fig)
+    plt.savefig(os.path.join(output_directory, f'Boxplot_5_runs_{file_title}_{metric}_DeepLab_Xception.png'), format="png")
+    plt.close()
 
 #Usage: 
 #map_values, f1_values = extract_map_and_f1('Results.txt')   

@@ -51,6 +51,7 @@ TRAINING_TYPE_CLASSIFICATION = "classification"
 TRAINING_TYPE_DOMAIN_ADAPTATION = "domain_adaptation"
 
 DA_MULTI_SOURCE_TITLE = 'DA multi-source '
+DA_MULTI_TARGET_TITLE = 'DA multi-target '
 DA_CHART_TITLE = 'DA multi-target experiments comparison'
 
 LOWER_BOUND_LABEL = 'Train(X)|Test(Y)]\n(Source only training)'
@@ -62,7 +63,7 @@ MULTI_SOURCE_LABEL = 'Train X, Y |Test(Z → X,Y)\n(DA multi-source)'
 FORMAT_LOWER_BOUND_LABEL = 'Train({})|Test({})]\n(Source only training)'
 FORMAT_UPPER_BOUND_SOURCE_ONLY_LABEL = 'Train({})|Test({})\n(Training on target)'
 FORMAT_SINGLE_TARGET_LABEL = 'Train {} |Test({} → {})\n(DA single-target)'
-FORMAT_MULTI_TARGET_LABEL = 'Train {} |Test({},{} → {}})\n(DA multi-target)'
+FORMAT_MULTI_TARGET_LABEL = 'Train {} |Test({},{} → {})\n(DA multi-target)'
 FORMAT_MULTI_SOURCE_LABEL = 'Train {},{} |Test({} → {},{})\n(DA multi-source)'
 
 formatted_lower_bound_label = lambda x, y: FORMAT_LOWER_BOUND_LABEL.format(x, y)
