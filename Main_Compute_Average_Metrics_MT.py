@@ -106,59 +106,31 @@ def Main():
 
     if not os.path.exists(args.results_dir + args.file + '/'):
         os.makedirs(args.results_dir + args.file + '/')
-
-    if args.save_result_text:
-        # Open a file in order to save the training history
-        f = open(args.results_dir + "Results.txt","a")
-        #   if counter == 0:     #TROCADO DE COUNTER ==0 PARA COUNER == 1 POIS O INCREMENTO ACONTECE ANTES (gabriel)
-        ACCURACY_ = []
-        FSCORE_ = []
-        RECALL_ = []
-        PRECISION_ = []
-        ALERT_AREA_ = []
-
-    ACCURACY, FSCORE, RECALL, PRECISION, CONFUSION_MATRIX, ALERT_AREA = Metrics_For_Test_M(Avg_hit_map,
+        
+    ACCURACY, FSCORE, RECALL, PRECISION, ALERT_AREA, MAX_THRESHOLD, THRESHOLD_ARGMAX = Metrics_For_Test_Avg(Avg_hit_map,
                                                                                         dataset.references[0], dataset.references[1],
                                                                                         dataset.Train_tiles, dataset.Valid_tiles, dataset.Undesired_tiles,
                                                                                         args)
+    f = open(args.results_dir + "Results.txt","a")
+    f.write("Average Ensemble Results with respect to F1-Score - Best Accuracy: %.2f%% Best F1-Score: %.2f%% Best Recall: %.2f%% Best Precision: %.2f%% Best Area: %.2f%% Best Threshold: %.2f Best Threshold index: %.2f File Name: %s\n" % (ACCURACY[0, THRESHOLD_ARGMAX], FSCORE[0, THRESHOLD_ARGMAX], RECALL[0, THRESHOLD_ARGMAX], PRECISION[0, THRESHOLD_ARGMAX], ALERT_AREA[0, THRESHOLD_ARGMAX], MAX_THRESHOLD, THRESHOLD_ARGMAX, args.file))
+    
+    ACCURACY_m = np.mean(ACCURACY)
+    FSCORE_m = np.mean(FSCORE)
+    RECALL_m = np.mean(RECALL)
+    PRECISION_m = np.mean(PRECISION)
+    ALERT_AREA_m = np.mean(ALERT_AREA)
 
-    if args.save_result_text:
-
-        ACCURACY_.append(ACCURACY[0,0])
-        FSCORE_.append(FSCORE[0,0])
-        RECALL_.append(RECALL[0,0])
-        PRECISION_.append(PRECISION[0,0])
-        ALERT_AREA_.append(ALERT_AREA[0,0])
-
-        print("printando ACCURACY_: "+ str(ACCURACY_))
-
-        #histories.sendLoss(loss = FSCORE[0 , 0], epoch = i, total_epochs = len(files))
-        f.write("Run: %d Accuracy: %.2f%% F1-Score: %.2f%% Recall: %.2f%% Precision: %.2f%% Area: %.2f%% File Name: %s\n" % (counter, ACCURACY, FSCORE, RECALL, PRECISION, ALERT_AREA, args.file))
-        f.close()
-        print(ACCURACY_)
-    else:
-        print('Coming up!')
-        #histories.sendLoss(loss = 0.0, epoch = i, total_epochs = len(files))
-
-    if args.save_result_text:
-        f = open(args.results_dir + "Results.txt","a")
-        ACCURACY_m = np.mean(ACCURACY_)
-        FSCORE_m = np.mean(FSCORE_)
-        RECALL_m = np.mean(RECALL_)
-        PRECISION_m = np.mean(PRECISION_)
-        ALERT_AREA_m = np.mean(ALERT_AREA_)
-
-
-        ACCURACY_s = np.std(ACCURACY_)
-        FSCORE_s = np.std(FSCORE_)
-        RECALL_s = np.std(RECALL_)
-        PRECISION_s = np.std(PRECISION_)
-        ALERT_AREA_s = np.std(ALERT_AREA_)
-
-        #histories.sendLoss(loss = FSCORE_m, epoch = i + 1, total_epochs = len(files) + 1)
-        f.write("Mean: %d Accuracy: %f%% F1-Score: %f%% Recall: %f%% Precision: %f%% Area: %f%%\n" % ( 0, ACCURACY_m, FSCORE_m, RECALL_m, PRECISION_m, ALERT_AREA_m))
-        f.write("Std: %d Accuracy: %.2f%% F1-Score: %.2f%% Recall: %.2f%% Precision: %.2f%% Area: %.2f%%\n" % ( 0, ACCURACY_s, FSCORE_s, RECALL_s, PRECISION_s, ALERT_AREA_s))
-        f.close()
+    ACCURACY_s = np.std(ACCURACY)
+    FSCORE_s = np.std(FSCORE)
+    RECALL_s = np.std(RECALL)
+    PRECISION_s = np.std(PRECISION)
+    ALERT_AREA_s = np.std(ALERT_AREA)
+    
+    f.write("Mean: %d Accuracy: %f%% F1-Score: %f%% Recall: %f%% Precision: %f%% Area: %f%%\n" % ( 0, ACCURACY_m, FSCORE_m, RECALL_m, PRECISION_m, ALERT_AREA_m))
+    f.write("Std: %d Accuracy: %.2f%% F1-Score: %.2f%% Recall: %.2f%% Precision: %.2f%% Area: %.2f%%\n" % ( 0, ACCURACY_s, FSCORE_s, RECALL_s, PRECISION_s, ALERT_AREA_s))
+    f.close()
+    
+    print('Coming up!')
 
 if __name__=='__main__':
     Main()

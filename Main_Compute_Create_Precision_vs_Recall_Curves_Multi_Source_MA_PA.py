@@ -14,7 +14,6 @@ args = parser.parse_args()
 
 num_samples = 100
 
-main_path = "./results/results_avg/"
 #MA PA -> RO
 baseline_paths = [
     'results_tr_Amazon_RO_classification_S_Amazon_RO_T_Amazon_RO/',

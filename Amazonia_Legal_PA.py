@@ -197,10 +197,10 @@ class AMAZON_PA():
                 print("References[0] shape: " + str(np.shape(self.references[0])))
                 print("References[1] shape: " + str(np.shape(self.references[1])))
                 self.corners_coordinates_tr, self.corners_coordinates_vl, reference1_, reference2_, self.pad_tuple, self.class_weights = Corner_Coordinates_Definition_Training(self.mask, self.references[0], self.references[1], args.patches_dimension, args.overlap, args.porcent_of_last_reference_in_actual_reference, args.porcent_of_positive_pixels_in_actual_reference)
-                sio.savemat(os.path.join(args.save_checkpoint_path,'mask.mat'), {'mask': self.mask})
+                #sio.savemat(os.path.join(args.save_checkpoint_path,'mask.mat'), {'mask': self.mask})
             else:
                 self.mask = mask_creation(self.images_norm[0].shape[0], self.images_norm[0].shape[1], int(self.HORIZONTAL_BLOCKS), int(self.VERTICAL_BLOCKS), self.Train_tiles, self.Valid_tiles, self.Undesired_tiles)
-                sio.savemat(os.path.join(args.save_checkpoint_path,'mask.mat'), {'mask': self.mask})
+                #sio.savemat(os.path.join(args.save_checkpoint_path,'mask.mat'), {'mask': self.mask})
                 self.corners_coordinates_tr, self.corners_coordinates_vl, reference1_, reference2_, self.pad_tuple, self.class_weights = Corner_Coordinates_Definition_Training(self.mask, self.references[0], self.references[1], args.patches_dimension, args.overlap, args.porcent_of_last_reference_in_actual_reference, args.porcent_of_positive_pixels_in_actual_reference)
 
             self.references_.append(reference1_)

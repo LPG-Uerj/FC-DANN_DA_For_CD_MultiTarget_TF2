@@ -33,19 +33,19 @@ baseline_checkpoints = [
 ]
 
 baseline_labels = [
-    SharedParameters.formatted_upper_bound_source_only_label('MA'),
-    SharedParameters.formatted_lower_bound_label('RO','MA'),
-    SharedParameters.formatted_single_target_label('RO','MA'),
-    SharedParameters.formatted_multi_target_label('RO','PA','MA') + " " + SharedParameters.EXPERIMENTS_LABELS[0],
-    SharedParameters.formatted_multi_target_label('RO','PA','MA') + " " + SharedParameters.EXPERIMENTS_LABELS[1],
-    SharedParameters.formatted_multi_source_label('PA','RO','MA')
+    SharedParameters.formatted_upper_bound_source_only_label("MA"),
+    SharedParameters.formatted_lower_bound_label("RO","MA"),
+    SharedParameters.formatted_single_target_label("RO","MA"),
+    SharedParameters.formatted_multi_target_label("RO","PA","MA") + " " + SharedParameters.EXPERIMENTS_LABELS[0],
+    SharedParameters.formatted_multi_target_label("RO","PA","MA") + " " + SharedParameters.EXPERIMENTS_LABELS[1],
+    SharedParameters.formatted_multi_source_label("PA","RO","MA")
 ]
 
 args.checkpoint_results_main_path = "./results/"
 
 target = CERRADO_MA.DATASET
 
-titles = SharedParameters.formatted_chart_title('RO','MA')+'\n'
+titles = SharedParameters.formatted_chart_title("RO","MA")+'\n'
 map_file = 'Multi_Target_Ts_RO_Eval_MA'
 metrics_file = 'Metrics_Multi_Target_Ts_RO_Eval_MA'
 

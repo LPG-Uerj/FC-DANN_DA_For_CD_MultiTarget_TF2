@@ -40,6 +40,15 @@ REFERENCES = [
     'Main_Compute_Create_Precision_vs_Recall_Curves_Multi_Target_RO-PA.py'
 ]
 
+REFERENCES = [
+    'Main_Compute_All_Multi_Target_MA-PA.py',
+    'Main_Compute_All_Multi_Target_MA-RO.py',
+    'Main_Compute_All_Multi_Target_PA-MA.py',
+    'Main_Compute_All_Multi_Target_PA-RO.py',
+    'Main_Compute_All_Multi_Target_RO-MA.py',
+    'Main_Compute_All_Multi_Target_RO-PA.py',
+]
+
 for reference in REFERENCES:
     Schedule.append("python " + reference + " 2>&1 | tee mAP.txt ")
 

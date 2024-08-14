@@ -54,6 +54,7 @@ parser.add_argument('--checkpoint_results_main_path', dest='checkpoint_results_m
 args = parser.parse_args()
 
 def Main():
+    
 
     Thresholds = np.array([0.5])
     
@@ -75,24 +76,6 @@ def Main():
 
     if os.path.exists(os.path.join(args.results_dir, "Results.txt")):
         os.remove(os.path.join(args.results_dir, "Results.txt"))
-
-
-    '''
-    counter = 0
-    files = os.listdir(args.results_dir)
-    initial_flag = True
-    for i in range(0, len(files)):
-        if files[i] != 'Results.txt':
-            Hit_map_path = args.results_dir + files[i] + '/hit_map.npy'
-            if os.path.exists(Hit_map_path):
-                hit_map = np.load(Hit_map_path)
-                counter += 1
-                if initial_flag:
-                    HIT_MAP = np.zeros_like(hit_map)
-                    initial_flag = False
-                HIT_MAP += hit_map
-    Avg_hit_map = HIT_MAP/counter
-    '''
 
     initial_flag = True
 
@@ -128,7 +111,7 @@ def Main():
                     ALERT_AREA_ = []
                     mAP_ = []
 
-            args.create_classification_map = True
+            args.create_classification_map = False
 
             ACCURACY, FSCORE, RECALL, PRECISION, _, ALERT_AREA = Metrics_For_Test(hit_map,dataset.references[0], dataset.references[1],
                                                                                                  dataset.Train_tiles, dataset.Valid_tiles, dataset.Undesired_tiles,
@@ -173,11 +156,11 @@ def Main():
         ALERT_AREA_s = np.std(ALERT_AREA_)
         mAP_s = np.std(mAP_)
 
-
         #histories.sendLoss(loss = FSCORE_m, epoch = i + 1, total_epochs = len(files) + 1)
         f.write("Mean: %d Accuracy: %f%% F1-Score: %f%% Recall: %f%% Precision: %f%% Area: %f%% mAP: %f%% \n" % ( 0, ACCURACY_m, FSCORE_m, RECALL_m, PRECISION_m, ALERT_AREA_m, mAP_m))
         f.write("Std: %d Accuracy: %.2f%% F1-Score: %.2f%% Recall: %.2f%% Precision: %.2f%% Area: %.2f%% mAP: %f%% \n" % ( 0, ACCURACY_s, FSCORE_s, RECALL_s, PRECISION_s, ALERT_AREA_s, mAP_s))
         f.close()
+        
 
 if __name__=='__main__':
     Main()

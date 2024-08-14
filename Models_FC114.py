@@ -498,16 +498,15 @@ class Models():
                 
             y_train_d = np.concatenate((source_labels_tr, target_labels_tr), axis = 0)
             y_valid_d = np.concatenate((source_labels_vl, target_labels_vl), axis = 0)
-
-            #Computing the number of batches
-            num_batches_tr = corners_coordinates_tr.shape[0]//self.args.batch_size
-            num_batches_vl = corners_coordinates_vl.shape[0]//self.args.batch_size      
-
-            print(f'Num samples for training: {corners_coordinates_tr.shape[0]}')
-            print(f'Num samples for validation: {corners_coordinates_vl.shape[0]}')  
         
         # Training configuration
         elif self.args.training_type == TRAINING_TYPE_CLASSIFICATION:
+            
+            data = []
+            for i in range(len(self.dataset_s)):
+                x_train_s = np.concatenate((self.dataset_s[i].images_norm_[0], self.dataset_s[i].images_norm_[1], reference_t1_s[i], reference_t2_s[i]), axis = 2)
+                data.append(x_train_s)
+            
             # Domain indexs configuration
             corners_coordinates_tr = []
             corners_coordinates_vl = []
@@ -530,14 +529,20 @@ class Models():
 
             domain_indexs_tr = np.concatenate(domain_indexs_tr,axis=0)
             domain_indexs_vl = np.concatenate(domain_indexs_vl,axis=0)
+            
+        #Computing the number of batches
+        num_batches_tr = corners_coordinates_tr.shape[0]//self.args.batch_size
+        num_batches_vl = corners_coordinates_vl.shape[0]//self.args.batch_size      
+
+        print(f'Num samples for training: {corners_coordinates_tr.shape[0]}')
+        print(f'Num samples for validation: {corners_coordinates_vl.shape[0]}')   
+            
+        data.append(x_train_s) 
 
         #Training starts now:
         e = 0
         best_model_epoch = -1
-        while (e < self.args.epochs):     
-            #self.acc_function_discriminator.reset_states()
-            #self.acc_function_discriminator_val.reset_states()
-
+        while (e < self.args.epochs):
             #Shuffling the data and the labels
             num_samples = corners_coordinates_tr.shape[0]
             index = np.arange(num_samples)
@@ -602,7 +607,6 @@ class Models():
 
                 batch_counter_cl = 0
                 batchs = trange(num_batches_tr)
-                #for b in range(num_batches_tr):
                 for b in batchs:
                     corners_coordinates_tr_batch = corners_coordinates_tr[b * self.args.batch_size : (b + 1) * self.args.batch_size , :]
                     domain_index_batch = domain_indexs_tr[b * self.args.batch_size : (b + 1) * self.args.batch_size, :]
@@ -985,7 +989,7 @@ class Models():
             
             print("Hit map:")
             print(np.shape(hit_map))
-            np.save(os.path.join(self.args.save_results_dir,'hit_map'), hit_map)    
+            np.save(os.path.join(self.args.save_results_dir,'hit_map'), hit_map)
 
     def save(self, checkpoint_dir, epoch):
 
@@ -1053,7 +1057,7 @@ def Metrics_For_Test(hit_map,
                      Thresholds,
                      args):
 
-    save_path = args.results_dir + args.file + '/'
+    save_path = os.path.join(args.results_dir, args.file)
     print('[*]Defining the initial central patches coordinates...')
     #mask_init = mask_creation(reference_t1.shape[0], reference_t1.shape[1], args.horizontal_blocks, args.vertical_blocks, [], [], [])
     mask_final = mask_creation(reference_t1.shape[0], reference_t1.shape[1], args.horizontal_blocks, args.vertical_blocks, Train_tiles, Valid_tiles, Undesired_tiles)
@@ -1149,15 +1153,6 @@ def Metrics_For_Test(hit_map,
         #CLASSIFICATION_MAPS[th, :, :, :] = Classification_map
         ALERT_AREA[0 , th] = Alert_area
 
-    np.save(os.path.join(save_path,'Fscore'), FSCORE)
-    np.save(os.path.join(save_path,'Recall'), RECALL)
-    np.save(os.path.join(save_path,'Precission'), PRECISSION)
-    #Saving the metrics as npy array
-    if not args.save_result_text:
-        np.save(os.path.join(save_path,'Accuracy'), ACCURACY)
-        np.save(os.path.join(save_path,'Confusion_matrix'), CONFUSION_MATRIX)
-        np.save(os.path.join(save_path,'Alert_area'), ALERT_AREA)
-
     print('Accuracy')
     print(ACCURACY)
     print('Fscore')
@@ -1173,14 +1168,12 @@ def Metrics_For_Test(hit_map,
 
     return ACCURACY, FSCORE, RECALL, PRECISSION, CONFUSION_MATRIX, ALERT_AREA
 
-def Metrics_For_Test_M(hit_map,
+def Metrics_For_Test_Avg(hit_map,
                      reference_t1, reference_t2,
                      Train_tiles, Valid_tiles, Undesired_tiles,
                      args):
 
-
-
-    save_path = args.results_dir + args.file + '/'
+    save_path = os.path.join(args.results_dir, args.file)
     print('[*]Defining the initial central patches coordinates...')
     #mask_init = mask_creation(reference_t1.shape[0], reference_t1.shape[1], args.horizontal_blocks, args.vertical_blocks, [], [], [])
     mask_final = mask_creation(reference_t1.shape[0], reference_t1.shape[1], args.horizontal_blocks, args.vertical_blocks, Train_tiles, Valid_tiles, Undesired_tiles)
@@ -1190,8 +1183,13 @@ def Metrics_For_Test_M(hit_map,
     mask_final[mask_final == 3] = 0
     mask_final[mask_final == 2] = 1
 
-    sio.savemat(os.path.join(save_path,'hit_map.mat') , {'hit_map': hit_map})
+    np.save(os.path.join(save_path,'hit_map'), hit_map)
+
     Probs_init = hit_map
+    
+    epsilon = 1e-10
+    uncertainty_map = -(hit_map * np.log2(hit_map + epsilon) + (1 - hit_map) * np.log2(1 - hit_map + epsilon))
+    
     positive_map_init = np.zeros_like(Probs_init)
 
     reference_t1_copy_ = reference_t1.copy()
@@ -1199,9 +1197,7 @@ def Metrics_For_Test_M(hit_map,
     reference_t1_copy_[reference_t1_copy_ == -1] = 1
     reference_t1_copy_[reference_t2 == 2] = 0
     mask_f_ = mask_final * reference_t1_copy_
-    sio.savemat(os.path.join(save_path,'mask_f_.mat') , {'mask_f_': mask_f_})
-    sio.savemat(os.path.join(save_path,'reference_t2.mat') , {'reference': reference_t2})
-    # Raul Implementation
+    
     min_array = np.zeros((1 , ))
     Pmax = np.max(Probs_init[mask_f_ == 1])
     probs_list = np.arange(Pmax, 0, -Pmax/(args.Npoints - 1))
@@ -1217,9 +1213,8 @@ def Metrics_For_Test_M(hit_map,
     RECALL = np.zeros((1, len(Thresholds)))
     PRECISSION = np.zeros((1, len(Thresholds)))
     CONFUSION_MATRIX = np.zeros((2 , 2, len(Thresholds)))
-    #CLASSIFICATION_MAPS = np.zeros((len(Thresholds), hit_map.shape[0], hit_map.shape[1], 3))
+    CLASSIFICATION_MAPS = np.zeros((len(Thresholds), hit_map.shape[0], hit_map.shape[1], 3))
     ALERT_AREA = np.zeros((1 , len(Thresholds)))
-
 
     print('[*]The metrics computation has started...')
     #Computing the metrics for each defined threshold
@@ -1239,7 +1234,6 @@ def Metrics_For_Test_M(hit_map,
         else:
             eliminated_samples = np.zeros_like(hit_map)
 
-
         reference_t1_copy = reference_t1_copy + eliminated_samples
         reference_t1_copy[reference_t1_copy == 2] = 1
         reference_t1_copy = reference_t1_copy - 1
@@ -1249,11 +1243,9 @@ def Metrics_For_Test_M(hit_map,
 
         #central_pixels_coordinates_ts, y_test = Central_Pixel_Definition_For_Test(mask_final_, reference_t1_copy, reference_t2, args.patches_dimension, 1, 'metrics')
         central_pixels_coordinates_ts_ = np.transpose(np.array(np.where(mask_f == 1)))
-        #print(np.shape(central_pixels_coordinates_ts))
-        #print(np.shape(central_pixels_coordinates_ts_))
+        
         y_test = reference_t2[central_pixels_coordinates_ts_[:,0].astype('int'), central_pixels_coordinates_ts_[:,1].astype('int')]
 
-        #print(np.shape(central_pixels_coordinates_ts))
         Probs = hit_map[central_pixels_coordinates_ts_[:,0].astype('int'), central_pixels_coordinates_ts_[:,1].astype('int')]
         Probs[Probs >= Thresholds[th]] = 1
         Probs[Probs <  Thresholds[th]] = 0
@@ -1267,9 +1259,7 @@ def Metrics_For_Test_M(hit_map,
         TN = conf_mat[0 , 0]
         FN = conf_mat[1 , 0]
         numerator = TP + FP
-
         denominator = TN + FN + FP + TP
-
         Alert_area = 100*(numerator/denominator)
         #print(f1score)
         print(precission)
@@ -1281,28 +1271,22 @@ def Metrics_For_Test_M(hit_map,
         CONFUSION_MATRIX[: , : , th] = conf_mat
         #CLASSIFICATION_MAPS[th, :, :, :] = Classification_map
         ALERT_AREA[0 , th] = Alert_area
+    
+    
+    max_idx = np.argmax(FSCORE)
+    max_fscore = np.max(FSCORE)
+    max_threshold = Thresholds[max_idx]
 
     #Saving the metrics as npy array
-    if not args.save_result_text:
-        np.save(os.path.join(save_path,'Accuracy'), ACCURACY)
-        np.save(os.path.join(save_path,'Fscore'), FSCORE)
-        np.save(os.path.join(save_path,'Recall'), RECALL)
-        np.save(os.path.join(save_path,'Precission'), PRECISSION)
-        np.save(os.path.join(save_path,'Confusion_matrix'), CONFUSION_MATRIX)
-        #np.save(save_path + 'Classification_maps', CLASSIFICATION_MAPS)
-        np.save(os.path.join(save_path,'Alert_area'), ALERT_AREA)
+    np.save(os.path.join(save_path,'Accuracy'), ACCURACY)
+    np.save(os.path.join(save_path,'Fscore'), FSCORE)
+    np.save(os.path.join(save_path,'Recall'), RECALL)
+    np.save(os.path.join(save_path,'Precission'), PRECISSION)
+    np.save(os.path.join(save_path,'Confusion_matrix'), CONFUSION_MATRIX)
+    #np.save(os.path.join(save_path,'Classification_maps'), CLASSIFICATION_MAPS)
+    np.save(os.path.join(save_path,'Alert_area'), ALERT_AREA)
+    np.save(os.path.join(save_path,'Max_fscore'), max_fscore)
+    np.save(os.path.join(save_path,'Max_threshold'), max_threshold)
+    np.save(os.path.join(save_path,'Uncertainty_map'), uncertainty_map)
 
-    print('Accuracy')
-    print(ACCURACY)
-    print('Fscore')
-    print(FSCORE)
-    print('Recall')
-    print(RECALL)
-    print('Precision')
-    print(PRECISSION)
-    print('Confusion matrix')
-    print(CONFUSION_MATRIX[:,:,0])
-    print('Alert_area')
-    print(ALERT_AREA)
-
-    return ACCURACY, FSCORE, RECALL, PRECISSION, CONFUSION_MATRIX, ALERT_AREA
+    return ACCURACY, FSCORE, RECALL, PRECISSION, ALERT_AREA, max_threshold, max_idx

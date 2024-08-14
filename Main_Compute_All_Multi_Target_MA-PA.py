@@ -20,6 +20,7 @@ baseline_paths = [
     'results_tr_Cerrado_MA_to_Amazon_PA_domain_adaptation_DR_single_Amazon_PA_wrmp1_gamma_2.5_skipconn_True/',
     'results_tr_Cerrado_MA_to_Amazon_RO_Amazon_PA_domain_adaptation_DR_FC_multi_discriminate_target_True_wrmp_1_Amazon_PA_skipconn_True/',
     'results_tr_Cerrado_MA_to_Amazon_RO_Amazon_PA_domain_adaptation_DR_FC_multi_discriminate_target_False_wrmp_1_Amazon_PA_skipconn_True/',
+    'results_tr_Cerrado_MA_Amazon_RO_to_Amazon_PA_domain_adaptation_DR_FC_multi_source_discriminate_target_False/'
 ]
 
 baseline_checkpoints = [
@@ -27,7 +28,8 @@ baseline_checkpoints = [
     'checkpoint_tr_Cerrado_MA_classification_Cerrado_MA/',
     'checkpoint_tr_Cerrado_MA_to_Amazon_PA_domain_adaptation_DR_single_Amazon_PA_gamma_2.5_skipconn_True/',
     'checkpoint_tr_Cerrado_MA_to_Amazon_RO_Amazon_PA_domain_adaptation_DR_FC_multi_discriminate_target_True_wrmp_1_Amazon_RO_Amazon_PA_skipconn_True/',
-    'checkpoint_tr_Cerrado_MA_to_Amazon_RO_Amazon_PA_domain_adaptation_DR_FC_multi_discriminate_target_False_wrmp_1_Amazon_RO_Amazon_PA_skipconn_True/'
+    'checkpoint_tr_Cerrado_MA_to_Amazon_RO_Amazon_PA_domain_adaptation_DR_FC_multi_discriminate_target_False_wrmp_1_Amazon_RO_Amazon_PA_skipconn_True/',
+    'checkpoint_tr_Cerrado_MA_Amazon_RO_to_Amazon_PA_domain_adaptation_DR_FC_multi_source_discriminate_target_False/'
 ]
 
 baseline_labels = [
@@ -36,6 +38,7 @@ baseline_labels = [
     SharedParameters.formatted_single_target_label('MA','PA'),
     SharedParameters.formatted_multi_target_label('MA','RO','PA') + " " + SharedParameters.EXPERIMENTS_LABELS[0],
     SharedParameters.formatted_multi_target_label('MA','RO','PA') + " " + SharedParameters.EXPERIMENTS_LABELS[1],
+    SharedParameters.formatted_multi_source_label('MA','RO','PA')
 ]
 
 args.checkpoint_results_main_path = "./results/"

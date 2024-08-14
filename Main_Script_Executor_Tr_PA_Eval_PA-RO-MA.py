@@ -126,6 +126,7 @@ for dr_localization in DR_LOCALIZATION:
                                 "--checkpoint_results_main_path " + Checkpoint_Results_MAIN_PATH + " ")                
 
                 if args.metrics:
+                    
                     Schedule.append("python " + Metrics_05_MAIN_COMMAND + " "
                                 "--classifier_type " + method + " "
                                 "--domain_regressor_type FC "
@@ -145,6 +146,7 @@ for dr_localization in DR_LOCALIZATION:
                                 "--results_dir " + results_dir_param + " "
                                 "--dataset " + target_ds + " "                                
                                 "--checkpoint_results_main_path " + Checkpoint_Results_MAIN_PATH + " ")
+                    
 
                     Schedule.append("python " + Metrics_th_MAIN_COMMAND + " "
                                 "--classifier_type " + method + " "

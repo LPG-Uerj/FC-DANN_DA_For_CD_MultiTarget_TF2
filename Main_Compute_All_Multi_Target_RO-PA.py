@@ -34,19 +34,19 @@ baseline_checkpoints = [
 ]
 
 baseline_labels = [
-    SharedParameters.formatted_upper_bound_source_only_label('PA'),
-    SharedParameters.formatted_lower_bound_label('RO','PA'),
-    SharedParameters.formatted_single_target_label('RO','PA'),
-    SharedParameters.formatted_multi_target_label('RO','PA','MA') + " " + SharedParameters.EXPERIMENTS_LABELS[0],
-    SharedParameters.formatted_multi_target_label('RO','PA','MA') + " " + SharedParameters.EXPERIMENTS_LABELS[1],
-    SharedParameters.formatted_multi_source_label('MA','RO','PA')
+    SharedParameters.formatted_upper_bound_source_only_label("PA"),
+    SharedParameters.formatted_lower_bound_label("RO","PA"),
+    SharedParameters.formatted_single_target_label("RO","PA"),
+    SharedParameters.formatted_multi_target_label("RO","PA","MA") + " " + SharedParameters.EXPERIMENTS_LABELS[0],
+    SharedParameters.formatted_multi_target_label("RO","PA","MA") + " " + SharedParameters.EXPERIMENTS_LABELS[1],
+    SharedParameters.formatted_multi_source_label("MA","RO","PA")
 ]
 
 args.checkpoint_results_main_path = "./results/"
 
 target = AMAZON_PA.DATASET
 
-titles = SharedParameters.formatted_chart_title('RO','PA')+'\n'
+titles = SharedParameters.formatted_chart_title("RO","PA")+'\n'
 map_file = 'Multi_Target_Ts_RO_Eval_PA'
 metrics_file = 'Metrics_Multi_Target_Ts_RO_Eval_PA'
 
