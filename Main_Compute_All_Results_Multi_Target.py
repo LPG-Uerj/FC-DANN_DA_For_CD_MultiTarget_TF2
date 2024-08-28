@@ -339,3 +339,5 @@ Charts.generate_tables(
     args,
     sources
 )
+
+Charts.generate_tables_uncertainty(args,sources)

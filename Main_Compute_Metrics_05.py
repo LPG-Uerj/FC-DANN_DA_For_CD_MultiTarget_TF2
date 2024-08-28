@@ -113,12 +113,12 @@ def Main():
 
             args.create_classification_map = False
 
-            ACCURACY, FSCORE, RECALL, PRECISION, _, ALERT_AREA = Metrics_For_Test(hit_map,dataset.references[0], dataset.references[1],
+            ACCURACY, FSCORE, RECALL, PRECISION, _, ALERT_AREA, _, _, _, _, _ = Metrics_For_Test(hit_map, None, dataset.references[0], dataset.references[1],
                                                                                                  dataset.Train_tiles, dataset.Valid_tiles, dataset.Undesired_tiles,
                                                                                                  Thresholds,
                                                                                                 args)
 
-            _, _, RECALL_for_mAP, PRECISION_for_mAP, _, _ = Metrics_For_Test(hit_map, dataset.references[0], 
+            _, _, RECALL_for_mAP, PRECISION_for_mAP, _, _, _, _, _, _, _  = Metrics_For_Test(hit_map, None, dataset.references[0], 
                                                                              dataset.references[1],dataset.Train_tiles, dataset.Valid_tiles, dataset.Undesired_tiles,
                                                                             None, args)
             

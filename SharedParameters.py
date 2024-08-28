@@ -61,13 +61,15 @@ UPPER_BOUND_SOURCE_ONLY_LABEL = 'Training on target\\\(upperbound)'
 SINGLE_TARGET_LABEL = 'DA single-target'
 MULTI_TARGET_LABEL = 'DA multi-target'
 MULTI_SOURCE_LABEL = 'DA multi-source'
+MULTI_SOURCE_LABEL_NO_DA = 'Multi-source only training'
 
-FORMAT_CHART_TITLE = 'Training on {} | Validating on {}'
-FORMAT_LOWER_BOUND_LABEL = 'Train({})|Test({})]\nSource only training'
-FORMAT_UPPER_BOUND_SOURCE_ONLY_LABEL = 'Train({})|Test({})\nTraining on target'
-FORMAT_SINGLE_TARGET_LABEL = 'Train {} |Test({} → {})\nDA Single-Target'
-FORMAT_MULTI_TARGET_LABEL = 'Train {} |Test({},{} → {})\nDA Multi-Target'
-FORMAT_MULTI_SOURCE_LABEL = 'Train {},{} |Test({} → {},{})\nDA Multi-Source'
+FORMAT_CHART_TITLE =                    'Training on {} | Validating on {}'
+FORMAT_LOWER_BOUND_LABEL =              'Tr({})|Val({})]\nSource only training'
+FORMAT_UPPER_BOUND_SOURCE_ONLY_LABEL =  'Tr({})|Val({})\nTraining on target'
+FORMAT_SINGLE_TARGET_LABEL =            'Tr({})|Val({}→{})\nDA Single-Target'
+FORMAT_MULTI_TARGET_LABEL =             'Tr({})|Val({},{}→{})\nDA Multi-Target'
+FORMAT_MULTI_SOURCE_LABEL =             'Tr({},{})|Val({}→{},{})\nDA Multi-Source'
+FORMAT_MULTI_SOURCE_NO_DA_LABEL =       'Tr({},{})|Val({})\nMulti-Source only training'
 
 formatted_chart_title = lambda x, y: FORMAT_CHART_TITLE.format(x, y)
 formatted_lower_bound_label = lambda x, y: FORMAT_LOWER_BOUND_LABEL.format(x, y)
@@ -75,15 +77,16 @@ formatted_upper_bound_source_only_label = lambda y: FORMAT_UPPER_BOUND_SOURCE_ON
 formatted_single_target_label = lambda x, y: FORMAT_SINGLE_TARGET_LABEL.format(x, y, x)
 formatted_multi_target_label = lambda x, y1, y2: FORMAT_MULTI_TARGET_LABEL.format(x, y1, y2, x)
 formatted_multi_source_label = lambda x, y, z: FORMAT_MULTI_SOURCE_LABEL.format(x, y, z, x, y)
+formatted_multi_source_no_da_label = lambda x, y, z: FORMAT_MULTI_SOURCE_NO_DA_LABEL.format(x, y, z)
 
 EXPERIMENTS_LABELS = [    
-    '3 neurons',
-    '2 neurons'
+    'Multi-Domain Disc.',
+    'Source-Target Disc.'
 ]
 
 EXPERIMENTS_LABELS_LB = [    
-    '3 neurons',
-    '2 neurons'
+    'Multi-Domain Disc.',
+    'Source-Target Disc.'
 ]
 
 MULTI_SOURCE_EXPERIMENTS_LABELS = [    

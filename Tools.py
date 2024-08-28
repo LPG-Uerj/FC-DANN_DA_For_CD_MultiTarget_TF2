@@ -105,6 +105,24 @@ def compute_metrics(true_labels, predicted_labels):
     conf_mat = confusion_matrix(true_labels, predicted_labels)
     return accuracy, f1score, recall, prescision, conf_mat
 
+def compute_f1_uncertainty(true_labels, predicted_labels, high_uncertainty_mask):
+    
+    low_uncertainty_mask = 1 - high_uncertainty_mask
+    
+    f1score = 100*f1_score(true_labels, predicted_labels)
+    
+    f1score_high = 100*f1_score(true_labels, predicted_labels, sample_weight=high_uncertainty_mask)
+    
+    f1score_low = 100*f1_score(true_labels, predicted_labels, sample_weight=low_uncertainty_mask)
+    
+    audit_pred = predicted_labels.copy()
+    
+    audit_pred[high_uncertainty_mask == 1] = true_labels[high_uncertainty_mask == 1]
+    
+    f1score_audit = 100*f1_score(true_labels, audit_pred)
+
+    return f1score, f1score_low, f1score_high, f1score_audit
+
 def Data_Augmentation_Definition(corners_coordinates):
     num_sample = np.size(corners_coordinates , 0)
     data_cols = np.size(corners_coordinates , 1)    

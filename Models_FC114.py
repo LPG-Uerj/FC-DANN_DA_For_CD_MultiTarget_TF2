@@ -16,6 +16,7 @@ from SharedParameters import TRAINING_TYPE_DOMAIN_ADAPTATION,TRAINING_TYPE_CLASS
 from Tools import Data_Augmentation_Definition, Patch_Extraction, Data_Augmentation_Execution, Classification_Maps, compute_metrics, mask_creation
 from Networks import *
 from discriminators import *
+from collections import Counter
 
 import math
 from Tools import *
@@ -1051,11 +1052,13 @@ class Models():
         plt.savefig(os.path.join(self.args.save_checkpoint_path,"segmentation_f1score.png"))
     
 
-def Metrics_For_Test(hit_map,
+def Metrics_For_Test(hit_map, uncertainty_map,
                      reference_t1, reference_t2,
                      Train_tiles, Valid_tiles, Undesired_tiles,
                      Thresholds,
                      args):
+
+    audit_area = 3.0
 
     save_path = os.path.join(args.results_dir, args.file)
     print('[*]Defining the initial central patches coordinates...')
@@ -1089,7 +1092,11 @@ def Metrics_For_Test(hit_map,
     CONFUSION_MATRIX = np.zeros((2 , 2, len(Thresholds)))
     CLASSIFICATION_MAPS = np.zeros((len(Thresholds), hit_map.shape[0], hit_map.shape[1], 3))
     ALERT_AREA = np.zeros((1 , len(Thresholds)))
-
+    UNCERTAINTY_MEAN = np.zeros((1, len(Thresholds)))
+    FSCORE_LOW_UNCERTAINTY = np.zeros((1, len(Thresholds)))
+    FSCORE_HIGH_UNCERTAINTY = np.zeros((1, len(Thresholds)))
+    FSCORE_AUDIT = np.zeros((1, len(Thresholds)))
+    AUDIT_THRESHOLD = np.zeros((1, len(Thresholds)))
 
     print('[*]The metrics computation has started...')
     #Computing the metrics for each defined threshold
@@ -1125,9 +1132,27 @@ def Metrics_For_Test(hit_map,
 
         #print(np.shape(central_pixels_coordinates_ts))
         Probs = hit_map[central_pixels_coordinates_ts_[:,0].astype('int'), central_pixels_coordinates_ts_[:,1].astype('int')]
+        
         Probs[Probs >= Thresholds[th]] = 1
         Probs[Probs <  Thresholds[th]] = 0
-
+        
+        if uncertainty_map is not None:
+            uncertaint_map_ = uncertainty_map[central_pixels_coordinates_ts_[:,0].astype('int'), central_pixels_coordinates_ts_[:,1].astype('int')]
+            UNCERTAINTY_MEAN[0 , th] = np.mean(uncertaint_map_.flatten())*100
+            
+            uncertaint_map_ = np.maximum(uncertaint_map_, 0)
+            
+            uncertainty_threshold = np.percentile(uncertaint_map_, 100.0 - audit_area)
+            mask_uncertainty = uncertaint_map_ >= uncertainty_threshold
+            high_uncertainty_mask = np.where(mask_uncertainty, 1, 0)
+            
+            _, f1score_low, f1score_high, f1score_audit = compute_f1_uncertainty(y_test.astype('int'), Probs.astype('int'), high_uncertainty_mask)
+            
+            FSCORE_LOW_UNCERTAINTY[0 , th] = f1score_low
+            FSCORE_HIGH_UNCERTAINTY[0 , th] = f1score_high
+            FSCORE_AUDIT[0 , th] = f1score_audit
+            AUDIT_THRESHOLD[0 , th] = uncertainty_threshold
+            
         accuracy, f1score, recall, precission, conf_mat = compute_metrics(y_test.astype('int'), Probs.astype('int'))
 
         if args.create_classification_map:
@@ -1150,7 +1175,6 @@ def Metrics_For_Test(hit_map,
         RECALL[0 , th] = recall
         PRECISSION[0 , th] = precission
         CONFUSION_MATRIX[: , : , th] = conf_mat
-        #CLASSIFICATION_MAPS[th, :, :, :] = Classification_map
         ALERT_AREA[0 , th] = Alert_area
 
     print('Accuracy')
@@ -1165,8 +1189,18 @@ def Metrics_For_Test(hit_map,
     print(CONFUSION_MATRIX[:,:,0])
     print('Alert_area')
     print(ALERT_AREA)
+    print('Uncertainty mean')
+    print(UNCERTAINTY_MEAN)
+    print('FScore Low Uncertainty')
+    print(FSCORE_LOW_UNCERTAINTY)
+    print('FScore High Uncertainty')
+    print(FSCORE_HIGH_UNCERTAINTY)
+    print('FScore Audited')
+    print(FSCORE_AUDIT)
+    print('Audit Threshold')
+    print(AUDIT_THRESHOLD)
 
-    return ACCURACY, FSCORE, RECALL, PRECISSION, CONFUSION_MATRIX, ALERT_AREA
+    return ACCURACY, FSCORE, RECALL, PRECISSION, CONFUSION_MATRIX, ALERT_AREA, UNCERTAINTY_MEAN, FSCORE_LOW_UNCERTAINTY, FSCORE_HIGH_UNCERTAINTY, FSCORE_AUDIT, AUDIT_THRESHOLD
 
 def Metrics_For_Test_Avg(hit_map,
                      reference_t1, reference_t2,
@@ -1175,7 +1209,7 @@ def Metrics_For_Test_Avg(hit_map,
 
     save_path = os.path.join(args.results_dir, args.file)
     print('[*]Defining the initial central patches coordinates...')
-    #mask_init = mask_creation(reference_t1.shape[0], reference_t1.shape[1], args.horizontal_blocks, args.vertical_blocks, [], [], [])
+    
     mask_final = mask_creation(reference_t1.shape[0], reference_t1.shape[1], args.horizontal_blocks, args.vertical_blocks, Train_tiles, Valid_tiles, Undesired_tiles)
 
     #mask_final = mask_final_.copy()
@@ -1245,8 +1279,9 @@ def Metrics_For_Test_Avg(hit_map,
         central_pixels_coordinates_ts_ = np.transpose(np.array(np.where(mask_f == 1)))
         
         y_test = reference_t2[central_pixels_coordinates_ts_[:,0].astype('int'), central_pixels_coordinates_ts_[:,1].astype('int')]
-
+        
         Probs = hit_map[central_pixels_coordinates_ts_[:,0].astype('int'), central_pixels_coordinates_ts_[:,1].astype('int')]
+        
         Probs[Probs >= Thresholds[th]] = 1
         Probs[Probs <  Thresholds[th]] = 0
 
@@ -1271,7 +1306,6 @@ def Metrics_For_Test_Avg(hit_map,
         CONFUSION_MATRIX[: , : , th] = conf_mat
         #CLASSIFICATION_MAPS[th, :, :, :] = Classification_map
         ALERT_AREA[0 , th] = Alert_area
-    
     
     max_idx = np.argmax(FSCORE)
     max_fscore = np.max(FSCORE)
