@@ -154,7 +154,7 @@ class Models():
             temp_loss = self.weighted_cross_entropy_c(self.label_c, self.prediction_c, self.class_weights)
             # Essa mask_c deixa de fora os pixels que eu não me importo. A rede vai gerar um resultado, mas eu não nao me importo com essas saidas
             self.classifier_loss =  tf.reduce_sum(self.mask_c * temp_loss) / tf.reduce_sum(self.mask_c)
-            # Perguntar essa frase de baixo pro Pedro
+
             if self.args.training_type == 'classification':
                 self.total_loss = self.classifier_loss
             else:
@@ -1058,6 +1058,8 @@ def Metrics_For_Test(hit_map, uncertainty_map,
                      Thresholds,
                      args):
 
+    #audit_area = [i for i in range(10)]
+    
     audit_area = 3.0
 
     save_path = os.path.join(args.results_dir, args.file)
@@ -1090,7 +1092,7 @@ def Metrics_For_Test(hit_map, uncertainty_map,
     RECALL = np.zeros((1, len(Thresholds)))
     PRECISSION = np.zeros((1, len(Thresholds)))
     CONFUSION_MATRIX = np.zeros((2 , 2, len(Thresholds)))
-    CLASSIFICATION_MAPS = np.zeros((len(Thresholds), hit_map.shape[0], hit_map.shape[1], 3))
+    #CLASSIFICATION_MAPS = np.zeros((len(Thresholds), hit_map.shape[0], hit_map.shape[1], 3))
     ALERT_AREA = np.zeros((1 , len(Thresholds)))
     UNCERTAINTY_MEAN = np.zeros((1, len(Thresholds)))
     FSCORE_LOW_UNCERTAINTY = np.zeros((1, len(Thresholds)))
@@ -1324,3 +1326,96 @@ def Metrics_For_Test_Avg(hit_map,
     np.save(os.path.join(save_path,'Uncertainty_map'), uncertainty_map)
 
     return ACCURACY, FSCORE, RECALL, PRECISSION, ALERT_AREA, max_threshold, max_idx
+
+
+
+def Metrics_For_Uncertainty(hit_map,
+                     reference_t1, reference_t2,
+                     Train_tiles, Valid_tiles, Undesired_tiles,
+                     args):
+
+    print('Computing Metrics_For_Uncertainty')
+
+    uncertainty_path = os.path.join(args.average_results_dir, args.file,'Uncertainty_map.npy')
+    
+    if not os.path.exists(uncertainty_path):
+        raise Exception(f"There is no uncertainty map recorded in: {uncertainty_path}")
+    
+    uncertainty_map = np.load(uncertainty_path)
+
+    audit_area = [i for i in range(21)]
+    
+    threshold = 0.5
+
+    save_path = os.path.join(args.results_dir, args.file)
+    print('[*]Defining the initial central patches coordinates...')
+    #mask_init = mask_creation(reference_t1.shape[0], reference_t1.shape[1], args.horizontal_blocks, args.vertical_blocks, [], [], [])
+    mask_final = mask_creation(reference_t1.shape[0], reference_t1.shape[1], args.horizontal_blocks, args.vertical_blocks, Train_tiles, Valid_tiles, Undesired_tiles)
+
+    #mask_final = mask_final_.copy()
+    mask_final[mask_final == 1] = 0
+    mask_final[mask_final == 3] = 0
+    mask_final[mask_final == 2] = 1
+
+    Probs_init = hit_map
+    
+    # Metrics containers
+    # ROWS: different values for audit area
+    # 5 COLS: f1score, f1score_low, f1score_high, f1score_audit, uncertainty_threshold
+    FSCORE_METRICS = np.zeros((len(audit_area),5))
+
+    print('[*]The metrics computation has started...')
+
+    print('Threshold:')
+    print(threshold)
+
+    positive_map_init = np.zeros_like(hit_map)
+    reference_t1_copy = reference_t1.copy()
+    
+    positive_coordinates = np.transpose(np.array(np.where(Probs_init >= threshold)))
+    positive_map_init[positive_coordinates[:,0].astype('int'), positive_coordinates[:,1].astype('int')] = 1
+
+    if args.eliminate_regions:
+        positive_map_init_ = skimage.morphology.area_opening(positive_map_init.astype('int'),area_threshold = args.area_avoided, connectivity=1)
+        eliminated_samples = positive_map_init - positive_map_init_
+    else:
+        eliminated_samples = np.zeros_like(hit_map)
+
+    reference_t1_copy = reference_t1_copy + eliminated_samples
+    reference_t1_copy[reference_t1_copy == 2] = 1
+
+    reference_t1_copy = reference_t1_copy - 1
+    reference_t1_copy[reference_t1_copy == -1] = 1
+    reference_t1_copy[reference_t2 == 2] = 0
+    mask_f = mask_final * reference_t1_copy
+
+    #central_pixels_coordinates_ts, y_test = Central_Pixel_Definition_For_Test(mask_final_, reference_t1_copy, reference_t2, args.patches_dimension, 1, 'metrics')
+    central_pixels_coordinates_ts_ = np.transpose(np.array(np.where(mask_f == 1)))
+    
+    y_test = reference_t2[central_pixels_coordinates_ts_[:,0].astype('int'), central_pixels_coordinates_ts_[:,1].astype('int')]
+
+    #print(np.shape(central_pixels_coordinates_ts))
+    Probs = hit_map[central_pixels_coordinates_ts_[:,0].astype('int'), central_pixels_coordinates_ts_[:,1].astype('int')]
+    
+    Probs[Probs >= threshold] = 1
+    Probs[Probs < threshold] = 0
+    
+    uncertaint_map_ = uncertainty_map[central_pixels_coordinates_ts_[:,0].astype('int'), central_pixels_coordinates_ts_[:,1].astype('int')]
+    uncertaint_map_ = np.maximum(uncertaint_map_, 0)
+    
+    for index, aa in enumerate(audit_area):
+        uncertainty_threshold = np.percentile(uncertaint_map_, 100.0 - aa)
+        mask_uncertainty = uncertaint_map_ >= uncertainty_threshold
+        high_uncertainty_mask = np.where(mask_uncertainty, 1, 0)
+        
+        f1score, f1score_low, f1score_high, f1score_audit = compute_f1_uncertainty(y_test.astype('int'), Probs.astype('int'), high_uncertainty_mask)
+        
+        FSCORE_METRICS[index,0] = f1score
+        FSCORE_METRICS[index,1] = f1score_low
+        FSCORE_METRICS[index,2] = f1score_high
+        FSCORE_METRICS[index,3] = f1score_audit
+        FSCORE_METRICS[index,4] = uncertainty_threshold
+        
+    np.save(os.path.join(save_path,'fscore_metrics'), FSCORE_METRICS)
+
+    return FSCORE_METRICS

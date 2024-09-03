@@ -73,6 +73,26 @@ sources = [
                         + " "
                         + SharedParameters.EXPERIMENTS_LABELS[1],
                     },
+                    {
+                        "name": f"{SharedParameters.MULTI_TARGET_LABEL}\\\{SharedParameters.EXPERIMENTS_LABELS[2]}",
+                        "results": "results_tr_Cerrado_MA_to_Amazon_RO_Amazon_PA_domain_adaptation_DR_Dense_multi_discriminate_target_True_wrmp_1_Amazon_PA_skipconn_True/",
+                        "checkpoints": "checkpoint_tr_Cerrado_MA_to_Amazon_RO_Amazon_PA_domain_adaptation_DR_Dense_multi_discriminate_target_True_wrmp_1_Amazon_RO_Amazon_PA_skipconn_True/",
+                        "labels": SharedParameters.formatted_multi_target_label(
+                            "MA", "RO", "PA"
+                        )
+                        + " "
+                        + SharedParameters.EXPERIMENTS_LABELS[2],
+                    },
+                    {
+                        "name": f"{SharedParameters.MULTI_TARGET_LABEL}\\\{SharedParameters.EXPERIMENTS_LABELS[3]}",
+                        "results": "results_tr_Cerrado_MA_to_Amazon_RO_Amazon_PA_domain_adaptation_DR_Dense_multi_discriminate_target_False_wrmp_1_Amazon_PA_skipconn_True/",
+                        "checkpoints": "checkpoint_tr_Cerrado_MA_to_Amazon_RO_Amazon_PA_domain_adaptation_DR_Dense_multi_discriminate_target_False_wrmp_1_Amazon_RO_Amazon_PA_skipconn_True/",
+                        "labels": SharedParameters.formatted_multi_target_label(
+                            "MA", "RO", "PA"
+                        )
+                        + " "
+                        + SharedParameters.EXPERIMENTS_LABELS[3],
+                    },
                 ],
             },
             {
@@ -121,6 +141,26 @@ sources = [
                         )
                         + " "
                         + SharedParameters.EXPERIMENTS_LABELS[1],
+                    },
+                    {
+                        "name": f"{SharedParameters.MULTI_TARGET_LABEL}\\\{SharedParameters.EXPERIMENTS_LABELS[2]}",
+                        "results": "results_tr_Cerrado_MA_to_Amazon_RO_Amazon_PA_domain_adaptation_DR_Dense_multi_discriminate_target_True_wrmp_1_Amazon_RO_skipconn_True/",
+                        "checkpoints": "checkpoint_tr_Cerrado_MA_to_Amazon_RO_Amazon_PA_domain_adaptation_DR_Dense_multi_discriminate_target_True_wrmp_1_Amazon_RO_Amazon_PA_skipconn_True/",
+                        "labels": SharedParameters.formatted_multi_target_label(
+                            "MA", "RO", "PA"
+                        )
+                        + " "
+                        + SharedParameters.EXPERIMENTS_LABELS[2],
+                    },
+                    {
+                        "name": f"{SharedParameters.MULTI_TARGET_LABEL}\\\{SharedParameters.EXPERIMENTS_LABELS[3]}",
+                        "results": "results_tr_Cerrado_MA_to_Amazon_RO_Amazon_PA_domain_adaptation_DR_Dense_multi_discriminate_target_False_wrmp_1_Amazon_RO_skipconn_True/",
+                        "checkpoints": "checkpoint_tr_Cerrado_MA_to_Amazon_RO_Amazon_PA_domain_adaptation_DR_Dense_multi_discriminate_target_False_wrmp_1_Amazon_RO_Amazon_PA_skipconn_True/",
+                        "labels": SharedParameters.formatted_multi_target_label(
+                            "MA", "RO", "PA"
+                        )
+                        + " "
+                        + SharedParameters.EXPERIMENTS_LABELS[3],
                     },
                 ],
             },
@@ -176,6 +216,26 @@ sources = [
                         + " "
                         + SharedParameters.EXPERIMENTS_LABELS[1],
                     },
+                    {
+                        "name": f"{SharedParameters.MULTI_TARGET_LABEL}\\\{SharedParameters.EXPERIMENTS_LABELS[2]}",
+                        "results": "results_tr_Amazon_PA_to_Amazon_RO_Cerrado_MA_domain_adaptation_DR_Dense_multi_discriminate_target_True_wrmp_1_Cerrado_MA_skipconn_True/",
+                        "checkpoints": "checkpoint_tr_Amazon_PA_to_Amazon_RO_Cerrado_MA_domain_adaptation_DR_Dense_multi_discriminate_target_True_wrmp_1_Amazon_RO_Cerrado_MA_skipconn_True/",
+                        "labels": SharedParameters.formatted_multi_target_label(
+                            "PA", "RO", "MA"
+                        )
+                        + " "
+                        + SharedParameters.EXPERIMENTS_LABELS[2],
+                    },
+                    {
+                        "name": f"{SharedParameters.MULTI_TARGET_LABEL}\\\{SharedParameters.EXPERIMENTS_LABELS[3]}",
+                        "results": "results_tr_Amazon_PA_to_Amazon_RO_Cerrado_MA_domain_adaptation_DR_Dense_multi_discriminate_target_False_wrmp_1_Cerrado_MA_skipconn_True/",
+                        "checkpoints": "checkpoint_tr_Amazon_PA_to_Amazon_RO_Cerrado_MA_domain_adaptation_DR_Dense_multi_discriminate_target_False_wrmp_1_Amazon_RO_Cerrado_MA_skipconn_True/",
+                        "labels": SharedParameters.formatted_multi_target_label(
+                            "PA", "RO", "MA"
+                        )
+                        + " "
+                        + SharedParameters.EXPERIMENTS_LABELS[3],
+                    },
                 ],
             },
             {
@@ -224,6 +284,26 @@ sources = [
                         )
                         + " "
                         + SharedParameters.EXPERIMENTS_LABELS[1],
+                    },
+                    {
+                        "name": f"{SharedParameters.MULTI_TARGET_LABEL}\\\{SharedParameters.EXPERIMENTS_LABELS[2]}",
+                        "results": "results_tr_Amazon_PA_to_Amazon_RO_Cerrado_MA_domain_adaptation_DR_Dense_multi_discriminate_target_True_wrmp_1_Amazon_RO_skipconn_True/",
+                        "checkpoints": "checkpoint_tr_Amazon_PA_to_Amazon_RO_Cerrado_MA_domain_adaptation_DR_Dense_multi_discriminate_target_True_wrmp_1_Amazon_RO_Cerrado_MA_skipconn_True/",
+                        "labels": SharedParameters.formatted_multi_target_label(
+                            "PA", "RO", "MA"
+                        )
+                        + " "
+                        + SharedParameters.EXPERIMENTS_LABELS[2],
+                    },
+                    {
+                        "name": f"{SharedParameters.MULTI_TARGET_LABEL}\\\{SharedParameters.EXPERIMENTS_LABELS[3]}",
+                        "results": "results_tr_Amazon_PA_to_Amazon_RO_Cerrado_MA_domain_adaptation_DR_Dense_multi_discriminate_target_False_wrmp_1_Amazon_RO_skipconn_True/",
+                        "checkpoints": "checkpoint_tr_Amazon_PA_to_Amazon_RO_Cerrado_MA_domain_adaptation_DR_Dense_multi_discriminate_target_False_wrmp_1_Amazon_RO_Cerrado_MA_skipconn_True/",
+                        "labels": SharedParameters.formatted_multi_target_label(
+                            "PA", "RO", "MA"
+                        )
+                        + " "
+                        + SharedParameters.EXPERIMENTS_LABELS[3],
                     },
                 ],
             },
@@ -279,6 +359,26 @@ sources = [
                         + " "
                         + SharedParameters.EXPERIMENTS_LABELS[1],
                     },
+                    {
+                        "name": f"{SharedParameters.MULTI_TARGET_LABEL}\\\{SharedParameters.EXPERIMENTS_LABELS[2]}",
+                        "results": "results_tr_Amazon_RO_to_Amazon_PA_Cerrado_MA_domain_adaptation_DR_Dense_multi_discriminate_target_True_wrmp_1_Cerrado_MA_skipconn_True/",
+                        "checkpoints": "checkpoint_tr_Amazon_RO_to_Amazon_PA_Cerrado_MA_domain_adaptation_DR_Dense_multi_discriminate_target_True_wrmp_1_Amazon_PA_Cerrado_MA_skipconn_True/",
+                        "labels": SharedParameters.formatted_multi_target_label(
+                            "RO", "PA", "MA"
+                        )
+                        + " "
+                        + SharedParameters.EXPERIMENTS_LABELS[2],
+                    },
+                    {
+                        "name": f"{SharedParameters.MULTI_TARGET_LABEL}\\\{SharedParameters.EXPERIMENTS_LABELS[3]}",
+                        "results": "results_tr_Amazon_RO_to_Amazon_PA_Cerrado_MA_domain_adaptation_DR_Dense_multi_discriminate_target_False_wrmp_1_Cerrado_MA_skipconn_True/",
+                        "checkpoints": "checkpoint_tr_Amazon_RO_to_Amazon_PA_Cerrado_MA_domain_adaptation_DR_Dense_multi_discriminate_target_False_wrmp_1_Amazon_PA_Cerrado_MA_skipconn_True/",
+                        "labels": SharedParameters.formatted_multi_target_label(
+                            "RO", "PA", "MA"
+                        )
+                        + " "
+                        + SharedParameters.EXPERIMENTS_LABELS[3],
+                    },
                 ],
             },
             {
@@ -313,6 +413,18 @@ sources = [
                         "results": "results_tr_Amazon_RO_to_Amazon_PA_Cerrado_MA_domain_adaptation_DR_FC_multi_discriminate_target_False_wrmp_1_Amazon_PA_skipconn_True/",
                         "checkpoints": "checkpoint_tr_Amazon_RO_to_Amazon_PA_Cerrado_MA_domain_adaptation_DR_FC_multi_discriminate_target_False_wrmp_1_Amazon_PA_Cerrado_MA_skipconn_True/",
                         "labels": SharedParameters.formatted_multi_target_label("RO","PA","MA") + " " + SharedParameters.EXPERIMENTS_LABELS[1],
+                    },
+                    {
+                        "name": f"{SharedParameters.MULTI_TARGET_LABEL}\\\{SharedParameters.EXPERIMENTS_LABELS[2]}",
+                        "results": "results_tr_Amazon_RO_to_Amazon_PA_Cerrado_MA_domain_adaptation_DR_Dense_multi_discriminate_target_True_wrmp_1_Amazon_PA_skipconn_True/",
+                        "checkpoints": "checkpoint_tr_Amazon_RO_to_Amazon_PA_Cerrado_MA_domain_adaptation_DR_Dense_multi_discriminate_target_True_wrmp_1_Amazon_PA_Cerrado_MA_skipconn_True/",
+                        "labels": SharedParameters.formatted_multi_target_label("RO","PA","MA") + " " + SharedParameters.EXPERIMENTS_LABELS[2],
+                    },
+                    {
+                        "name": f"{SharedParameters.MULTI_TARGET_LABEL}\\\{SharedParameters.EXPERIMENTS_LABELS[3]}",
+                        "results": "results_tr_Amazon_RO_to_Amazon_PA_Cerrado_MA_domain_adaptation_DR_Dense_multi_discriminate_target_False_wrmp_1_Amazon_PA_skipconn_True/",
+                        "checkpoints": "checkpoint_tr_Amazon_RO_to_Amazon_PA_Cerrado_MA_domain_adaptation_DR_Dense_multi_discriminate_target_False_wrmp_1_Amazon_PA_Cerrado_MA_skipconn_True/",
+                        "labels": SharedParameters.formatted_multi_target_label("RO","PA","MA") + " " + SharedParameters.EXPERIMENTS_LABELS[3],
                     },
                 ],
             },

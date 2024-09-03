@@ -13,7 +13,7 @@ from Cerrado_Biome_MA import CERRADO_MA
 import SharedParameters
 
 
-colors = ["#dba237", "#70b2e4", "#469b76", "#2932bb", "#d12e95", "#00bfa0", "#ffa300", "#dc0ab4", "#b3d4ff"]
+colors = ["#dba237", "#70b2e4", "#469b76", "#2932bb", "#d12e95", "#00bfa0", "#ffa300", "#dc0ab4", "#b3d4ff", "#808080"]
 
 
 def get_metrics(args):
@@ -133,9 +133,9 @@ def create_chart(args, experiments, target, result_list, checkpoint_list, mAP_li
     bar0 = plt.bar(x - (width*2), bars_mAP, width, label='mAP', color=colors[0], align=align)
     #bar1 = plt.bar(x - (width*1), bars_Accuracy, width, label='Accuracy', color=colors[1], align=align)
     bar2 = plt.bar(x - (width*1), bars_F1, width, label='F1-Score', color=colors[1],align=align)
-    bar3 = plt.bar(x + (width*0), bars_Recall,width, label='Recall', color=colors[2],align=align)
-    bar4 = plt.bar(x + (width*1), bars_Precision,width, label='Precision', color=colors[3],align=align)
-    bar5 = plt.bar(x + (width*2), bars_Uncertainty,width, label='Average Uncertainty', color=colors[4],align=align)
+    #bar3 = plt.bar(x + (width*0), bars_Recall,width, label='Recall', color=colors[2],align=align)
+    #bar4 = plt.bar(x + (width*1), bars_Precision,width, label='Precision', color=colors[3],align=align)
+    bar5 = plt.bar(x + (width*0), bars_Uncertainty,width, label='Average Uncertainty', color=colors[9],align=align)
     
 
     # Add some text for labels, title and custom x-axis tick labels, etc.
@@ -148,8 +148,8 @@ def create_chart(args, experiments, target, result_list, checkpoint_list, mAP_li
     plt.bar_label(bar0,fmt='%.1f', padding=3)
     #plt.bar_label(bar1,fmt='%.1f%%', padding=3)
     plt.bar_label(bar2,fmt='%.1f', padding=3)
-    plt.bar_label(bar3,fmt='%.1f', padding=3)
-    plt.bar_label(bar4,fmt='%.1f', padding=3)
+    #plt.bar_label(bar3,fmt='%.1f', padding=3)
+    #plt.bar_label(bar4,fmt='%.1f', padding=3)
     plt.bar_label(bar5,fmt='%.1f', padding=3)
 
     plt.legend(prop={'size': 14})
@@ -562,9 +562,12 @@ def generate_latex_table(experiments, sources, targets, map_values, f1_values, f
     if not (len(map_values) == num_experiments and len(f1_values) == num_experiments and len(map_values[0]) == num_targets and len(f1_values[0]) == num_targets):
         raise ValueError("Mismatch in the lengths of input lists.")
     
-    if map_values.shape[0] > 1:
+    if map_values.shape[0] > 1 and setting == 'multi-target':
         max_values_map = np.max(map_values[1:], axis=0)
         max_values_f1 = np.max(f1_values[1:], axis=0)
+    elif map_values.shape[0] > 1 and setting == 'multi-source':
+        max_values_map = np.max(map_values[:], axis=0)
+        max_values_f1 = np.max(f1_values[:], axis=0)
     else:
         max_values_map = np.zeros(map_values.shape[1])
         max_values_f1 = np.zeros(map_values.shape[1])
@@ -574,12 +577,14 @@ def generate_latex_table(experiments, sources, targets, map_values, f1_values, f
     
     for i in range(map_values.shape[0]):
         for j in range(map_values.shape[1]):
-            formatted_map_values[i,j] = fr'\textbf{{{map_values[i, j]:.1f}}}' if map_values[i, j] == max_values_map[j] else f'{map_values[i, j]:.1f}'
-            formatted_f1_values[i,j] = fr'\textbf{{{f1_values[i, j]:.1f}}}' if f1_values[i, j] == max_values_f1[j] else f'{f1_values[i, j]:.1f}'
+            formatted_map_values[i,j] = fr'\cellcolor{{lime}}\textbf{{{map_values[i, j]:.1f}}}' if map_values[i, j] == max_values_map[j] else f'{map_values[i, j]:.1f}'
+            formatted_f1_values[i,j] = fr'\cellcolor{{lime}}\textbf{{{f1_values[i, j]:.1f}}}' if f1_values[i, j] == max_values_f1[j] else f'{f1_values[i, j]:.1f}'
             
     if not multisource:
         latex_table = r"""
         \begin{table}[h!]
+        \begingroup
+        \setlength{\tabcolsep}{4pt}
         \centering
         \begin{tabularx}{\textwidth}{|c|""" + "CC|" * len(targets) + r"""}
         \hline
@@ -595,15 +600,17 @@ def generate_latex_table(experiments, sources, targets, map_values, f1_values, f
             latex_table += f"\makecell{{{experiment}}} & " + " & ".join([f"{formatted_map_values[i,j]} & {formatted_f1_values[i,j]}" for j in range(len(targets))]) + r""" \\
             \hline
             """
-        latex_table += r"""
-        \end{tabularx}
-        \caption{mAP and F1-Score values for different experiments and combinations of source and targets.}
-        \label{table:results}
+        latex_table += r"""\end{tabularx}
+        \caption{Evaluation of mAP and F1-Score in Multi-Target Experiments.}
+        \label{table:""" + f"results_multitarget" + r"""}
+        \endgroup
         \end{table}
         """
     else:
         latex_table = r"""
         \begin{table}[h!]
+        \begingroup
+        \setlength{\tabcolsep}{4pt}
         \centering
         \begin{tabularx}{\textwidth}{|c|""" + "CC|" * len(targets) + r"""}
         \hline
@@ -620,10 +627,10 @@ def generate_latex_table(experiments, sources, targets, map_values, f1_values, f
             \hline
             """
         
-        latex_table += r"""
-        \end{tabularx}
-        \caption{mAP and F1-Score values for different experiments and combinations of source and targets.}
-        \label{table:results}
+        latex_table += r"""\end{tabularx}
+        \caption{Evaluation of mAP and F1-Score in Multi-Source Experiments.}
+        \label{table:""" + f"results_multisource" + r"""}
+        \endgroup
         \end{table}
         """
 
@@ -645,16 +652,28 @@ def generate_latex_table_uncertainty(experiments, sources, targets, f1_values,f1
         multisource = True
         setting = 'multi-source'
     elif len(sources) * 2 != len(targets):
-        raise ValueError("Mismatch in the lengths of sources and targets.")
+        raise ValueError(f"Mismatch in the lengths of sources({len(sources)}) and targets({len(targets)}).")
         
-    if not (len(f1_values) == num_experiments and len(f1_low_values) == num_experiments and len(f1_high_values) == num_experiments and len(f1_audit_values) == num_experiments and len(f1_values[0]) == num_targets and len(f1_low_values[0]) == num_targets and len(f1_high_values[0]) == num_targets and len(f1_audit_values[0]) == num_targets):
+    if not (len(f1_values) == num_experiments 
+            and len(f1_low_values) == num_experiments 
+            and len(f1_high_values) == num_experiments 
+            and len(f1_audit_values) == num_experiments 
+            and len(f1_values[0]) == num_targets 
+            and len(f1_low_values[0]) == num_targets 
+            and len(f1_high_values[0]) == num_targets 
+            and len(f1_audit_values[0]) == num_targets):
         raise ValueError("Mismatch in the lengths of input lists.")
     
-    if f1_values.shape[0] > 1:
+    if f1_values.shape[0] > 1 and setting == 'multi-target':
         max_values_f1 = np.max(f1_values[1:], axis=0)
         max_values_f1_low = np.max(f1_low_values[1:], axis=0)
         max_values_f1_high = np.max(f1_high_values[1:], axis=0)
         max_values_f1_audit = np.max(f1_audit_values[1:], axis=0)
+    elif f1_values.shape[0] > 1 and setting == 'multi-source':
+        max_values_f1 = np.max(f1_values[:], axis=0)
+        max_values_f1_low = np.max(f1_low_values[:], axis=0)
+        max_values_f1_high = np.max(f1_high_values[:], axis=0)
+        max_values_f1_audit = np.max(f1_audit_values[:], axis=0)
     else:
         max_values_f1 = np.zeros(f1_values.shape[1])
         max_values_f1_low = np.zeros(f1_low_values.shape[1])
@@ -668,60 +687,70 @@ def generate_latex_table_uncertainty(experiments, sources, targets, f1_values,f1
     
     for i in range(f1_values.shape[0]):
         for j in range(f1_values.shape[1]):
-            formatted_f1_values[i,j] = fr'\textbf{{{f1_values[i, j]:.1f}}}' if f1_values[i, j] == max_values_f1[j] else f'{f1_values[i, j]:.1f}'
-            formatted_f1_low_values[i,j] = fr'\textbf{{{f1_low_values[i, j]:.1f}}}' if f1_low_values[i, j] == max_values_f1_low[j] else f'{f1_low_values[i, j]:.1f}'
-            formatted_f1_high_values[i,j] = fr'\textbf{{{f1_high_values[i, j]:.1f}}}' if f1_high_values[i, j] == max_values_f1_high[j] else f'{f1_high_values[i, j]:.1f}'
-            formatted_f1_audit_values[i,j] = fr'\textbf{{{f1_audit_values[i, j]:.1f}}}' if f1_audit_values[i, j] == max_values_f1_audit[j] else f'{f1_audit_values[i, j]:.1f}'
-            
+            formatted_f1_values[i,j] = fr'\cellcolor{{lime}}\textbf{{{f1_values[i, j]:.1f}}}' if f1_values[i, j] == max_values_f1[j] else f'{f1_values[i, j]:.1f}'
+            formatted_f1_low_values[i,j] = fr'\cellcolor{{lime}}\textbf{{{f1_low_values[i, j]:.1f}}}' if f1_low_values[i, j] == max_values_f1_low[j] else f'{f1_low_values[i, j]:.1f}'
+            formatted_f1_high_values[i,j] = fr'\cellcolor{{lime}}\textbf{{{f1_high_values[i, j]:.1f}}}' if f1_high_values[i, j] == max_values_f1_high[j] else f'{f1_high_values[i, j]:.1f}'
+            formatted_f1_audit_values[i,j] = fr'\cellcolor{{lime}}\textbf{{{f1_audit_values[i, j]:.1f}}}' if f1_audit_values[i, j] == max_values_f1_audit[j] else f'{f1_audit_values[i, j]:.1f}'
+    
+    latex_table = ""      
     if not multisource:
-        latex_table = r"""
-        \begin{table}[h!]
-        \centering
-        \begin{tabularx}{\textwidth}{|c|""" + "CC|" * len(targets) + r"""}
-        \hline
-        \textbf{Source} & """ + " & ".join([f"\multicolumn{{8}}{{c|}}{{{s}}}" for s in sources]) + r""" \\
-        \hline
-        \textbf{Target} & """ + " & ".join([f"\multicolumn{{4}}{{c|}}{{{t}}}" for t in targets]) + r""" \\
-        \hline
-        \textbf{Experiments} & """ + " & ".join([f"F1 & F1_{{low}} & F1_{{high}} & F1_{{aud}}" for _ in targets]) + r""" \\
-        \hline
-        """
-        for i, experiment in enumerate(experiments):
+        for index, s in enumerate(sources):
             
-            latex_table += f"\makecell{{{experiment}}} & " + " & ".join([f"{formatted_f1_values[i,j]} & {formatted_f1_low_values[i,j]} & {formatted_f1_high_values[i,j]} & {formatted_f1_audit_values[i,j]}" for j in range(len(targets))]) + r""" \\
+            idx = index * 2
+            
+            latex_table += r"""
+            \begin{table}[h!]
+            \begingroup
+            \setlength{\tabcolsep}{4pt}
+            \centering
+            \begin{tabularx}{\textwidth}{|c|""" + "CCCC|" * 2 + r"""}
+            \hline
+            \textbf{Source} & """ + f"\multicolumn{{8}}{{c|}}{{{s}}}" + r""" \\
+            \hline
+            \textbf{Target} & """ + " & ".join([f"\multicolumn{{4}}{{c|}}{{{targets[idx+j]}}}" for j in range(2)]) + r""" \\
+            \hline
+            \textbf{Experiments} & """ + " & ".join([f"F1 & F1_{{low}} & F1_{{high}} & F1_{{aud}}" for _ in range(2)]) + r""" \\
             \hline
             """
-        latex_table += r"""
-        \end{tabularx}
-        \caption{mAP and F1-Score values for different experiments and combinations of source and targets.}
-        \label{table:results}
-        \end{table}
-        """
+            for i, experiment in enumerate(experiments):
+                latex_table += f"\makecell{{{experiment}}} & " + " & ".join([f"{formatted_f1_values[i,idx+j]} & {formatted_f1_low_values[i,idx+j]} & {formatted_f1_high_values[i,idx+j]} & {formatted_f1_audit_values[i,idx+j]}" for j in range(2)]) + r""" \\
+                \hline
+                """
+            latex_table += r"""\end{tabularx}
+            \caption{F1-Score Evaluation for """ + f"{s}" + r""" source in Multi-Target Uncertainty Estimation Experiments.}
+            \label{table:""" + f"results_multitarget_uncertainty_{s}" + r"""}
+            \endgroup
+            \end{table}
+            """
     else:
-        latex_table = r"""
-        \begin{table}[h!]
-        \centering
-        \begin{tabularx}{\textwidth}{|c|""" + "CC|" * len(targets) + r"""}
-        \hline
-        \textbf{Source} & """ + " & ".join([f"\multicolumn{{4}}{{c|}}{{{s}}}" for s in sources]) + r""" \\
-        \hline
-        \textbf{Target} & """ + " & ".join([f"\multicolumn{{4}}{{c|}}{{{t}}}" for t in targets]) + r""" \\
-        \hline
-        \textbf{Experiments} & """ + " & ".join([f"F1 & F1_{{low}} & F1_{{high}} & F1_{{aud}}" for _ in targets]) + r""" \\
-        \hline
-        """
-        
-        for i, experiment in enumerate(experiments):
-            latex_table += f"\makecell{{{experiment}}} & " + " & ".join([f"{formatted_f1_values[i,j]} & {formatted_f1_low_values[i,j]} & {formatted_f1_high_values[i,j]} & {formatted_f1_audit_values[i,j]}" for j in range(len(targets))]) + r""" \\
+        for index, s in enumerate(sources):
+            
+            idx = index
+            
+            latex_table += r"""
+            \begin{table}[h!]
+            \begingroup
+            \setlength{\tabcolsep}{4pt}
+            \centering
+            \begin{tabularx}{\textwidth}{|c|""" + "CCCC|" + r"""}
+            \hline
+            \textbf{Source} & """ + f"\multicolumn{{4}}{{c|}}{{{s}}}" + r""" \\
+            \hline
+            \textbf{Target} & """ + f"\multicolumn{{4}}{{c|}}{{{targets[idx]}}}" + r""" \\
+            \hline
+            \textbf{Experiments} & F1 & F1_{low} & F1_{high} & F1_{aud} \\
             \hline
             """
-        
-        latex_table += r"""
-        \end{tabularx}
-        \caption{mAP and F1-Score values for different experiments and combinations of source and targets.}
-        \label{table:results}
-        \end{table}
-        """
+            for i, experiment in enumerate(experiments):
+                latex_table += f"\makecell{{{experiment}}} & " + " & ".join([f"{formatted_f1_values[i,idx+j]} & {formatted_f1_low_values[i,idx+j]} & {formatted_f1_high_values[i,idx+j]} & {formatted_f1_audit_values[i,idx+j]}" for j in range(1)]) + r""" \\
+                \hline
+                """
+            latex_table += r"""\end{tabularx}
+            \caption{F1-Score Evaluation for """ + f"{s}" + r""" source in Multi-Source Uncertainty Estimation Experiments.}
+            \label{table:""" + f"results_multisource_uncertainty_{s}" + r"""}
+            \endgroup
+            \end{table}
+            """
 
     output_file = os.path.join(file_path, f'{setting}_uncertainty_latex_table.tex')
     

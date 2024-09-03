@@ -52,6 +52,8 @@ SKIP_CONNECTIONS = str(True)
 TRAINING_TYPE_CLASSIFICATION = "classification"
 TRAINING_TYPE_DOMAIN_ADAPTATION = "domain_adaptation"
 
+DA_MULTI_SOURCE_FILE_TITLE = 'Multi_source'
+DA_MULTI_TARGET_FILE_TITLE = 'Multi_target'
 DA_MULTI_SOURCE_TITLE = 'DA Multi-Source '
 DA_MULTI_TARGET_TITLE = 'DA Multi-Target '
 DA_CHART_TITLE = 'DA Multi-Target experiments comparison'
@@ -80,8 +82,10 @@ formatted_multi_source_label = lambda x, y, z: FORMAT_MULTI_SOURCE_LABEL.format(
 formatted_multi_source_no_da_label = lambda x, y, z: FORMAT_MULTI_SOURCE_NO_DA_LABEL.format(x, y, z)
 
 EXPERIMENTS_LABELS = [    
-    'Multi-Domain Disc.',
-    'Source-Target Disc.'
+    'Multi-Domain fc Disc.',
+    'Source-Target fc Disc.',
+    'Multi-Domain conv. Disc.',
+    'Source-Target conv. Disc.'
 ]
 
 EXPERIMENTS_LABELS_LB = [    

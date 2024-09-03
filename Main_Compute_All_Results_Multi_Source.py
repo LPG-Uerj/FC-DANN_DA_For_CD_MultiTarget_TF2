@@ -95,6 +95,19 @@ sources = [
     }
 ]
 
+'''
+# Print the structure to verify
+for source in sources:
+    print(f"Source: {source['name']}")
+    for target in source["targets"]:
+        print(f"  Target: {target['name']}")
+        for method in target["methods"]:
+            print(f"    Method: {method['name']}")
+            print(f"      Results: {method['results']}")
+            print(f"      Checkpoints: {method['checkpoints']}")
+            print(f"      Labels: {method['labels']}")
+'''
+
 args.recalculate = False
 args.method = "multi-source"
 Charts.generate_tables(

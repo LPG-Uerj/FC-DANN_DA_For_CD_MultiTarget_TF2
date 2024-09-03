@@ -12,7 +12,7 @@ parser = argparse.ArgumentParser(description='')
 parser.add_argument('--train', dest='train', type=eval, choices=[True, False], default=True, help='whether to run train script or not')
 parser.add_argument('--test', dest='test', type=eval, choices=[True, False], default=True, help='whether to run test script or not')
 parser.add_argument('--metrics', dest='metrics', type=eval, choices=[True, False], default=True, help='whether to run metrics script or not')
-
+parser.add_argument('--metrics_avg', dest='metrics_avg', type=eval, choices=[True, False], default=True, help='whether to run metrics avg script or not')
 parser.add_argument('--running_in', dest='running_in', type=str, default='Datarmor_Interactive', help='Decide wether the script will be running')
 #parser.add_argument('--phase', dest = 'phase', type = str, default = 'train', help = 'Decide wether the phase: Train|Test will be running')
 
@@ -140,8 +140,8 @@ for dr_localization in DR_LOCALIZATION:
                                 "--image_channels 7 "
                                 "--buffer True "                                
                                 "--eliminate_regions True " 
-"--Npoints 100 "
-"--compute_ndvi False "
+                                "--Npoints 100 "
+                                "--compute_ndvi False "
                                 "--phase compute_metrics "
                                 "--training_type " + training_type + " "
                                 "--save_result_text True "
@@ -149,7 +149,7 @@ for dr_localization in DR_LOCALIZATION:
                                 "--results_dir " + results_dir_param + " "
                                 "--dataset " + target_ds + " "                                
                                 "--checkpoint_results_main_path " + Checkpoint_Results_MAIN_PATH + " ")
-
+                if args.metrics_avg:
                     Schedule.append("python " + Metrics_th_MAIN_COMMAND + " "
                                 "--classifier_type " + method + " "
                                 "--domain_regressor_type FC "

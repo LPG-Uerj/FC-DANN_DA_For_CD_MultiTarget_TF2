@@ -111,6 +111,15 @@ def Main():
                                                                                         dataset.references[0], dataset.references[1],
                                                                                         dataset.Train_tiles, dataset.Valid_tiles, dataset.Undesired_tiles,
                                                                                         args)
+    
+    Metrics_For_Uncertainty(Avg_hit_map,
+                            dataset.references[0], 
+                            dataset.references[1],
+                            dataset.Train_tiles, 
+                            dataset.Valid_tiles, 
+                            dataset.Undesired_tiles,
+                            args)
+    
     f = open(args.results_dir + "Results.txt","a")
     f.write("Average Ensemble Results with respect to F1-Score - Best Accuracy: %.2f%% Best F1-Score: %.2f%% Best Recall: %.2f%% Best Precision: %.2f%% Best Area: %.2f%% Best Threshold: %.2f Best Threshold index: %.2f File Name: %s\n" % (ACCURACY[0, THRESHOLD_ARGMAX], FSCORE[0, THRESHOLD_ARGMAX], RECALL[0, THRESHOLD_ARGMAX], PRECISION[0, THRESHOLD_ARGMAX], ALERT_AREA[0, THRESHOLD_ARGMAX], MAX_THRESHOLD, THRESHOLD_ARGMAX, args.file))
     

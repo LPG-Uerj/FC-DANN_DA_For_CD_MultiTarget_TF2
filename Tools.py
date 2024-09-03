@@ -106,19 +106,12 @@ def compute_metrics(true_labels, predicted_labels):
     return accuracy, f1score, recall, prescision, conf_mat
 
 def compute_f1_uncertainty(true_labels, predicted_labels, high_uncertainty_mask):
-    
     low_uncertainty_mask = 1 - high_uncertainty_mask
-    
     f1score = 100*f1_score(true_labels, predicted_labels)
-    
     f1score_high = 100*f1_score(true_labels, predicted_labels, sample_weight=high_uncertainty_mask)
-    
     f1score_low = 100*f1_score(true_labels, predicted_labels, sample_weight=low_uncertainty_mask)
-    
     audit_pred = predicted_labels.copy()
-    
     audit_pred[high_uncertainty_mask == 1] = true_labels[high_uncertainty_mask == 1]
-    
     f1score_audit = 100*f1_score(true_labels, audit_pred)
 
     return f1score, f1score_low, f1score_high, f1score_audit
@@ -202,8 +195,8 @@ def mask_creation(mask_row, mask_col, num_patch_row, num_patch_col, Train_tiles,
     mask_array = 2 * np.ones((mask_row, mask_col))
     
     train_mask = np.ones((patch_dim_row, patch_dim_col))
-    valid_mask = 3 * np.ones((patch_dim_row, patch_dim_col))
-    undesired_mask = 4 * np.ones((patch_dim_row, patch_dim_col))
+    valid_mask = valid_index * np.ones((patch_dim_row, patch_dim_col))
+    undesired_mask = undesired_index * np.ones((patch_dim_row, patch_dim_col))
     counter_r = 1
     counter = 1
     for i in range(0, mask_row, patch_dim_row): 
