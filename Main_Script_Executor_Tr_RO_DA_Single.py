@@ -259,8 +259,8 @@ for dr_localization in DR_LOCALIZATION:
                                 "--image_channels 7 "
                                 "--buffer True "                                
                                 "--eliminate_regions True " 
-"--Npoints 100 "
-"--compute_ndvi False "
+                                "--Npoints 100 "
+                                "--compute_ndvi False "
                                 "--phase compute_metrics "
                                 "--training_type " + training_type + " "
                                 "--save_result_text True "
@@ -268,7 +268,7 @@ for dr_localization in DR_LOCALIZATION:
                                 "--results_dir " + results_dir_param + " "
                                 "--dataset " + target_ds + " "                                
                                 "--checkpoint_results_main_path " + Checkpoint_Results_MAIN_PATH + " ")
-
+                if args.metrics_avg:
                     Schedule.append("python " + Metrics_th_MAIN_COMMAND + " "
                                 "--classifier_type " + method + " "
                                 "--domain_regressor_type FC "

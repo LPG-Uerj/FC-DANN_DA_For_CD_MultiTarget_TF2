@@ -11,6 +11,8 @@ from Amazonia_Legal_RO import AMAZON_RO
 from Amazonia_Legal_PA import AMAZON_PA
 from Cerrado_Biome_MA import CERRADO_MA
 import SharedParameters
+from scipy.interpolate import make_interp_spline
+import matplotlib.gridspec as gridspec
 
 
 colors = ["#dba237", "#70b2e4", "#469b76", "#2932bb", "#d12e95", "#00bfa0", "#ffa300", "#dc0ab4", "#b3d4ff", "#808080"]
@@ -117,7 +119,7 @@ def create_chart(args, experiments, target, result_list, checkpoint_list, mAP_li
 
     plt.clf()
 
-    plt.figure(figsize=(14,7))
+    plt.figure(figsize=(18,7))
         
     bars_mAP = mAP_list
     #bars_Accuracy = accuracy_list
@@ -145,12 +147,12 @@ def create_chart(args, experiments, target, result_list, checkpoint_list, mAP_li
     rcParams['axes.titlepad'] = 20 
     plt.xticks(x, _experiments)
 
-    plt.bar_label(bar0,fmt='%.1f', padding=3)
+    plt.bar_label(bar0,fmt='%.1f', padding=4)
     #plt.bar_label(bar1,fmt='%.1f%%', padding=3)
-    plt.bar_label(bar2,fmt='%.1f', padding=3)
+    plt.bar_label(bar2,fmt='%.1f', padding=4)
     #plt.bar_label(bar3,fmt='%.1f', padding=3)
     #plt.bar_label(bar4,fmt='%.1f', padding=3)
-    plt.bar_label(bar5,fmt='%.1f', padding=3)
+    plt.bar_label(bar5,fmt='%.1f', padding=4)
 
     plt.legend(prop={'size': 14})
     #plt.legend(bbox_to_anchor=(1.05, 1.05), loc='upper right')
@@ -337,7 +339,7 @@ def generate_combined_boxplot(output_directory, data_list, metric, labels, file_
     """
     Generate combined boxplots for the provided data lists and annotate the mean, upper bound, and lower bound.
     """
-    _, ax = plt.subplots(figsize=(16, 8))
+    _, ax = plt.subplots(figsize=(20, 8))
 
     fontsize = 11
     
@@ -413,12 +415,15 @@ def create_all_charts(args, baseline_paths, baseline_labels,baseline_checkpoints
     uncertainty_title = titles + 'Evaluation of F1-score (%) leveraging uncertainty estimation (Post-Ensemble)\nAudit area = 3%'
 
     file_title = map_file
-    map_list = create_map_chart(result_path_,labels_,SharedParameters.AVG_MAIN_PATH,SharedParameters.RESULTS_MAIN_PATH,file_title,mapTitle,num_samples,(7,7))
-    create_map_f1_boxplot(result_path_,labels_,SharedParameters.RESULTS_MAIN_PATH, SharedParameters.RESULTS_MAIN_PATH, file_title)
+    #map_list = create_map_chart(result_path_,labels_,SharedParameters.AVG_MAIN_PATH,SharedParameters.RESULTS_MAIN_PATH,file_title,mapTitle,num_samples,(7,7))
+    #create_map_f1_boxplot(result_path_,labels_,SharedParameters.RESULTS_MAIN_PATH, SharedParameters.RESULTS_MAIN_PATH, file_title)
 
     file_title = metrics_file
-    create_chart(args,labels_,target,result_path_,checkpoint_list_,map_list,SharedParameters.RESULTS_MAIN_PATH,file_title,title)
-    create_uncertainty_chart(args,labels_,target,result_path_,checkpoint_list_,SharedParameters.RESULTS_MAIN_PATH,f'{file_title}_Uncertainty',uncertainty_title)
+    #create_chart(args,labels_,target,result_path_,checkpoint_list_,map_list,SharedParameters.RESULTS_MAIN_PATH,file_title,title)
+    #create_uncertainty_chart(args,labels_,target,result_path_,checkpoint_list_,SharedParameters.RESULTS_MAIN_PATH,f'{file_title}_Uncertainty', uncertainty_title)
+    create_audit_area_chart(baseline_paths, baseline_labels, SharedParameters.RESULTS_MAIN_PATH, f'{file_title}_Audit')
+    
+    
     
 def generate_tables(args, sources):
     
@@ -584,7 +589,7 @@ def generate_latex_table(experiments, sources, targets, map_values, f1_values, f
         latex_table = r"""
         \begin{table}[h!]
         \begingroup
-        \setlength{\tabcolsep}{4pt}
+        \setlength{\tabcolsep}{2pt}
         \centering
         \begin{tabularx}{\textwidth}{|c|""" + "CC|" * len(targets) + r"""}
         \hline
@@ -798,7 +803,7 @@ def create_uncertainty_chart(args, experiments, target, result_list, checkpoint_
 
     plt.clf()
 
-    plt.figure(figsize=(14,7))
+    plt.figure(figsize=(17,7))
     
     bars_F1 = fscore_list
     bars_F1_Low = fscore_low_list
@@ -821,10 +826,10 @@ def create_uncertainty_chart(args, experiments, target, result_list, checkpoint_
     rcParams['axes.titlepad'] = 20 
     plt.xticks(x, _experiments)
 
-    plt.bar_label(bar0,fmt='%.1f', padding=3)
-    plt.bar_label(bar1,fmt='%.1f', padding=3)
-    plt.bar_label(bar2,fmt='%.1f', padding=3)
-    plt.bar_label(bar3,fmt='%.1f', padding=3)
+    plt.bar_label(bar0,fmt='%.1f', padding=4)
+    plt.bar_label(bar1,fmt='%.1f', padding=4)
+    plt.bar_label(bar2,fmt='%.1f', padding=4)
+    plt.bar_label(bar3,fmt='%.1f', padding=4)
 
     plt.legend(prop={'size': 14})
     #plt.legend(bbox_to_anchor=(1.05, 1.05), loc='upper right')
@@ -840,3 +845,83 @@ def create_uncertainty_chart(args, experiments, target, result_list, checkpoint_
     plt.close()
 
     print(f"Done! {full_chart_path} has been saved.")
+    
+    
+def create_audit_area_chart(baseline_paths, baseline_labels, output_directory,filename):
+    
+    if not (len(baseline_paths) == len(baseline_labels)):
+        raise Exception("create_audit_area_chart: Lists are not the same length. Please verify.")
+    
+    # Plot each column, with column 1 (constant value) as dashed line
+    labels = [
+        'F1 No Uncertainty',
+        'F1 Low Uncertainty',
+        'F1 High Uncertainty',
+        'F1 Audited'
+    ]
+
+    colors = [
+        '#5285B9',
+        '#70B2E4',
+        'red',
+        '#63A953'
+    ]
+    
+    row_index = 0
+    col_index = 0
+ 
+    # Create a figure
+    fig = plt.figure(figsize=(14, 8))
+
+    # Define the GridSpec
+    gs = gridspec.GridSpec(3, 3)
+    
+    for rf in range(len(baseline_paths)):
+
+        if(rf != 0 and rf % 3 == 0):
+            row_index+=1
+            col_index=0
+        
+        file_path = os.path.join(SharedParameters.AVG_MAIN_PATH, baseline_paths[rf],'Avg_Scores','fscore_metrics.npy')
+        if not os.path.exists(file_path):
+            raise Exception(f"File {file_path} could not be found.")
+        
+        fscore_array = np.load(file_path)
+        
+        data = fscore_array[:,:4]
+        # X-axis points (row indices)
+        x = np.arange(data.shape[0])
+
+        # Smoothing the lines using cubic spline interpolation
+        x_new = np.linspace(x.min(), x.max(), 300)  # More points for a smoother curve
+
+        for i in range(data.shape[1]):
+            ax = plt.subplot(gs[row_index, col_index])
+            
+            spline = make_interp_spline(x, data[:, i], k=3)  # Cubic spline
+            y_smooth = spline(x_new)
+            
+            if np.all(data[:, i] == data[0, i]):  # Check if the column has constant values
+                ax.plot(x_new, y_smooth, linestyle='--', label=labels[i], color=colors[i])
+            else:
+                ax.plot(x_new, y_smooth, label=labels[i], color=colors[i])
+
+        # Adding title and labels
+        ax.set_title(f'F1-Score Performance across Audit Areas for {baseline_labels[rf]}')
+        ax.set_xlabel('Audit Area (%)')
+        ax.set_ylabel('F1 Score (%)')
+        ax.set_xticks(np.arange(21))
+        ax.set_yticks(np.arange(0,100,10))
+
+        # Adding legend
+        ax.legend()
+        
+        col_index+=1
+
+    # Adjust layout
+    plt.tight_layout()        
+
+    full_chart_path = os.path.join(output_directory,filename) + '.png'
+
+    plt.savefig(full_chart_path, format="png")
+    plt.close()

@@ -57,6 +57,15 @@ REFERENCES = [
     'Main_Compute_All_Results_Multi_Target.py'
 ]
 
+REFERENCES = [
+    'Main_Compute_All_Multi_Target_Source_MA-PA.py',
+    'Main_Compute_All_Multi_Target_Source_MA-RO.py',
+    'Main_Compute_All_Multi_Target_Source_PA-MA.py',
+    'Main_Compute_All_Multi_Target_Source_PA-RO.py',
+    'Main_Compute_All_Multi_Target_Source_RO-MA.py',
+    'Main_Compute_All_Multi_Target_Source_RO-PA.py',
+]
+
 for reference in REFERENCES:
     Schedule.append("python " + reference + " 2>&1 | tee mAP.txt ")
 
