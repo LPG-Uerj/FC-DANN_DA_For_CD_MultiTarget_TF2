@@ -546,8 +546,11 @@ def generate_tables_uncertainty(args, sources):
         _f1_high_arr = np.load(f1_high_path)
         _f1_audit_arr = np.load(f1_audit_path)
     
-    
     generate_latex_table_uncertainty(_experiments, _sources, _targets,_f1_arr, _f1_low_arr,_f1_high_arr,_f1_audit_arr, SharedParameters.RESULTS_MAIN_PATH)        
+    generate_latex_table_uncertainty_paper(_experiments, _sources, _targets,_f1_arr, _f1_low_arr,_f1_high_arr,_f1_audit_arr, SharedParameters.RESULTS_MAIN_PATH)
+    
+    
+    
     
 def generate_latex_table(experiments, sources, targets, map_values, f1_values, file_path):
     
@@ -761,6 +764,68 @@ def generate_latex_table_uncertainty(experiments, sources, targets, f1_values,f1
     
     with open(output_file, 'w') as file:
         file.write(latex_table)
+
+
+def generate_latex_table_uncertainty_paper(experiments, sources, targets, f1_values,f1_low_values,f1_high_values,f1_audit_values, file_path):
+    
+    # Verify the lengths of the inputs
+    num_experiments = len(experiments)
+    num_targets = len(targets)
+    multisource = False
+    setting = 'multi-target'
+
+    #Multisource cenario example: source=['PA-MA','PA-RO','MA-RO'] target= ['RO','MA','PA']
+    if len(sources) == len(targets):
+        multisource = True
+        setting = 'multi-source'
+    elif len(sources) * 2 != len(targets):
+        raise ValueError(f"Mismatch in the lengths of sources({len(sources)}) and targets({len(targets)}).")
+        
+    if not (len(f1_values) == num_experiments 
+            and len(f1_low_values) == num_experiments 
+            and len(f1_high_values) == num_experiments 
+            and len(f1_audit_values) == num_experiments 
+            and len(f1_values[0]) == num_targets 
+            and len(f1_low_values[0]) == num_targets 
+            and len(f1_high_values[0]) == num_targets 
+            and len(f1_audit_values[0]) == num_targets):
+        raise ValueError("Mismatch in the lengths of input lists.")
+        
+    latex_table = ""      
+    if not multisource:
+        for index, s in enumerate(sources):
+            
+            idx = index * 2
+            
+            latex_table += r"""
+            \begin{table}[h]
+
+            \centering
+            \begin{tabular}{|c|""" + "CCCC|" * 2 + r"""}
+            \hline
+            \textbf{Source} & """ + f"\multicolumn{{8}}{{c|}}{{{s}}}" + r""" \\
+            \hline
+            \textbf{Target} & """ + " & ".join([f"\multicolumn{{4}}{{c|}}{{{targets[idx+j]}}}" for j in range(2)]) + r""" \\
+            \hline
+            \textbf{Experiments} & """ + " & ".join([f"F1 & F1_{{low}} & F1_{{high}} & F1_{{aud}}" for _ in range(2)]) + r""" \\
+            \hline
+            """
+            for i, experiment in enumerate(experiments):
+                latex_table += f"{experiment} & " + " & ".join([f"{f1_values[i,idx+j]:.1f} & {f1_low_values[i,idx+j]:.1f} & {f1_high_values[i,idx+j]:.1f} & {f1_audit_values[i,idx+j]:.1f}" for j in range(2)]) + r""" \\
+                \hline
+                """
+            latex_table += r"""\end{tabular}
+            \caption{F1-Score Evaluation for """ + f"{s}" + r""" source in Multi-Target Uncertainty Estimation Experiments.}
+            \label{table:""" + f"results_domain_adaptation_uncertainty_{s}" + r"""}
+            \end{table}
+            """
+    
+
+    output_file = os.path.join(file_path, f'{setting}_uncertainty_latex_table_paper.tex')
+    
+    with open(output_file, 'w') as file:
+        file.write(latex_table)
+
         
         
 def create_uncertainty_chart(args, experiments, target, result_list, checkpoint_list, path_to_export_chart, file_title, title):
