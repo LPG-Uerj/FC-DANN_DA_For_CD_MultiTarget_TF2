@@ -147,6 +147,9 @@ class AMAZON_PA():
         print(np.max(image_t1_norm))
         print(np.min(image_t2_norm))
         print(np.max(image_t2_norm))
+        
+        print('image_t2_norm shape:')
+        print(np.shape(image_t2_norm))
 
         # Storing the images in a list
         self.images_norm.append(image_t1_norm)

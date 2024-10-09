@@ -116,6 +116,11 @@ def compute_f1_uncertainty(true_labels, predicted_labels, high_uncertainty_mask)
 
     return f1score, f1score_low, f1score_high, f1score_audit
 
+def compute_audit_mask(true_labels, predicted_labels, high_uncertainty_mask):
+    audit_pred = predicted_labels.copy()
+    audit_pred[high_uncertainty_mask == 1] = true_labels[high_uncertainty_mask == 1]
+    return audit_pred
+
 def Data_Augmentation_Definition(corners_coordinates):
     num_sample = np.size(corners_coordinates , 0)
     data_cols = np.size(corners_coordinates , 1)    
@@ -325,7 +330,7 @@ def Corner_Coordinates_Definition_Testing(mask, patch_dimension, overlap_porcent
 
 def Classification_Maps(Predicted_labels, True_labels, central_pixels_coordinates, hit_map):
         
-    Classification_Map = np.zeros((hit_map.shape[0], hit_map.shape[1], 3))
+    Classification_Map = np.zeros((hit_map.shape[0], hit_map.shape[1], 3),dtype=np.uint8)
     TP_counter = 0
     FP_counter = 0
     for i in range(central_pixels_coordinates.shape[0]):

@@ -115,12 +115,12 @@ def Main():
 
             ACCURACY, FSCORE, RECALL, PRECISION, _, ALERT_AREA, _, _, _, _, _ = Metrics_For_Test(hit_map, None, dataset.references[0], dataset.references[1],
                                                                                                  dataset.Train_tiles, dataset.Valid_tiles, dataset.Undesired_tiles,
-                                                                                                 Thresholds,
+                                                                                                 Thresholds, None,
                                                                                                 args)
 
             _, _, RECALL_for_mAP, PRECISION_for_mAP, _, _, _, _, _, _, _  = Metrics_For_Test(hit_map, None, dataset.references[0], 
                                                                              dataset.references[1],dataset.Train_tiles, dataset.Valid_tiles, dataset.Undesired_tiles,
-                                                                            None, args)
+                                                                            None, None, args)
             
             _,_,mAP = Charts.computeMap(100, RECALL_for_mAP, PRECISION_for_mAP)
 

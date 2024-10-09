@@ -1055,7 +1055,7 @@ class Models():
 def Metrics_For_Test(hit_map, uncertainty_map,
                      reference_t1, reference_t2,
                      Train_tiles, Valid_tiles, Undesired_tiles,
-                     Thresholds,
+                     Thresholds, image_t2,
                      args):
 
     #audit_area = [i for i in range(10)]
@@ -1064,14 +1064,20 @@ def Metrics_For_Test(hit_map, uncertainty_map,
 
     save_path = os.path.join(args.results_dir, args.file)
     print('[*]Defining the initial central patches coordinates...')
+    
+    print('Undesired_tiles: ')
+    print(Undesired_tiles)
     #mask_init = mask_creation(reference_t1.shape[0], reference_t1.shape[1], args.horizontal_blocks, args.vertical_blocks, [], [], [])
-    mask_final = mask_creation(reference_t1.shape[0], reference_t1.shape[1], args.horizontal_blocks, args.vertical_blocks, Train_tiles, Valid_tiles, Undesired_tiles)
+    mask_original = mask_creation(reference_t1.shape[0], reference_t1.shape[1], args.horizontal_blocks, args.vertical_blocks, Train_tiles, Valid_tiles, Undesired_tiles)
 
-    #mask_final = mask_final_.copy()
+    mask_final = mask_original.copy()
+    
     mask_final[mask_final == 1] = 0
     mask_final[mask_final == 3] = 0
     mask_final[mask_final == 2] = 1
-
+    
+    np.save(os.path.join(save_path,f'mask_final_{args.target_dataset}.npy'), mask_final)
+    
     Probs_init = hit_map
 
     if Thresholds is None:
@@ -1092,7 +1098,6 @@ def Metrics_For_Test(hit_map, uncertainty_map,
     RECALL = np.zeros((1, len(Thresholds)))
     PRECISSION = np.zeros((1, len(Thresholds)))
     CONFUSION_MATRIX = np.zeros((2 , 2, len(Thresholds)))
-    #CLASSIFICATION_MAPS = np.zeros((len(Thresholds), hit_map.shape[0], hit_map.shape[1], 3))
     ALERT_AREA = np.zeros((1 , len(Thresholds)))
     UNCERTAINTY_MEAN = np.zeros((1, len(Thresholds)))
     FSCORE_LOW_UNCERTAINTY = np.zeros((1, len(Thresholds)))
@@ -1107,6 +1112,9 @@ def Metrics_For_Test(hit_map, uncertainty_map,
 
         positive_map_init = np.zeros_like(hit_map)
         reference_t1_copy = reference_t1.copy()
+        
+        #Adding previously deforestated area to the mask
+        mask_original[reference_t1_copy == 1] = 4
 
         threshold = Thresholds[th]
         positive_coordinates = np.transpose(np.array(np.where(Probs_init >= threshold)))
@@ -1126,6 +1134,11 @@ def Metrics_For_Test(hit_map, uncertainty_map,
         reference_t1_copy[reference_t1_copy == -1] = 1
         reference_t1_copy[reference_t2 == 2] = 0
         mask_f = mask_final * reference_t1_copy
+        
+        print('mask_f shape:')
+        print(np.shape(mask_f))
+        
+        brown_colour = [204, 102, 0]
 
         #central_pixels_coordinates_ts, y_test = Central_Pixel_Definition_For_Test(mask_final_, reference_t1_copy, reference_t2, args.patches_dimension, 1, 'metrics')
         central_pixels_coordinates_ts_ = np.transpose(np.array(np.where(mask_f == 1)))
@@ -1150,6 +1163,28 @@ def Metrics_For_Test(hit_map, uncertainty_map,
             
             _, f1score_low, f1score_high, f1score_audit = compute_f1_uncertainty(y_test.astype('int'), Probs.astype('int'), high_uncertainty_mask)
             
+            audit_predictions = compute_audit_mask(y_test.astype('int'), Probs.astype('int'), high_uncertainty_mask)
+            
+            if args.create_classification_map and len(Thresholds) == 1 and image_t2 is not None:
+                selected_channels = image_t2[:, :, [3, 2, 1]]
+                selected_channels[:,:,0] *= mask_f
+                selected_channels[:,:,1] *= mask_f
+                selected_channels[:,:,2] *= mask_f
+                np.save(os.path.join(save_path,'image_t2_mask'), selected_channels)
+                Classification_map_audit, _, _ = Classification_Maps(audit_predictions.astype('int'), y_test.astype('int'), central_pixels_coordinates_ts_, hit_map)
+                
+                # Locate where the mask equals 4
+                Classification_map_audit[mask_original == 4] = brown_colour
+                
+                plt.imsave(os.path.join(save_path,'Classification_map_audit.png'), Classification_map_audit)
+                
+                cmap = plt.cm.get_cmap('jet')
+                # Convert normalized data to RGB using the colormap
+                rgb_image = cmap(uncertainty_map)
+                # Remove the alpha channel (the fourth dimension)
+                rgb_image = rgb_image[..., :3]
+                plt.imsave(os.path.join(save_path,'Uncertainty_heatmap.png'), uncertainty_map, cmap='jet')
+            
             FSCORE_LOW_UNCERTAINTY[0 , th] = f1score_low
             FSCORE_HIGH_UNCERTAINTY[0 , th] = f1score_high
             FSCORE_AUDIT[0 , th] = f1score_audit
@@ -1157,10 +1192,10 @@ def Metrics_For_Test(hit_map, uncertainty_map,
             
         accuracy, f1score, recall, precission, conf_mat = compute_metrics(y_test.astype('int'), Probs.astype('int'))
 
-        if args.create_classification_map:
+        if args.create_classification_map and len(Thresholds) == 1:
             Classification_map, _, _ = Classification_Maps(Probs, y_test, central_pixels_coordinates_ts_, hit_map)
-            #plt.imshow(Classification_map)
-            plt.savefig(os.path.join(save_path,'Classification_map.jpg'))
+            Classification_map[mask_original == 4] = brown_colour
+            plt.imsave(os.path.join(save_path,'Classification_map.png'), Classification_map)
 
         TP = conf_mat[1 , 1]
         FP = conf_mat[0 , 1]

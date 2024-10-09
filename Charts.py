@@ -74,7 +74,7 @@ def get_metrics(args):
 
     dataset.Tiles_Configuration(args, 0)
     
-    ACCURACY, FSCORE, RECALL, PRECISION, _, _, UNCERTAINTY_MEAN, FSCORE_LOW_UNCERTAINTY, FSCORE_HIGH_UNCERTAINTY, FSCORE_AUDIT, AUDIT_THRESHOLD  = Metrics_For_Test(Avg_hit_map, uncertainty_map, dataset.references[0], dataset.references[1], dataset.Train_tiles, dataset.Valid_tiles, dataset.Undesired_tiles, Thresholds, args)
+    ACCURACY, FSCORE, RECALL, PRECISION, _, _, UNCERTAINTY_MEAN, FSCORE_LOW_UNCERTAINTY, FSCORE_HIGH_UNCERTAINTY, FSCORE_AUDIT, AUDIT_THRESHOLD  = Metrics_For_Test(Avg_hit_map, uncertainty_map, dataset.references[0], dataset.references[1], dataset.Train_tiles, dataset.Valid_tiles, dataset.Undesired_tiles, Thresholds, dataset.images_norm[1], args)
         
     return ACCURACY[0,0], FSCORE[0,0], RECALL[0,0], PRECISION[0,0], UNCERTAINTY_MEAN[0,0], FSCORE_LOW_UNCERTAINTY[0,0], FSCORE_HIGH_UNCERTAINTY[0,0], FSCORE_AUDIT[0,0], AUDIT_THRESHOLD[0,0]
 
@@ -420,7 +420,7 @@ def create_all_charts(args, baseline_paths, baseline_labels,baseline_checkpoints
 
     file_title = metrics_file
     #create_chart(args,labels_,target,result_path_,checkpoint_list_,map_list,SharedParameters.RESULTS_MAIN_PATH,file_title,title)
-    #create_uncertainty_chart(args,labels_,target,result_path_,checkpoint_list_,SharedParameters.RESULTS_MAIN_PATH,f'{file_title}_Uncertainty', uncertainty_title)
+    create_uncertainty_chart(args,labels_,target,result_path_,checkpoint_list_,SharedParameters.RESULTS_MAIN_PATH,f'{file_title}_Uncertainty', uncertainty_title)
     create_audit_area_chart(baseline_paths, baseline_labels, SharedParameters.RESULTS_MAIN_PATH, f'{file_title}_Audit')
     
     
@@ -794,31 +794,31 @@ def generate_latex_table_uncertainty_paper(experiments, sources, targets, f1_val
     latex_table = ""      
     if not multisource:
         for index, s in enumerate(sources):
-            
             idx = index * 2
             
-            latex_table += r"""
-            \begin{table}[h]
-
-            \centering
-            \begin{tabular}{|c|""" + "CCCC|" * 2 + r"""}
-            \hline
-            \textbf{Source} & """ + f"\multicolumn{{8}}{{c|}}{{{s}}}" + r""" \\
-            \hline
-            \textbf{Target} & """ + " & ".join([f"\multicolumn{{4}}{{c|}}{{{targets[idx+j]}}}" for j in range(2)]) + r""" \\
-            \hline
-            \textbf{Experiments} & """ + " & ".join([f"F1 & F1_{{low}} & F1_{{high}} & F1_{{aud}}" for _ in range(2)]) + r""" \\
-            \hline
-            """
-            for i, experiment in enumerate(experiments):
-                latex_table += f"{experiment} & " + " & ".join([f"{f1_values[i,idx+j]:.1f} & {f1_low_values[i,idx+j]:.1f} & {f1_high_values[i,idx+j]:.1f} & {f1_audit_values[i,idx+j]:.1f}" for j in range(2)]) + r""" \\
+            for j in range(2):
+            
+                latex_table += r"""
+                \begin{table}[h]
+                \centering
+                \begin{tabular}{|c|""" + "CCCC|" + r"""}
+                \hline
+                \textbf{Source} & """ + f"\multicolumn{{4}}{{c|}}{{{s}}}" + r""" \\
+                \hline
+                \textbf{Target} & """ + f"\multicolumn{{4}}{{c|}}{{{targets[idx+j]}}}" + r""" \\
+                \hline
+                \textbf{Experiments} & """ + "F1 & F1_{{low}} & F1_{{high}} & F1_{{aud}}" + r""" \\
                 \hline
                 """
-            latex_table += r"""\end{tabular}
-            \caption{F1-Score Evaluation for """ + f"{s}" + r""" source in Multi-Target Uncertainty Estimation Experiments.}
-            \label{table:""" + f"results_domain_adaptation_uncertainty_{s}" + r"""}
-            \end{table}
-            """
+                for i, experiment in enumerate(experiments):
+                    latex_table += f"{experiment} & {f1_values[i,idx+j]:.1f} & {f1_low_values[i,idx+j]:.1f} & {f1_high_values[i,idx+j]:.1f} & {f1_audit_values[i,idx+j]:.1f}" + r""" \\
+                    \hline
+                    """
+                latex_table += r"""\end{tabular}
+                \caption{F1-Score results for """ + f"{s} source and {targets[idx+j]} target" + r""" in Uncertainty Estimation Experiments.}
+                \label{table:""" + f"results_domain_adaptation_uncertainty_{s}" + r"""}
+                \end{table}
+                """
     
 
     output_file = os.path.join(file_path, f'{setting}_uncertainty_latex_table_paper.tex')
@@ -972,7 +972,7 @@ def create_audit_area_chart(baseline_paths, baseline_labels, output_directory,fi
                 ax.plot(x_new, y_smooth, label=labels[i], color=colors[i])
 
         # Adding title and labels
-        ax.set_title(f'F1-Score Performance across Audit Areas for {baseline_labels[rf]}')
+        ax.set_title(f'F1-Score Performance across Audit Areas for\n{baseline_labels[rf]}')
         ax.set_xlabel('Audit Area (%)')
         ax.set_ylabel('F1 Score (%)')
         ax.set_xticks(np.arange(21))
