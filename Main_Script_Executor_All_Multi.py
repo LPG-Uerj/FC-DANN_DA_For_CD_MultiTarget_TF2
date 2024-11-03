@@ -128,6 +128,15 @@ REFERENCES = [
     'Main_Script_Executor_Tr_RO_DA_Multi_Target.py --train False --test False --metrics False --discriminate_domain_targets True ',
 ]
 
+REFERENCES = [
+    'Main_Compute_All_Single_Target_MA-PA.py ',
+    'Main_Compute_All_Single_Target_MA-RO.py ',
+    'Main_Compute_All_Single_Target_PA-MA.py ',
+    'Main_Compute_All_Single_Target_PA-RO.py ',
+    'Main_Compute_All_Single_Target_RO-MA.py ',
+    'Main_Compute_All_Single_Target_RO-PA.py ',
+]
+
 for reference in REFERENCES:
     Schedule.append("python " + reference + " 2>&1 | tee Main_Script_Executor_All_Multi.txt ")
 

@@ -420,7 +420,7 @@ def create_all_charts(args, baseline_paths, baseline_labels,baseline_checkpoints
 
     file_title = metrics_file
     #create_chart(args,labels_,target,result_path_,checkpoint_list_,map_list,SharedParameters.RESULTS_MAIN_PATH,file_title,title)
-    create_uncertainty_chart(args,labels_,target,result_path_,checkpoint_list_,SharedParameters.RESULTS_MAIN_PATH,f'{file_title}_Uncertainty', uncertainty_title)
+    #create_uncertainty_chart(args,labels_,target,result_path_,checkpoint_list_,SharedParameters.RESULTS_MAIN_PATH,f'{file_title}_Uncertainty', uncertainty_title)
     create_audit_area_chart(baseline_paths, baseline_labels, SharedParameters.RESULTS_MAIN_PATH, f'{file_title}_Audit')
     
     
@@ -937,6 +937,7 @@ def create_audit_area_chart(baseline_paths, baseline_labels, output_directory,fi
  
     # Create a figure
     fig = plt.figure(figsize=(14, 8))
+    #fig = plt.figure()
 
     # Define the GridSpec
     gs = gridspec.GridSpec(3, 3)
@@ -955,7 +956,7 @@ def create_audit_area_chart(baseline_paths, baseline_labels, output_directory,fi
         
         data = fscore_array[:,:4]
         # X-axis points (row indices)
-        x = np.arange(data.shape[0])
+        x = np.arange(1, data.shape[0])
 
         # Smoothing the lines using cubic spline interpolation
         x_new = np.linspace(x.min(), x.max(), 300)  # More points for a smoother curve
@@ -963,7 +964,7 @@ def create_audit_area_chart(baseline_paths, baseline_labels, output_directory,fi
         for i in range(data.shape[1]):
             ax = plt.subplot(gs[row_index, col_index])
             
-            spline = make_interp_spline(x, data[:, i], k=3)  # Cubic spline
+            spline = make_interp_spline(x, data[1:, i], k=3)  # Cubic spline
             y_smooth = spline(x_new)
             
             if np.all(data[:, i] == data[0, i]):  # Check if the column has constant values
@@ -975,12 +976,13 @@ def create_audit_area_chart(baseline_paths, baseline_labels, output_directory,fi
         ax.set_title(f'F1-Score Performance across Audit Areas for\n{baseline_labels[rf]}')
         ax.set_xlabel('Audit Area (%)')
         ax.set_ylabel('F1 Score (%)')
-        ax.set_xticks(np.arange(21))
+        ax.set_xlim(0,21)
+        ax.set_xticks(np.arange(1,21))
         ax.set_yticks(np.arange(0,100,10))
 
         # Adding legend
         ax.legend()
-        
+
         col_index+=1
 
     # Adjust layout
@@ -988,5 +990,5 @@ def create_audit_area_chart(baseline_paths, baseline_labels, output_directory,fi
 
     full_chart_path = os.path.join(output_directory,filename) + '.png'
 
-    plt.savefig(full_chart_path, format="png")
+    plt.savefig(full_chart_path, format="png", dpi=300)
     plt.close()

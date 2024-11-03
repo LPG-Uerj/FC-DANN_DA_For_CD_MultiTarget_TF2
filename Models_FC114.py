@@ -1152,6 +1152,8 @@ def Metrics_For_Test(hit_map, uncertainty_map,
         Probs[Probs <  Thresholds[th]] = 0
         
         if uncertainty_map is not None:
+            uncertainty_map = np.clip(uncertainty_map, 0, 1)
+            
             uncertaint_map_ = uncertainty_map[central_pixels_coordinates_ts_[:,0].astype('int'), central_pixels_coordinates_ts_[:,1].astype('int')]
             UNCERTAINTY_MEAN[0 , th] = np.mean(uncertaint_map_.flatten())*100
             
