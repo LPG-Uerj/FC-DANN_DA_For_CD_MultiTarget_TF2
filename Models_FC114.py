@@ -1076,7 +1076,7 @@ def Metrics_For_Test(hit_map, uncertainty_map,
     mask_final[mask_final == 3] = 0
     mask_final[mask_final == 2] = 1
     
-    np.save(os.path.join(save_path,f'mask_final_{args.target_dataset}.npy'), mask_final)
+    np.save(os.path.join(save_path,f'mask_final_{args.dataset}.npy'), mask_final)
     
     Probs_init = hit_map
 
@@ -1185,7 +1185,7 @@ def Metrics_For_Test(hit_map, uncertainty_map,
                 rgb_image = cmap(uncertainty_map)
                 # Remove the alpha channel (the fourth dimension)
                 rgb_image = rgb_image[..., :3]
-                plt.imsave(os.path.join(save_path,'Uncertainty_heatmap.png'), uncertainty_map, cmap='jet')
+                plt.imsave(os.path.join(save_path,' .png'), uncertainty_map, cmap='jet')
             
             FSCORE_LOW_UNCERTAINTY[0 , th] = f1score_low
             FSCORE_HIGH_UNCERTAINTY[0 , th] = f1score_high

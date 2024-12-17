@@ -40,7 +40,7 @@ source = CERRADO_MA.DATASET
 target = AMAZON_RO.DATASET
 
 titles = SharedParameters.formatted_chart_title('MA','RO')+'\n'
-map_file = f'{SharedParameters.DA_MULTI_TARGET_FILE_TITLE}_Ts_MA_Eval_RO'
-metrics_file = f'Metrics_{SharedParameters.DA_MULTI_TARGET_FILE_TITLE}_Ts_MA_Eval_RO'
+map_file = f'{SharedParameters.DA_SINGLE_TARGET_FILE_TITLE}_Ts_MA_Eval_RO'
+metrics_file = f'Metrics_{SharedParameters.DA_SINGLE_TARGET_FILE_TITLE}_Ts_MA_Eval_RO'
 
 Charts.create_all_charts(args, baseline_paths,baseline_labels,baseline_checkpoints,titles, map_file,metrics_file,num_samples,target)

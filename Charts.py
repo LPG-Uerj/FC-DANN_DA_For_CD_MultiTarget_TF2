@@ -32,6 +32,7 @@ def get_metrics(args):
     args.image_channels = 7
     args.phase = SharedParameters.PHASE_METRICS
     args.buffer = True
+    args.dataset = args.target_dataset
     
     if args.target_dataset == AMAZON_RO.DATASET or args.target_dataset == 'RO':        
         dataset = AMAZON_RO(args)
@@ -119,7 +120,10 @@ def create_chart(args, experiments, target, result_list, checkpoint_list, mAP_li
 
     plt.clf()
 
-    plt.figure(figsize=(18,7))
+    if len(experiments) > 3:
+        plt.figure(figsize=(10,7))
+    else:
+        plt.figure()
         
     bars_mAP = mAP_list
     #bars_Accuracy = accuracy_list
@@ -132,12 +136,12 @@ def create_chart(args, experiments, target, result_list, checkpoint_list, mAP_li
        
     align = 'edge'    
     
-    bar0 = plt.bar(x - (width*2), bars_mAP, width, label='mAP', color=colors[0], align=align)
+    bar0 = plt.bar(x - (width*1), bars_mAP, width, label='mAP', color=colors[0], align=align)
     #bar1 = plt.bar(x - (width*1), bars_Accuracy, width, label='Accuracy', color=colors[1], align=align)
-    bar2 = plt.bar(x - (width*1), bars_F1, width, label='F1-Score', color=colors[1],align=align)
+    bar2 = plt.bar(x + (width*0), bars_F1, width, label='F1-Score', color=colors[1],align=align)
     #bar3 = plt.bar(x + (width*0), bars_Recall,width, label='Recall', color=colors[2],align=align)
     #bar4 = plt.bar(x + (width*1), bars_Precision,width, label='Precision', color=colors[3],align=align)
-    bar5 = plt.bar(x + (width*0), bars_Uncertainty,width, label='Average Uncertainty', color=colors[9],align=align)
+    #bar5 = plt.bar(x + (width*0), bars_Uncertainty,width, label='Average Uncertainty', color=colors[9],align=align)
     
 
     # Add some text for labels, title and custom x-axis tick labels, etc.
@@ -147,16 +151,16 @@ def create_chart(args, experiments, target, result_list, checkpoint_list, mAP_li
     rcParams['axes.titlepad'] = 20 
     plt.xticks(x, _experiments)
 
-    plt.bar_label(bar0,fmt='%.1f', padding=4)
+    plt.bar_label(bar0,fmt='%.1f')
     #plt.bar_label(bar1,fmt='%.1f%%', padding=3)
-    plt.bar_label(bar2,fmt='%.1f', padding=4)
+    plt.bar_label(bar2,fmt='%.1f')
     #plt.bar_label(bar3,fmt='%.1f', padding=3)
     #plt.bar_label(bar4,fmt='%.1f', padding=3)
-    plt.bar_label(bar5,fmt='%.1f', padding=4)
+    #plt.bar_label(bar5,fmt='%.1f', padding=4)
 
     plt.legend(prop={'size': 14})
-    #plt.legend(bbox_to_anchor=(1.05, 1.05), loc='upper right')
-    plt.legend(bbox_to_anchor=(1, 1.15), loc='upper right')
+    plt.legend(bbox_to_anchor=(1.05, 1.23), loc='upper right')
+    #plt.legend(loc='center right')
     
     plt.ylim(0,100)
 
@@ -164,7 +168,106 @@ def create_chart(args, experiments, target, result_list, checkpoint_list, mAP_li
 
     plt.tight_layout()
 
-    plt.savefig(full_chart_path, format="png")
+    plt.savefig(full_chart_path, format="png", dpi=300)
+    plt.close()
+
+    print(f"Done! {full_chart_path} has been saved.")
+    
+    
+def create_f1_bar_chart(args, experiments, target, result_list, checkpoint_list, path_to_export_chart, file_title, title):
+    if not (len(result_list) == len(checkpoint_list)):
+        raise Exception("Lists are not the same length. Please verify.")
+    
+    _length = len(result_list)   
+    
+    fscore_list = []
+
+    args.save_result_text = True
+        
+    for i in range(0,_length):
+        args.target_dataset = target
+        args.checkpoint_dir = checkpoint_list[i]
+        args.results_dir = result_list[i]
+        try:
+            _,fscore,_,_,_,_,_,_,_ = get_metrics(args)            
+        except Exception as e:
+            print("Error:")
+            print(e)
+            continue
+        fscore_list.append(fscore)
+           
+    result_lists = []
+    num_results = 5
+    # Loop through the first six indices
+    for i in range(num_results):
+        new_list = [fscore_list[i], fscore_list[i + num_results]]
+        # Append the new list to the result
+        result_lists.append(new_list)
+
+    x = np.arange(2)   
+
+    plt.clf()
+    
+    legends = [
+        SharedParameters.UPPER_BOUND_SOURCE_ONLY_LABEL,
+        SharedParameters.LOWER_BOUND_LABEL,
+        SharedParameters.SINGLE_TARGET_LABEL,
+        SharedParameters.MULTI_TARGET_LABEL,
+        SharedParameters.MULTI_SOURCE_LABEL,
+    ]
+
+    #plt.figure(figsize=(10,7))
+    plt.figure()
+        
+    bar_1 = result_lists[0]
+    bar_2 = result_lists[1]
+    bar_3 = result_lists[2]
+    bar_4 = result_lists[3]
+    bar_5 = result_lists[4]
+    #bar_6 = result_lists[5]
+
+    width = 0.1
+       
+    align = 'edge'    
+    
+    x_pos = np.arange(2)
+    
+    spacing = 0.03
+    
+    bar1 = plt.bar(x_pos - 2.5 * (width+spacing), bar_1, width, label=legends[0], color=colors[0], align=align)
+    bar2 = plt.bar(x_pos - 1.5 * (width+spacing), bar_2, width, label=legends[1], color=colors[1], align=align)
+    bar3 = plt.bar(x_pos - 0.5 * (width+spacing), bar_3, width, label=legends[2], color=colors[2], align=align)
+    bar4 = plt.bar(x_pos + 0.5 * (width+spacing), bar_4, width, label=legends[3], color=colors[3], align=align)
+    bar5 = plt.bar(x_pos + 1.5 * (width+spacing), bar_5, width, label=legends[4], color=colors[4], align=align)
+    #bar6 = plt.bar(x_pos + 2.5 * width, bar_6, width, label=legends[5], color=colors[5], align=align)
+    
+
+    # Add some text for labels, title and custom x-axis tick labels, etc.
+    plt.ylabel('F1-Score %')
+    #plt.xlabel('Experiments') 
+    plt.title(title,fontsize = 14)  
+    rcParams['axes.titlepad'] = 20 
+    plt.xticks(x, experiments)
+
+    plt.bar_label(bar1,fmt='%.1f')
+    plt.bar_label(bar2,fmt='%.1f')
+    plt.bar_label(bar3,fmt='%.1f')
+    plt.bar_label(bar4,fmt='%.1f')
+    plt.bar_label(bar5,fmt='%.1f')
+    #plt.bar_label(bar6,fmt='%.1f')
+
+    plt.legend(prop={'size': 12})
+    #plt.legend(bbox_to_anchor=(1.15, 1.15), loc='upper right')
+    plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), ncol=3)
+    
+    
+    plt.ylim(0,100)
+
+    full_chart_path = path_to_export_chart + file_title + '.png'
+
+    plt.tight_layout()
+
+    plt.savefig(full_chart_path, format="png", dpi=300)
     plt.close()
 
     print(f"Done! {full_chart_path} has been saved.")
@@ -254,7 +357,7 @@ def create_map_chart(result_path,labels,main_path,output_directory,file_title,ti
         ##rcParams['axes.titlepad'] = 10 
         plt.ylabel('Precision')
         plt.xlabel('Recall')
-        plt.savefig(output_directory + 'Recall_vs_Precision_5_runs_' + file_title + '_DeepLab_Xception.png', format="png")
+        plt.savefig(output_directory + 'Recall_vs_Precision_5_runs_' + file_title + '_DeepLab_Xception.png', format="png", dpi=300)
         plt.close()
         init += 1
     
@@ -405,23 +508,29 @@ def extract_map_and_f1(file_path):
     return map_values, f1_values
 
 
-def create_all_charts(args, baseline_paths, baseline_labels,baseline_checkpoints,titles, map_file,metrics_file,num_samples,target):
+def create_all_charts(args, baseline_paths, baseline_labels,baseline_checkpoints,titles, map_file,metrics_file,num_samples,target,upperbound_results_path=None):
     result_path_ = baseline_paths
     labels_ = baseline_labels
     checkpoint_list_ = baseline_checkpoints
 
-    title = titles + 'Evaluation of metrics (%) across experiments (Post-Ensemble)'
-    mapTitle = titles + 'Evaluation of mAP (%) across experiments (Post-Ensemble)'
+    #title = titles + 'Evaluation of metrics (%) across experiments (Post-Ensemble)'
+    #mapTitle = titles + 'Evaluation of mAP (%) across experiments (Post-Ensemble)'
+    
+    title = titles + 'Evaluation of metrics (%) across experiments'
+    mapTitle = titles + 'Evaluation of mAP (%) across experiments'
+    f1Title = titles + 'Evaluation of F1 (%) across experiments'
     uncertainty_title = titles + 'Evaluation of F1-score (%) leveraging uncertainty estimation (Post-Ensemble)\nAudit area = 3%'
+    uncertainty_title = titles + 'Evaluation of F1-score (%) leveraging uncertainty estimation\nAudit area = 3%'
 
-    file_title = map_file
+    #file_title = map_file
     #map_list = create_map_chart(result_path_,labels_,SharedParameters.AVG_MAIN_PATH,SharedParameters.RESULTS_MAIN_PATH,file_title,mapTitle,num_samples,(7,7))
     #create_map_f1_boxplot(result_path_,labels_,SharedParameters.RESULTS_MAIN_PATH, SharedParameters.RESULTS_MAIN_PATH, file_title)
 
     file_title = metrics_file
     #create_chart(args,labels_,target,result_path_,checkpoint_list_,map_list,SharedParameters.RESULTS_MAIN_PATH,file_title,title)
+    create_f1_bar_chart(args,labels_,target,result_path_,checkpoint_list_,SharedParameters.RESULTS_MAIN_PATH,file_title,f1Title)
     #create_uncertainty_chart(args,labels_,target,result_path_,checkpoint_list_,SharedParameters.RESULTS_MAIN_PATH,f'{file_title}_Uncertainty', uncertainty_title)
-    create_audit_area_chart(baseline_paths, baseline_labels, SharedParameters.RESULTS_MAIN_PATH, f'{file_title}_Audit')
+    #create_audit_area_chart(baseline_paths, baseline_labels, SharedParameters.RESULTS_MAIN_PATH, f'{file_title}_Audit', upperbound_results_path)
     
     
     
@@ -433,10 +542,14 @@ def generate_tables(args, sources):
     
     map_path = os.path.join(SharedParameters.RESULTS_MAIN_PATH,f'map_arr_{args.method}.npy')
     f1_path = os.path.join(SharedParameters.RESULTS_MAIN_PATH,f'f1_arr_{args.method}.npy')
+    recall_path = os.path.join(SharedParameters.RESULTS_MAIN_PATH,f'recall_arr_{args.method}.npy')
+    precision_path = os.path.join(SharedParameters.RESULTS_MAIN_PATH,f'precision_arr_{args.method}.npy')
     
     if args.recalculate or not (os.path.exists(map_path) and os.path.exists(f1_path)):
         
         _f1 = []
+        _recall = []
+        _precision = []
         _mAP = []
     
         args.save_result_text = True
@@ -444,6 +557,8 @@ def generate_tables(args, sources):
         for source in sources:
             for target in source["targets"]:
                 fscore_list = []
+                recall_list = []
+                precision_list = []
                 mAP_list = []
                 for method in target["methods"]:
                     args.target_dataset = target['name']
@@ -452,24 +567,32 @@ def generate_tables(args, sources):
                     
                     #Computing F1-Score
                     try:
-                        _,fscore,_,_,_,_,_,_,_ = get_metrics(args)
+                        _,fscore,recall,precision,_,_,_,_,_ = get_metrics(args)
                     except Exception as e:
                         print(f"Error: {e}")
                         sys.exit(1)
                     fscore_list.append(fscore)
+                    recall_list.append(recall)
+                    precision_list.append(precision)
                     
                     #Computing mAP
                     avg_result_folder = os.path.join(SharedParameters.AVG_MAIN_PATH, method['results'], 'Avg_Scores')
                     _, _, mAP = computeMap(100, None, None, avg_result_folder)
                     mAP_list.append(mAP)
                 _f1.append(fscore_list)
+                _recall.append(recall_list)
+                _precision.append(precision_list)
                 _mAP.append(mAP_list)
                 
         _map_arr = np.array(_mAP).transpose()
         _f1_arr = np.array(_f1).transpose()
+        _recall_arr = np.array(_recall).transpose()
+        _precision_arr = np.array(_precision).transpose()
         
         np.save(map_path,_map_arr)
         np.save(f1_path,_f1_arr)
+        np.save(recall_path,_recall_arr)
+        np.save(precision_path,_precision_arr)
         
     else:
         if not (os.path.exists(map_path) and os.path.exists(f1_path)):
@@ -477,8 +600,14 @@ def generate_tables(args, sources):
         
         _map_arr = np.load(map_path)
         _f1_arr = np.load(f1_path)
+        _recall_arr = np.load(recall_path)
+        _precision_arr = np.load(precision_path)
     
-    generate_latex_table(_experiments, _sources, _targets, _map_arr, _f1_arr, SharedParameters.RESULTS_MAIN_PATH)    
+    generate_latex_table(args, _experiments, _sources, _targets, _map_arr, _f1_arr, SharedParameters.RESULTS_MAIN_PATH)  
+    
+    generate_latex_table_metric(args, _experiments, _sources, _targets, _f1_arr, SharedParameters.RESULTS_MAIN_PATH,'F1') 
+    generate_latex_table_metric(args, _experiments, _sources, _targets, _recall_arr, SharedParameters.RESULTS_MAIN_PATH,'Recall') 
+    generate_latex_table_metric(args, _experiments, _sources, _targets, _precision_arr, SharedParameters.RESULTS_MAIN_PATH,'Precision') 
     
 def generate_tables_uncertainty(args, sources):
     
@@ -547,25 +676,27 @@ def generate_tables_uncertainty(args, sources):
         _f1_audit_arr = np.load(f1_audit_path)
     
     generate_latex_table_uncertainty(_experiments, _sources, _targets,_f1_arr, _f1_low_arr,_f1_high_arr,_f1_audit_arr, SharedParameters.RESULTS_MAIN_PATH)        
-    generate_latex_table_uncertainty_paper(_experiments, _sources, _targets,_f1_arr, _f1_low_arr,_f1_high_arr,_f1_audit_arr, SharedParameters.RESULTS_MAIN_PATH)
+    #generate_latex_table_uncertainty_paper(_experiments, _sources, _targets,_f1_arr, _f1_low_arr,_f1_high_arr,_f1_audit_arr, SharedParameters.RESULTS_MAIN_PATH)
     
     
     
     
-def generate_latex_table(experiments, sources, targets, map_values, f1_values, file_path):
+def generate_latex_table(args, experiments, sources, targets, map_values, f1_values, file_path):
     
     # Verify the lengths of the inputs
     num_experiments = len(experiments)
     num_targets = len(targets)
     multisource = False
-    setting = 'multi-target'
+    setting = args.method
 
     #Multisource cenario example: source=['PA-MA','PA-RO','MA-RO'] target= ['RO','MA','PA']
+    '''
     if len(sources) == len(targets):
         multisource = True
         setting = 'multi-source'
     elif len(sources) * 2 != len(targets):
         raise ValueError("Mismatch in the lengths of sources and targets.")
+    ''' 
         
     if not (len(map_values) == num_experiments and len(f1_values) == num_experiments and len(map_values[0]) == num_targets and len(f1_values[0]) == num_targets):
         raise ValueError("Mismatch in the lengths of input lists.")
@@ -647,6 +778,87 @@ def generate_latex_table(experiments, sources, targets, map_values, f1_values, f
     with open(output_file, 'w') as file:
         file.write(latex_table)
         
+
+def generate_latex_table_metric(args, experiments, sources, targets, metric_values, file_path, metric_name):
+    
+    # Verify the lengths of the inputs
+    num_experiments = len(experiments)
+    num_targets = len(targets)
+    multisource = False
+    setting = args.method
+
+    #Multisource cenario example: source=['PA-MA','PA-RO','MA-RO'] target= ['RO','MA','PA']
+    '''
+    if len(sources) == len(targets):
+        multisource = True
+        setting = 'multi-source'
+    elif len(sources) * 2 != len(targets):
+        raise ValueError("Mismatch in the lengths of sources and targets.")
+    '''
+        
+    if not (len(metric_values) == num_experiments and len(metric_values[0]) == num_targets):
+        raise ValueError("Mismatch in the lengths of input lists.")
+    
+    if not multisource:
+        latex_table = r"""
+        \begin{table}[h!]
+        \begingroup
+        \setlength{\tabcolsep}{2pt}
+        \centering
+        \begin{tabularx}{\textwidth}{|c|""" + "CC|" * len(targets) + r"""}
+        \hline
+        \textbf{Source} & """ + " & ".join([f"\multicolumn{{2}}{{c|}}{{{s}}}" for s in sources]) + r""" \\
+        \hline
+        \textbf{Target} & """ + " & ".join([f"{t}" for t in targets]) + r""" \\
+        \hline
+        \textbf{Experiments} & """ + " & ".join([f"{metric_name}" for _ in targets]) + r""" \\
+        \hline
+        """
+        for i, experiment in enumerate(experiments):
+            
+            latex_table += f"\makecell{{{experiment}}} & " + " & ".join([f"{metric_values[i,j]:.1f}" for j in range(len(targets))]) + r""" \\
+            \hline
+            """
+        latex_table += r"""\end{tabularx}
+        \caption{Evaluation of """ + metric_name +r""" in Multi-Target Experiments.}
+        \label{table:""" + f"results_multitarget" + r"""}
+        \endgroup
+        \end{table}
+        """
+    else:
+        latex_table = r"""
+        \begin{table}[h!]
+        \begingroup
+        \setlength{\tabcolsep}{4pt}
+        \centering
+        \begin{tabularx}{\textwidth}{|c|""" + "CC|" * len(targets) + r"""}
+        \hline
+        \textbf{Source} & """ + " & ".join([f"{s}" for s in sources]) + r""" \\
+        \hline
+        \textbf{Target} & """ + " & ".join([f"{t}" for t in targets]) + r""" \\
+        \hline
+        \textbf{Experiments} & """ + " & ".join([f"{metric_name}" for _ in targets]) + r""" \\
+        \hline
+        """
+        
+        for i, experiment in enumerate(experiments):
+            latex_table += f"\makecell{{{experiment}}} & " + " & ".join([f"{metric_values[i,j]:.1f}" for j in range(len(targets))]) + r""" \\
+            \hline
+            """
+        
+        latex_table += r"""\end{tabularx}
+        \caption{Evaluation of """ + metric_name +r""" in Multi-Source Experiments.}
+        \label{table:""" + f"results_multisource" + r"""}
+        \endgroup
+        \end{table}
+        """
+
+    output_file = os.path.join(file_path, f'{setting}_{metric_name}_latex_table.tex')
+    
+    with open(output_file, 'w') as file:
+        file.write(latex_table)        
+
+        
 def generate_latex_table_uncertainty(experiments, sources, targets, f1_values,f1_low_values,f1_high_values,f1_audit_values, file_path):
     
     # Verify the lengths of the inputs
@@ -693,12 +905,22 @@ def generate_latex_table_uncertainty(experiments, sources, targets, f1_values,f1
     formatted_f1_high_values = np.empty(f1_high_values.shape,dtype=object)
     formatted_f1_audit_values = np.empty(f1_audit_values.shape,dtype=object)
     
+    '''
     for i in range(f1_values.shape[0]):
         for j in range(f1_values.shape[1]):
             formatted_f1_values[i,j] = fr'\cellcolor{{lime}}\textbf{{{f1_values[i, j]:.1f}}}' if f1_values[i, j] == max_values_f1[j] else f'{f1_values[i, j]:.1f}'
             formatted_f1_low_values[i,j] = fr'\cellcolor{{lime}}\textbf{{{f1_low_values[i, j]:.1f}}}' if f1_low_values[i, j] == max_values_f1_low[j] else f'{f1_low_values[i, j]:.1f}'
             formatted_f1_high_values[i,j] = fr'\cellcolor{{lime}}\textbf{{{f1_high_values[i, j]:.1f}}}' if f1_high_values[i, j] == max_values_f1_high[j] else f'{f1_high_values[i, j]:.1f}'
             formatted_f1_audit_values[i,j] = fr'\cellcolor{{lime}}\textbf{{{f1_audit_values[i, j]:.1f}}}' if f1_audit_values[i, j] == max_values_f1_audit[j] else f'{f1_audit_values[i, j]:.1f}'
+    '''
+    
+    for i in range(f1_values.shape[0]):
+        for j in range(f1_values.shape[1]):
+            formatted_f1_values[i,j] = f'{f1_values[i, j]:.1f}'
+            formatted_f1_low_values[i,j] = f'{f1_low_values[i, j]:.1f}'
+            formatted_f1_high_values[i,j] = f'{f1_high_values[i, j]:.1f}'
+            formatted_f1_audit_values[i,j] = fr'\textbf{{{f1_audit_values[i, j]:.1f}}}'
+    
     
     latex_table = ""      
     if not multisource:
@@ -717,7 +939,7 @@ def generate_latex_table_uncertainty(experiments, sources, targets, f1_values,f1
             \hline
             \textbf{Target} & """ + " & ".join([f"\multicolumn{{4}}{{c|}}{{{targets[idx+j]}}}" for j in range(2)]) + r""" \\
             \hline
-            \textbf{Experiments} & """ + " & ".join([f"F1 & F1_{{low}} & F1_{{high}} & F1_{{aud}}" for _ in range(2)]) + r""" \\
+            \textbf{Experiments} & """ + " & ".join([f"$F1$ & $F1_{{low}}$ & $F1_{{high}}$ & $F1_{{aud}}$" for _ in range(2)]) + r""" \\
             \hline
             """
             for i, experiment in enumerate(experiments):
@@ -746,7 +968,7 @@ def generate_latex_table_uncertainty(experiments, sources, targets, f1_values,f1
             \hline
             \textbf{Target} & """ + f"\multicolumn{{4}}{{c|}}{{{targets[idx]}}}" + r""" \\
             \hline
-            \textbf{Experiments} & F1 & F1_{low} & F1_{high} & F1_{aud} \\
+            \textbf{Experiments} & $F1$ & $F1_{low}$ & $F1_{high}$ & $F1_{aud}$ \\
             \hline
             """
             for i, experiment in enumerate(experiments):
@@ -754,7 +976,7 @@ def generate_latex_table_uncertainty(experiments, sources, targets, f1_values,f1
                 \hline
                 """
             latex_table += r"""\end{tabularx}
-            \caption{F1-Score Evaluation for """ + f"{s}" + r""" source in Multi-Source Uncertainty Estimation Experiments.}
+            \caption{F1-Score Evaluation for """ + f"{s}" + r""" source in Multi-Source Uncertainty Estimation Experiments with AA = 3\%.}
             \label{table:""" + f"results_multisource_uncertainty_{s}" + r"""}
             \endgroup
             \end{table}
@@ -815,7 +1037,7 @@ def generate_latex_table_uncertainty_paper(experiments, sources, targets, f1_val
                     \hline
                     """
                 latex_table += r"""\end{tabular}
-                \caption{F1-Score results for """ + f"{s} source and {targets[idx+j]} target" + r""" in Uncertainty Estimation Experiments.}
+                \caption{F1-Score results for """ + f"{s} source and {targets[idx+j]} target" + r""" in Uncertainty Estimation Experiments with AA = 3\%.}
                 \label{table:""" + f"results_domain_adaptation_uncertainty_{s}" + r"""}
                 \end{table}
                 """
@@ -867,8 +1089,11 @@ def create_uncertainty_chart(args, experiments, target, result_list, checkpoint_
     x = np.arange(len(_experiments))   
 
     plt.clf()
-
-    plt.figure(figsize=(17,7))
+    
+    if len(experiments) > 3:
+        plt.figure(figsize=(14,7))
+    else:
+        plt.figure(figsize=(10,7))
     
     bars_F1 = fscore_list
     bars_F1_Low = fscore_low_list
@@ -886,9 +1111,9 @@ def create_uncertainty_chart(args, experiments, target, result_list, checkpoint_
 
     # Add some text for labels, title and custom x-axis tick labels, etc.
     plt.ylabel('Scores %')
-    plt.xlabel('Experiments') 
-    plt.title(title,fontsize = 14)  
-    rcParams['axes.titlepad'] = 20 
+    plt.xlabel('Experiments')
+    plt.title(title,fontsize = 14) 
+    rcParams['axes.titlepad'] = 20
     plt.xticks(x, _experiments)
 
     plt.bar_label(bar0,fmt='%.1f', padding=4)
@@ -906,13 +1131,13 @@ def create_uncertainty_chart(args, experiments, target, result_list, checkpoint_
 
     plt.tight_layout()
 
-    plt.savefig(full_chart_path, format="png")
+    plt.savefig(full_chart_path, format="png", dpi=300)
     plt.close()
 
     print(f"Done! {full_chart_path} has been saved.")
     
     
-def create_audit_area_chart(baseline_paths, baseline_labels, output_directory,filename):
+def create_audit_area_chart(baseline_paths, baseline_labels, output_directory,filename,upperbound_results_path):
     
     if not (len(baseline_paths) == len(baseline_labels)):
         raise Exception("create_audit_area_chart: Lists are not the same length. Please verify.")
@@ -922,27 +1147,38 @@ def create_audit_area_chart(baseline_paths, baseline_labels, output_directory,fi
         'F1 No Uncertainty',
         'F1 Low Uncertainty',
         'F1 High Uncertainty',
-        'F1 Audited'
+        'F1 Audited',
+        'F1 Upper-bound baseline'
     ]
 
     colors = [
         '#5285B9',
         '#70B2E4',
         'red',
-        '#63A953'
+        '#63A953',
+        '#dba237'
     ]
     
     row_index = 0
     col_index = 0
  
     # Create a figure
-    fig = plt.figure(figsize=(14, 8))
-    #fig = plt.figure()
+    #fig = plt.figure(figsize=(14, 12))
+    fig = plt.figure()
 
     # Define the GridSpec
-    gs = gridspec.GridSpec(3, 3)
+    gs = gridspec.GridSpec(1, 1)
     
     for rf in range(len(baseline_paths)):
+        
+        if upperbound_results_path is not None:
+            upper_file_path = os.path.join(SharedParameters.AVG_MAIN_PATH, upperbound_results_path,'Avg_Scores','fscore_metrics.npy')
+            if not os.path.exists(upper_file_path):
+                raise Exception(f"File {upper_file_path} could not be found.")
+            upper_fscore_array = np.load(upper_file_path)
+            upper_data = upper_fscore_array[:,0]
+            upper_data = upper_data[:, np.newaxis] 
+        
 
         if(rf != 0 and rf % 3 == 0):
             row_index+=1
@@ -955,6 +1191,9 @@ def create_audit_area_chart(baseline_paths, baseline_labels, output_directory,fi
         fscore_array = np.load(file_path)
         
         data = fscore_array[:,:4]
+        
+        data = np.hstack((data, upper_data))
+        
         # X-axis points (row indices)
         x = np.arange(1, data.shape[0])
 
@@ -963,6 +1202,9 @@ def create_audit_area_chart(baseline_paths, baseline_labels, output_directory,fi
 
         for i in range(data.shape[1]):
             ax = plt.subplot(gs[row_index, col_index])
+            
+            print(i)
+            print(data[1:, i])
             
             spline = make_interp_spline(x, data[1:, i], k=3)  # Cubic spline
             y_smooth = spline(x_new)

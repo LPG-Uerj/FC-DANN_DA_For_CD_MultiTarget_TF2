@@ -18,28 +18,30 @@ result_path = []
 baseline_paths = [
     'results_tr_Cerrado_MA_classification_S_Cerrado_MA_T_Cerrado_MA/',
     'results_tr_Amazon_PA_classification_S_Amazon_PA_T_Cerrado_MA/',
-    'results_tr_Amazon_PA_to_Cerrado_MA_domain_adaptation_DR_single_Cerrado_MA_wrmp1_gamma_2.5_skipconn_True/',
     
-    'results_tr_Amazon_PA_Amazon_RO_to_Cerrado_MA_domain_adaptation_DR_FC_multi_source_discriminate_target_False/',
     'results_tr_Amazon_PA_Amazon_RO_to_Cerrado_MA_classification_None_FC_multi_source_discriminate_target_False/',
+    'results_tr_Amazon_PA_Amazon_RO_to_Cerrado_MA_domain_adaptation_DR_FC_multi_source_discriminate_target_True/',
+    'results_tr_Amazon_PA_Amazon_RO_to_Cerrado_MA_domain_adaptation_DR_FC_multi_source_discriminate_target_False/',
+    
 ]
 
 baseline_checkpoints = [
     'checkpoint_tr_Cerrado_MA_classification_Cerrado_MA/',
     'checkpoint_tr_Amazon_PA_classification_Amazon_PA/',
-    'checkpoint_tr_Amazon_PA_to_Cerrado_MA_domain_adaptation_DR_single_Cerrado_MA_wrmp1_gamma_2.5_skipconn_True/',
     
-    'checkpoint_tr_Amazon_PA_Amazon_RO_to_Cerrado_MA_domain_adaptation_DR_FC_multi_source_discriminate_target_False/',
     'checkpoint_tr_Amazon_PA_Amazon_RO_to_Cerrado_MA_classification_None_FC_multi_source_discriminate_target_False/',
+    'checkpoint_tr_Amazon_PA_Amazon_RO_to_Cerrado_MA_domain_adaptation_DR_FC_multi_source_discriminate_target_True/',
+    'checkpoint_tr_Amazon_PA_Amazon_RO_to_Cerrado_MA_domain_adaptation_DR_FC_multi_source_discriminate_target_False/',
+    
 ]
 
 baseline_labels = [
     SharedParameters.formatted_upper_bound_source_only_label("MA"),
     SharedParameters.formatted_lower_bound_label("PA","MA"),
-    SharedParameters.formatted_single_target_label("PA","MA"),
     
-    SharedParameters.formatted_multi_source_label("PA","RO","MA"),
-    SharedParameters.formatted_multi_source_no_da_label("PA","RO","MA")
+    SharedParameters.formatted_multi_source_no_da_label("PA","RO","MA"),
+    SharedParameters.formatted_multi_source_label("PA","RO","MA") + "\n" + SharedParameters.EXPERIMENTS_LABELS[0],
+    SharedParameters.formatted_multi_source_label("PA","RO","MA") + "\n" + SharedParameters.EXPERIMENTS_LABELS[1],
 ]
 
 args.checkpoint_results_main_path = "./results/"

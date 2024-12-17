@@ -18,28 +18,30 @@ result_path = []
 baseline_paths = [
     'results_tr_Amazon_PA_classification_S_Amazon_PA_T_Amazon_PA/',
     'results_tr_Amazon_RO_classification_S_Amazon_RO_T_Amazon_PA/',
-    'results_tr_Amazon_RO_to_Amazon_PA_domain_adaptation_DR_single_Amazon_PA_wrmp1_gamma_2.5_skipconn_True/',
     
-    'results_tr_Cerrado_MA_Amazon_RO_to_Amazon_PA_domain_adaptation_DR_FC_multi_source_discriminate_target_False/',
     'results_tr_Cerrado_MA_Amazon_RO_to_Amazon_PA_classification_None_FC_multi_source_discriminate_target_False/',
+    'results_tr_Cerrado_MA_Amazon_RO_to_Amazon_PA_domain_adaptation_DR_FC_multi_source_discriminate_target_True/',
+    'results_tr_Cerrado_MA_Amazon_RO_to_Amazon_PA_domain_adaptation_DR_FC_multi_source_discriminate_target_False/',
+    
 ]
 
 baseline_checkpoints = [
     'checkpoint_tr_Amazon_PA_classification_Amazon_PA/',
     'checkpoint_tr_Amazon_RO_classification_Amazon_RO/',
-    'checkpoint_tr_Amazon_RO_to_Amazon_PA_domain_adaptation_DR_single_Amazon_PA_gamma_2.5_skipconn_True/',
     
-    'checkpoint_tr_Cerrado_MA_Amazon_RO_to_Amazon_PA_domain_adaptation_DR_FC_multi_source_discriminate_target_False/',
     'checkpoint_tr_Cerrado_MA_Amazon_RO_to_Amazon_PA_classification_None_FC_multi_source_discriminate_target_False/',
+    'checkpoint_tr_Cerrado_MA_Amazon_RO_to_Amazon_PA_domain_adaptation_DR_FC_multi_source_discriminate_target_True/',
+    'checkpoint_tr_Cerrado_MA_Amazon_RO_to_Amazon_PA_domain_adaptation_DR_FC_multi_source_discriminate_target_False/',
+    
 ]
 
 baseline_labels = [
     SharedParameters.formatted_upper_bound_source_only_label("PA"),
     SharedParameters.formatted_lower_bound_label("RO","PA"),
-    SharedParameters.formatted_single_target_label("RO","PA"),
     
-    SharedParameters.formatted_multi_source_label("MA","RO","PA"),
     SharedParameters.formatted_multi_source_no_da_label("MA","RO","PA"),
+    SharedParameters.formatted_multi_source_label("MA","RO","PA") + "\n" + SharedParameters.EXPERIMENTS_LABELS[0],
+    SharedParameters.formatted_multi_source_label("MA","RO","PA") + "\n" + SharedParameters.EXPERIMENTS_LABELS[1],
 ]
 
 args.checkpoint_results_main_path = "./results/"

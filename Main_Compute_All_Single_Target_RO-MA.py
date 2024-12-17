@@ -37,7 +37,7 @@ args.checkpoint_results_main_path = "./results/"
 target = CERRADO_MA.DATASET
 
 titles = SharedParameters.formatted_chart_title("RO","MA")+'\n'
-map_file = f'{SharedParameters.DA_MULTI_TARGET_FILE_TITLE}_Ts_RO_Eval_MA'
-metrics_file = f'Metrics_{SharedParameters.DA_MULTI_TARGET_FILE_TITLE}_Ts_RO_Eval_MA'
+map_file = f'{SharedParameters.DA_SINGLE_TARGET_FILE_TITLE}_Ts_RO_Eval_MA'
+metrics_file = f'Metrics_{SharedParameters.DA_SINGLE_TARGET_FILE_TITLE}_Ts_RO_Eval_MA'
 
 Charts.create_all_charts(args, baseline_paths,baseline_labels,baseline_checkpoints,titles, map_file,metrics_file,num_samples,target)

@@ -54,7 +54,8 @@ warmup = "1"
 DR_LOCALIZATION = ['55']
 METHODS  = [SharedParameters.METHOD]
 DA_TYPES = ['DR']
-TARGET_DATASETS = [AMAZON_PA.DATASET]
+#TARGET_DATASETS = [AMAZON_PA.DATASET]
+TARGET_DATASETS = [CERRADO_MA.DATASET,AMAZON_PA.DATASET,AMAZON_RO.DATASET]
 
 for dr_localization in DR_LOCALIZATION:
     for method in METHODS:
@@ -103,7 +104,7 @@ for dr_localization in DR_LOCALIZATION:
 
             for target_ds in TARGET_DATASETS:
                 
-                results_dir_param = results_dir + training_type + "_" + da + "_" + domain_regressor_type + "_multi_source_discriminate_target_" + str(args.discriminate_domain_targets)
+                results_dir_param = results_dir + training_type + "_" + da + "_" + domain_regressor_type + "_multi_source_discriminate_target_" + str(args.discriminate_domain_targets) + "_" + target_ds
 
                 if args.test:                    
                     Schedule.append("python " + Test_MAIN_COMMAND + " "

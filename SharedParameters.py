@@ -52,19 +52,23 @@ SKIP_CONNECTIONS = str(True)
 TRAINING_TYPE_CLASSIFICATION = "classification"
 TRAINING_TYPE_DOMAIN_ADAPTATION = "domain_adaptation"
 
+DMDA_FILE_TITLE = 'DMDA'
+DMDA_SOURCE_FILE_TITLE = 'DMDA_SOURCE'
 DA_MULTI_SOURCE_FILE_TITLE = 'Multi_source'
 DA_MULTI_TARGET_FILE_TITLE = 'Multi_target'
-DA_MULTI_SOURCE_TITLE = 'DA Multi-Source '
-DA_MULTI_TARGET_TITLE = 'DA Multi-Target '
-DA_CHART_TITLE = 'DA Multi-Target experiments comparison'
+DA_SINGLE_TARGET_FILE_TITLE = 'Single_target'
+DA_MULTI_SOURCE_TITLE = 'DMDA Multi-Source '
+DA_MULTI_TARGET_TITLE = 'DMDA Multi-Target '
+DA_SINGLE_TARGET_TITLE = 'DA Single-Target '
+DA_CHART_TITLE = 'DMDA Multi-Target experiments comparison'
 
 #LOWER_BOUND_LABEL = 'Source only training\\\(lowerbound)'
 #UPPER_BOUND_SOURCE_ONLY_LABEL = 'Training on target\\\(upperbound)'
 LOWER_BOUND_LABEL = 'Source only training'
 UPPER_BOUND_SOURCE_ONLY_LABEL = 'Training on target'
-SINGLE_TARGET_LABEL = 'DA single-target'
-MULTI_TARGET_LABEL = 'DA multi-target'
-MULTI_SOURCE_LABEL = 'DA multi-source'
+SINGLE_TARGET_LABEL = 'DA Single-target'
+MULTI_TARGET_LABEL = 'DMDA Multi-target'
+MULTI_SOURCE_LABEL = 'DMDA Multi-source'
 MULTI_SOURCE_LABEL_NO_DA = 'Multi-source only training'
 
 '''
@@ -77,27 +81,29 @@ FORMAT_MULTI_SOURCE_LABEL =             'Tr({},{})|Val({}→{},{})\nDA Multi-Sou
 FORMAT_MULTI_SOURCE_NO_DA_LABEL =       'Tr({},{})|Val({})\nMulti-Source only training'
 '''
 
-FORMAT_CHART_TITLE =                    'Training on {} | Validating on {}'
-FORMAT_LOWER_BOUND_LABEL =              'Source {}|Target {} (Source only training)'
-FORMAT_UPPER_BOUND_SOURCE_ONLY_LABEL =  'Source {}|Target {} (Training on target)'
-FORMAT_SINGLE_TARGET_LABEL =            'Source {}|Target {} (Domain Adaptation)'
-FORMAT_MULTI_TARGET_LABEL =             'Tr({})|Val({},{}→{})\nDA Multi-Target'
-FORMAT_MULTI_SOURCE_LABEL =             'Tr({},{})|Val({}→{},{})\nDA Multi-Source'
-FORMAT_MULTI_SOURCE_NO_DA_LABEL =       'Tr({},{})|Val({})\nMulti-Source only training'
+FORMAT_F1_SOURCE_CHART_TITLE =          'Source {}'
+FORMAT_F1_CHART_TITLE =                 'Target {}'
+FORMAT_CHART_TITLE =                    'Source {} | Target {}'
+FORMAT_LOWER_BOUND_LABEL =              'Source {} | Target {}\nSource only training'
+FORMAT_UPPER_BOUND_SOURCE_ONLY_LABEL =  'Source {} | Target {}\nTraining on target'
+FORMAT_SINGLE_TARGET_LABEL =            'Source {} | Target {}\nDA Single-target'
+FORMAT_MULTI_TARGET_LABEL =             'Source {} | Target {}\nDMDA Multi-target'
+FORMAT_MULTI_SOURCE_LABEL =             'Source {},{} | Target {}\nDMDA Multi-source'
+FORMAT_MULTI_SOURCE_NO_DA_LABEL =       'Source {},{} | Target {}\nMulti-source only training'
 
+formatted_f1_source_chart_title = lambda x: FORMAT_F1_SOURCE_CHART_TITLE.format(x)
+formatted_f1_chart_title = lambda x: FORMAT_F1_CHART_TITLE.format(x)
 formatted_chart_title = lambda x, y: FORMAT_CHART_TITLE.format(x, y)
 formatted_lower_bound_label = lambda x, y: FORMAT_LOWER_BOUND_LABEL.format(x, y)
 formatted_upper_bound_source_only_label = lambda y: FORMAT_UPPER_BOUND_SOURCE_ONLY_LABEL.format(y,y)
 formatted_single_target_label = lambda x, y: FORMAT_SINGLE_TARGET_LABEL.format(x, y, x)
-formatted_multi_target_label = lambda x, y1, y2: FORMAT_MULTI_TARGET_LABEL.format(x, y1, y2, x)
+formatted_multi_target_label = lambda x, y1, y2: FORMAT_MULTI_TARGET_LABEL.format(x, y1)
 formatted_multi_source_label = lambda x, y, z: FORMAT_MULTI_SOURCE_LABEL.format(x, y, z, x, y)
 formatted_multi_source_no_da_label = lambda x, y, z: FORMAT_MULTI_SOURCE_NO_DA_LABEL.format(x, y, z)
 
 EXPERIMENTS_LABELS = [    
-    'Multi-Domain fc Disc.',
-    'Source-Target fc Disc.',
-    'Multi-Domain conv. Disc.',
-    'Source-Target conv. Disc.'
+    'Multi-Domain Disc.',
+    'Source-Target Disc.'
 ]
 
 EXPERIMENTS_LABELS_LB = [    
@@ -106,7 +112,7 @@ EXPERIMENTS_LABELS_LB = [
 ]
 
 MULTI_SOURCE_EXPERIMENTS_LABELS = [    
-    '2 neurons discr.'
+    'Source-Target Disc.'
 ]
 
 

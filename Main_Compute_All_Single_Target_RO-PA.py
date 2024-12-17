@@ -38,7 +38,7 @@ args.checkpoint_results_main_path = "./results/"
 target = AMAZON_PA.DATASET
 
 titles = SharedParameters.formatted_chart_title("RO","PA")+'\n'
-map_file = f'{SharedParameters.DA_MULTI_TARGET_FILE_TITLE}_Ts_RO_Eval_PA'
-metrics_file = f'Metrics_{SharedParameters.DA_MULTI_TARGET_FILE_TITLE}_Ts_RO_Eval_PA'
+map_file = f'{SharedParameters.DA_SINGLE_TARGET_FILE_TITLE}_Ts_RO_Eval_PA'
+metrics_file = f'Metrics_{SharedParameters.DA_SINGLE_TARGET_FILE_TITLE}_Ts_RO_Eval_PA'
 
 Charts.create_all_charts(args, baseline_paths,baseline_labels,baseline_checkpoints,titles, map_file,metrics_file,num_samples,target)
