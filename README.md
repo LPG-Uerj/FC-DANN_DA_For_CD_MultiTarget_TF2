@@ -1,4 +1,4 @@
-Deep Learning DANN implementation built on TensorFlow 1.15 for Change Detection with Multi Target and Multi Source support.
+Deep Learning DANN implementation built on TensorFlow 2 for Change Detection with Multi Target and Multi Source support.
 
 Startup classes:
 
