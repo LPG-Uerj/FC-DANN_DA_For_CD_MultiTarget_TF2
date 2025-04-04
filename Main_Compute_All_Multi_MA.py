@@ -4,6 +4,7 @@ from Amazonia_Legal_RO import AMAZON_RO
 from Amazonia_Legal_PA import AMAZON_PA
 from Cerrado_Biome_MA import CERRADO_MA
 import SharedParameters
+import numpy as np
 
 parser = argparse.ArgumentParser()
 
@@ -20,13 +21,13 @@ baseline_paths = [
     'results_tr_Amazon_PA_classification_S_Amazon_PA_T_Cerrado_MA/',
     'results_tr_Amazon_PA_to_Cerrado_MA_domain_adaptation_DR_single_Cerrado_MA_wrmp1_gamma_2.5_skipconn_True/',
     'results_tr_Amazon_PA_to_Amazon_RO_Cerrado_MA_domain_adaptation_DR_FC_multi_discriminate_target_True_wrmp_1_Cerrado_MA_skipconn_True/',
-    'results_tr_Amazon_PA_Amazon_RO_to_Cerrado_MA_domain_adaptation_DR_FC_multi_source_discriminate_target_True/',
+    'results_tr_Amazon_PA_Amazon_RO_to_Cerrado_MA_domain_adaptation_DR_FC_multi_source_discriminate_target_True_Cerrado_MA/',
     
     'results_tr_Cerrado_MA_classification_S_Cerrado_MA_T_Cerrado_MA/',
     'results_tr_Amazon_RO_classification_S_Amazon_RO_T_Cerrado_MA/',
     'results_tr_Amazon_RO_to_Cerrado_MA_domain_adaptation_DR_single_Cerrado_MA_wrmp1_gamma_2.5_skipconn_True/',
     'results_tr_Amazon_RO_to_Amazon_PA_Cerrado_MA_domain_adaptation_DR_FC_multi_discriminate_target_True_wrmp_1_Cerrado_MA_skipconn_True/',
-    'results_tr_Amazon_PA_Amazon_RO_to_Cerrado_MA_domain_adaptation_DR_FC_multi_source_discriminate_target_True/',
+    'results_tr_Amazon_PA_Amazon_RO_to_Cerrado_MA_domain_adaptation_DR_FC_multi_source_discriminate_target_True_Cerrado_MA/',
 ]
 
 baseline_checkpoints = [
@@ -44,8 +45,8 @@ baseline_checkpoints = [
 ]
 
 labels = [
-    'Source PA | Target MA',
-    'Source RO | Target MA'
+    r"$^{1 2 3}$Source PA | Target MA | Test MA"+"\n"+r"$^{4}$Source PA | Target MA,RO | Test MA"+"\n"+r"$^{5}$Source PA,RO | Target MA | Test MA",
+    r"$^{1 2 3}$Source RO | Target MA | Test MA"+"\n"+r"$^{4}$Source RO | Target MA,PA | Test MA"+"\n"+r"$^{5}$Source PA,RO | Target MA | Test MA"
 ]
 
 baseline_labels = []
@@ -58,6 +59,24 @@ target = CERRADO_MA.DATASET
 titles = SharedParameters.formatted_f1_chart_title('MA')
 metrics_file = f'Metrics_{SharedParameters.DMDA_FILE_TITLE}_MA'
 
+boxplot_title = f'Boxplot_{metrics_file}'
+
 f1Title = 'Evaluation of F1-Score (%) across experiments' + "\n" + titles
 
-Charts.create_f1_bar_chart(args,labels,target,baseline_paths,baseline_checkpoints,SharedParameters.RESULTS_MAIN_PATH,metrics_file,f1Title)
+#Charts.create_f1_bar_chart_with_limits(args,labels,target,baseline_paths,baseline_checkpoints,SharedParameters.RESULTS_MAIN_PATH,metrics_file,f1Title)
+
+#Charts.create_map_f1_boxplot(baseline_paths,labels,SharedParameters.RESULTS_MAIN_PATH, SharedParameters.RESULTS_MAIN_PATH, boxplot_title)
+
+f1_array, f1_std, f1_mean = Charts.get_stats(baseline_paths,SharedParameters.RESULTS_MAIN_PATH)
+
+print('f1_mean')
+print(f1_mean)
+
+print('f1_std')
+print(f1_std)
+
+Charts.t_test('Source PA | Target MA -> MT vs Lower baseline',f1_mean[1],f1_std[1],f1_mean[3],f1_std[3], n=5)
+Charts.t_test('Source PA | Target MA -> MS vs Lower baseline',f1_mean[1],f1_std[1],f1_mean[4],f1_std[4], n=5)
+
+Charts.t_test('Source RO | Target MA -> MT vs Lower baseline',f1_mean[6],f1_std[6],f1_mean[8],f1_std[8], n=5)
+Charts.t_test('Source RO | Target MA -> MS vs Lower baseline',f1_mean[6],f1_std[6],f1_mean[9],f1_std[9], n=5)

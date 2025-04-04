@@ -69,12 +69,12 @@ REFERENCES = [
     'Main_Script_Executor_Tr_MA_DA_Multi_Target.py --train False --test False ',
     'Main_Script_Executor_Tr_PA_DA_Multi_Target.py --train False --test False ',
     'Main_Script_Executor_Tr_RO_DA_Multi_Target.py --train False --test False ',
-    'Main_Script_Executor_Tr_MA_DA_Multi_Target.py --train False --test False --discriminate_domain_targets True ',
+    'Main_Script_Executor_Tr_MA_DA_Multi_Target.py --train False --discriminate_domain_targets True ',
     'Main_Script_Executor_Tr_PA_DA_Multi_Target.py --train False --test False --discriminate_domain_targets True ',
     'Main_Script_Executor_Tr_RO_DA_Multi_Target.py --train False --test False --discriminate_domain_targets True ',
-    'Main_Script_Executor_Tr_MA_PA_DA_Multi_Source.py --train False --test False ',
-    'Main_Script_Executor_Tr_MA_RO_DA_Multi_Source.py --train False --test False ',
-    'Main_Script_Executor_Tr_PA_RO_DA_Multi_Source.py --train False --test False ',
+    'Main_Script_Executor_Tr_MA_PA_DA_Multi_Source.py --train False --discriminate_domain_targets True ',
+    'Main_Script_Executor_Tr_MA_RO_DA_Multi_Source.py --train False --discriminate_domain_targets True ',
+    'Main_Script_Executor_Tr_PA_RO_DA_Multi_Source.py --train False --discriminate_domain_targets True ',
     'Main_Script_Executor_Tr_MA_DA_Single.py --train False --test False ',
     'Main_Script_Executor_Tr_PA_DA_Single.py --train False --test False ',
     'Main_Script_Executor_Tr_RO_DA_Single.py --train False --test False '
@@ -155,6 +155,7 @@ REFERENCES = [
     'Main_Script_Executor_Tr_MA_RO_DA_Multi_Source.py --train False --discriminate_domain_targets True ',
     'Main_Script_Executor_Tr_PA_RO_DA_Multi_Source.py --train False --discriminate_domain_targets True ',
 ]
+
 
 for reference in REFERENCES:
     Schedule.append("python " + reference + " 2>&1 | tee Main_Script_Executor_All_Multi.txt ")

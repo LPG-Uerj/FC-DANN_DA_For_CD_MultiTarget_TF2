@@ -13,7 +13,7 @@ from Cerrado_Biome_MA import CERRADO_MA
 import SharedParameters
 from scipy.interpolate import make_interp_spline
 import matplotlib.gridspec as gridspec
-
+from scipy import stats
 
 colors = ["#dba237", "#70b2e4", "#469b76", "#2932bb", "#d12e95", "#00bfa0", "#ffa300", "#dc0ab4", "#b3d4ff", "#808080"]
 
@@ -216,7 +216,7 @@ def create_f1_bar_chart(args, experiments, target, result_list, checkpoint_list,
         SharedParameters.MULTI_SOURCE_LABEL,
     ]
 
-    #plt.figure(figsize=(10,7))
+    #plt.figure(figsize=(7,5))
     plt.figure()
         
     bar_1 = result_lists[0]
@@ -258,7 +258,126 @@ def create_f1_bar_chart(args, experiments, target, result_list, checkpoint_list,
 
     plt.legend(prop={'size': 12})
     #plt.legend(bbox_to_anchor=(1.15, 1.15), loc='upper right')
-    plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), ncol=3)
+    plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.25), ncol=3)
+    
+    
+    plt.ylim(0,100)
+
+    full_chart_path = path_to_export_chart + file_title + '.png'
+
+    plt.tight_layout()
+
+    plt.savefig(full_chart_path, format="png", dpi=300)
+    plt.close()
+
+    print(f"Done! {full_chart_path} has been saved.")
+    
+def create_f1_bar_chart_with_limits(args, experiments, target, result_list, checkpoint_list, path_to_export_chart, file_title, title):
+    if not (len(result_list) == len(checkpoint_list)):
+        raise Exception("Lists are not the same length. Please verify.")
+    
+    _length = len(result_list)   
+    
+    fscore_list = []
+    upper_list = []
+    lower_list = []
+
+    args.save_result_text = True
+        
+    for i in range(0,_length):
+        args.target_dataset = target
+        args.checkpoint_dir = checkpoint_list[i]
+        args.results_dir = result_list[i]
+        try:
+            _,fscore,_,_,_,_,_,_,_ = get_metrics(args)
+            _, f1_values = extract_map_and_f1(os.path.join(SharedParameters.RESULTS_MAIN_PATH,result_list[i],'Results.txt'))
+            fscore_list.append(fscore)
+            upper_list.append(np.max(f1_values))
+            lower_list.append(np.min(f1_values))
+        except Exception as e:
+            print("Error:")
+            print(e)
+            continue
+        
+    print('fscore_list shape')
+    print(np.shape(np.array(fscore_list)))
+    
+    result_lists = []
+    upper_result_lists = []
+    lower_result_lists = []
+    num_results = 5
+    # Loop through the first six indices
+    for i in range(num_results):
+        new_list = [fscore_list[i], fscore_list[i + num_results]]
+        upper_new_list = [upper_list[i], upper_list[i + num_results]]
+        lower_new_list = [lower_list[i], lower_list[i + num_results]]
+        # Append the new list to the result
+        result_lists.append(new_list)
+        upper_result_lists.append(upper_new_list)
+        lower_result_lists.append(lower_new_list)
+
+    x = np.arange(2)   
+
+    plt.clf()
+    
+    legends = [
+        SharedParameters.UPPER_BOUND_SOURCE_ONLY_LABEL,
+        SharedParameters.LOWER_BOUND_LABEL,
+        SharedParameters.SINGLE_TARGET_LABEL,
+        SharedParameters.MULTI_TARGET_LABEL,
+        SharedParameters.MULTI_SOURCE_LABEL,
+    ]
+
+    #plt.figure(figsize=(7,5))
+    plt.figure()
+        
+    bar_1 = result_lists[0]
+    bar_2 = result_lists[1]
+    bar_3 = result_lists[2]
+    bar_4 = result_lists[3]
+    bar_5 = result_lists[4]
+    #bar_6 = result_lists[5]
+    
+    errors = []
+    errors.append([[abs(a - b) for a, b in zip(result_lists[0], lower_result_lists[0])],[abs(a - b) for a, b in zip(upper_result_lists[0], result_lists[0])]])
+    errors.append([[abs(a - b) for a, b in zip(result_lists[1], lower_result_lists[1])],[abs(a - b) for a, b in zip(upper_result_lists[1], result_lists[1])]])
+    errors.append([[abs(a - b) for a, b in zip(result_lists[2], lower_result_lists[2])],[abs(a - b) for a, b in zip(upper_result_lists[2], result_lists[2])]])
+    errors.append([[abs(a - b) for a, b in zip(result_lists[3], lower_result_lists[3])],[abs(a - b) for a, b in zip(upper_result_lists[3], result_lists[3])]])
+    errors.append([[abs(a - b) for a, b in zip(result_lists[4], lower_result_lists[4])],[abs(a - b) for a, b in zip(upper_result_lists[4], result_lists[4])]])
+    
+    width = 0.1
+       
+    align = 'edge'    
+    
+    x_pos = np.arange(2)
+    
+    spacing = 0.03
+    
+    bar1 = plt.bar(x_pos - 2.5 * (width+spacing), bar_1, width, yerr=errors[0], label=legends[0], color=colors[0], align=align, capsize=5)
+    bar2 = plt.bar(x_pos - 1.5 * (width+spacing), bar_2, width, yerr=errors[1], label=legends[1], color=colors[1], align=align, capsize=5)
+    bar3 = plt.bar(x_pos - 0.5 * (width+spacing), bar_3, width, yerr=errors[2], label=legends[2], color=colors[2], align=align, capsize=5)
+    bar4 = plt.bar(x_pos + 0.5 * (width+spacing), bar_4, width, yerr=errors[3], label=legends[3], color=colors[3], align=align, capsize=5)
+    bar5 = plt.bar(x_pos + 1.5 * (width+spacing), bar_5, width, yerr=errors[4], label=legends[4], color=colors[4], align=align, capsize=5)
+    #bar6 = plt.bar(x_pos + 2.5 * width, bar_6, width, label=legends[5], color=colors[5], align=align)
+    
+
+    # Add some text for labels, title and custom x-axis tick labels, etc.
+    plt.ylabel('F1-Score %')
+    #plt.xlabel('Experiments') 
+    plt.title(title,fontsize = 14)  
+    rcParams['axes.titlepad'] = 20 
+    plt.xticks(x, experiments)
+
+    plt.bar_label(bar1,fmt='%.1f')
+    plt.bar_label(bar2,fmt='%.1f')
+    plt.bar_label(bar3,fmt='%.1f')
+    plt.bar_label(bar4,fmt='%.1f')
+    plt.bar_label(bar5,fmt='%.1f')
+    #plt.bar_label(bar6,fmt='%.1f')
+
+    plt.legend(prop={'size': 12})
+    #plt.legend(bbox_to_anchor=(1.15, 1.15), loc='upper right')
+    plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.25), ncol=3)
     
     
     plt.ylim(0,100)
@@ -435,7 +554,7 @@ def create_map_f1_boxplot(result_path,labels,base_path, output_directory, file_t
         map_list.append(map_values)
         f1_list.append(f1_values)
 
-    generate_combined_boxplot(output_directory,map_list,'mAP',labels, file_title, f'Evaluation of mAP (%) over 5 Runs (Pre-Ensemble)')
+    #generate_combined_boxplot(output_directory,map_list,'mAP',labels, file_title, f'Evaluation of mAP (%) over 5 Runs (Pre-Ensemble)')
     generate_combined_boxplot(output_directory,f1_list,'F1',labels, file_title, f'Evaluation of F1-Score (%) over 5 Runs (Pre-Ensemble)')
 
 def generate_combined_boxplot(output_directory, data_list, metric, labels, file_title, title):
@@ -477,6 +596,49 @@ def generate_combined_boxplot(output_directory, data_list, metric, labels, file_
     
     plt.savefig(os.path.join(output_directory, f'Boxplot_5_runs_{file_title}_{metric}_DeepLab_Xception.png'), format="png")
     plt.close()
+    
+def get_stats(result_path, base_path):
+    #map_list = []
+    f1_list = []
+    
+    for rf in range(len(result_path)):
+
+        result_folder = os.path.join(base_path,result_path[rf])
+
+        if not os.path.exists(result_folder):
+            raise Exception(f"Folder not found: {result_folder}")
+
+        _, f1_values = extract_map_and_f1(os.path.join(result_folder,'Results.txt'))
+
+        #map_list.append(map_values)
+        f1_list.append(f1_values)
+        
+    f1_array = np.array(f1_list)
+    
+    print('f1_array')
+    print(np.shape(f1_array))
+    
+    f1_std = np.std(f1_array,axis=1)
+    f1_mean = np.mean(f1_array,axis=1)
+    
+    return f1_array, f1_std, f1_mean
+    
+def t_test(title, mean_A,dev_A,mean_B,dev_B, n = 5):
+    
+    t_stat, p_value = stats.ttest_ind_from_stats(
+    mean1=mean_B, std1=dev_B, nobs1=n,
+    mean2=mean_A, std2=dev_A, nobs2=n,
+    equal_var=False, alternative='greater')
+    
+    print(f"Teste t de Welch: {title}, Estatística t = {t_stat:.4f}, Valor-p = {p_value:.4f}")
+
+    # Interpretação
+    alpha = 0.05
+    if p_value < alpha:
+        print("Rejeitamos H0: O modelo B é estatisticamente superior ao modelo A.")
+    else:
+        print("Não há evidências estatísticas suficientes para afirmar que B é melhor.")
+
 
 #Usage: 
 #map_values, f1_values = extract_map_and_f1('Results.txt')   
@@ -501,9 +663,17 @@ def extract_map_and_f1(file_path):
     f1_values = []
     
     for match in experiment_pattern.findall(content):
+        print('file_path')
+        print(file_path)
         f1_score, map_score = match
         f1_values.append(float(f1_score))
         map_values.append(float(map_score))
+        
+        print('added f1_score:')
+        print(f1_score)
+    
+    if len(f1_values) != 5:
+        raise Exception(f"inconsistency found at {file_path}")
     
     return map_values, f1_values
 
@@ -515,7 +685,7 @@ def create_all_charts(args, baseline_paths, baseline_labels,baseline_checkpoints
 
     #title = titles + 'Evaluation of metrics (%) across experiments (Post-Ensemble)'
     #mapTitle = titles + 'Evaluation of mAP (%) across experiments (Post-Ensemble)'
-    
+    file_title = 'boxplot' + titles
     title = titles + 'Evaluation of metrics (%) across experiments'
     mapTitle = titles + 'Evaluation of mAP (%) across experiments'
     f1Title = titles + 'Evaluation of F1 (%) across experiments'
@@ -524,11 +694,11 @@ def create_all_charts(args, baseline_paths, baseline_labels,baseline_checkpoints
 
     #file_title = map_file
     #map_list = create_map_chart(result_path_,labels_,SharedParameters.AVG_MAIN_PATH,SharedParameters.RESULTS_MAIN_PATH,file_title,mapTitle,num_samples,(7,7))
-    #create_map_f1_boxplot(result_path_,labels_,SharedParameters.RESULTS_MAIN_PATH, SharedParameters.RESULTS_MAIN_PATH, file_title)
+    create_map_f1_boxplot(result_path_,labels_,SharedParameters.RESULTS_MAIN_PATH, SharedParameters.RESULTS_MAIN_PATH, file_title)
 
     file_title = metrics_file
     #create_chart(args,labels_,target,result_path_,checkpoint_list_,map_list,SharedParameters.RESULTS_MAIN_PATH,file_title,title)
-    create_f1_bar_chart(args,labels_,target,result_path_,checkpoint_list_,SharedParameters.RESULTS_MAIN_PATH,file_title,f1Title)
+    #create_f1_bar_chart(args,labels_,target,result_path_,checkpoint_list_,SharedParameters.RESULTS_MAIN_PATH,file_title,f1Title)
     #create_uncertainty_chart(args,labels_,target,result_path_,checkpoint_list_,SharedParameters.RESULTS_MAIN_PATH,f'{file_title}_Uncertainty', uncertainty_title)
     #create_audit_area_chart(baseline_paths, baseline_labels, SharedParameters.RESULTS_MAIN_PATH, f'{file_title}_Audit', upperbound_results_path)
     

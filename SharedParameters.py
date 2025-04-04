@@ -64,11 +64,11 @@ DA_CHART_TITLE = 'DMDA Multi-Target experiments comparison'
 
 #LOWER_BOUND_LABEL = 'Source only training\\\(lowerbound)'
 #UPPER_BOUND_SOURCE_ONLY_LABEL = 'Training on target\\\(upperbound)'
-LOWER_BOUND_LABEL = 'Source only training'
-UPPER_BOUND_SOURCE_ONLY_LABEL = 'Training on target'
-SINGLE_TARGET_LABEL = 'DA Single-target'
-MULTI_TARGET_LABEL = 'DMDA Multi-target'
-MULTI_SOURCE_LABEL = 'DMDA Multi-source'
+UPPER_BOUND_SOURCE_ONLY_LABEL = 'Training on target$^{1}$'
+LOWER_BOUND_LABEL = 'Source only training$^{2}$'
+SINGLE_TARGET_LABEL = 'DA Single-target$^{3}$'
+MULTI_TARGET_LABEL = 'DMDA Multi-target$^{4}$'
+MULTI_SOURCE_LABEL = 'DMDA Multi-source$^{5}$'
 MULTI_SOURCE_LABEL_NO_DA = 'Multi-source only training'
 
 '''
@@ -87,7 +87,7 @@ FORMAT_CHART_TITLE =                    'Source {} | Target {}'
 FORMAT_LOWER_BOUND_LABEL =              'Source {} | Target {}\nSource only training'
 FORMAT_UPPER_BOUND_SOURCE_ONLY_LABEL =  'Source {} | Target {}\nTraining on target'
 FORMAT_SINGLE_TARGET_LABEL =            'Source {} | Target {}\nDA Single-target'
-FORMAT_MULTI_TARGET_LABEL =             'Source {} | Target {}\nDMDA Multi-target'
+FORMAT_MULTI_TARGET_LABEL =             'Source {} | Target {},{} | Test {}\nDMDA Multi-target'
 FORMAT_MULTI_SOURCE_LABEL =             'Source {},{} | Target {}\nDMDA Multi-source'
 FORMAT_MULTI_SOURCE_NO_DA_LABEL =       'Source {},{} | Target {}\nMulti-source only training'
 
@@ -97,7 +97,7 @@ formatted_chart_title = lambda x, y: FORMAT_CHART_TITLE.format(x, y)
 formatted_lower_bound_label = lambda x, y: FORMAT_LOWER_BOUND_LABEL.format(x, y)
 formatted_upper_bound_source_only_label = lambda y: FORMAT_UPPER_BOUND_SOURCE_ONLY_LABEL.format(y,y)
 formatted_single_target_label = lambda x, y: FORMAT_SINGLE_TARGET_LABEL.format(x, y, x)
-formatted_multi_target_label = lambda x, y1, y2: FORMAT_MULTI_TARGET_LABEL.format(x, y1)
+formatted_multi_target_label = lambda x, y1, y2, y3: FORMAT_MULTI_TARGET_LABEL.format(x, y1, y2, y3)
 formatted_multi_source_label = lambda x, y, z: FORMAT_MULTI_SOURCE_LABEL.format(x, y, z, x, y)
 formatted_multi_source_no_da_label = lambda x, y, z: FORMAT_MULTI_SOURCE_NO_DA_LABEL.format(x, y, z)
 

@@ -44,8 +44,8 @@ baseline_checkpoints = [
 ]
 
 labels = [
-    'Source MA | Target PA',
-    'Source MA | Target RO'
+    'Source MA | Target PA\nSource MA | Target PA,RO | Test PA (multi-target)\nSource MA,RO | Target PA (multi-source)',
+    'Source MA | Target RO\nSource MA | Target PA,RO | Test RO (multi-target)\nSource MA,PA | Target RO (multi-source)',
 ]
 
 baseline_labels = []

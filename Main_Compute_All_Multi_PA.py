@@ -20,13 +20,13 @@ baseline_paths = [
     'results_tr_Cerrado_MA_classification_S_Cerrado_MA_T_Amazon_PA/',
     'results_tr_Cerrado_MA_to_Amazon_PA_domain_adaptation_DR_single_Amazon_PA_wrmp1_gamma_2.5_skipconn_True/',
     'results_tr_Cerrado_MA_to_Amazon_RO_Amazon_PA_domain_adaptation_DR_FC_multi_discriminate_target_True_wrmp_1_Amazon_PA_skipconn_True/',
-    'results_tr_Cerrado_MA_Amazon_RO_to_Amazon_PA_domain_adaptation_DR_FC_multi_source_discriminate_target_True/',
+    'results_tr_Cerrado_MA_Amazon_RO_to_Amazon_PA_domain_adaptation_DR_FC_multi_source_discriminate_target_True_Amazon_PA/',
     
     'results_tr_Amazon_PA_classification_S_Amazon_PA_T_Amazon_PA/',
     'results_tr_Amazon_RO_classification_S_Amazon_RO_T_Amazon_PA/',
     'results_tr_Amazon_RO_to_Amazon_PA_domain_adaptation_DR_single_Amazon_PA_wrmp1_gamma_2.5_skipconn_True/',
     'results_tr_Amazon_RO_to_Amazon_PA_Cerrado_MA_domain_adaptation_DR_FC_multi_discriminate_target_True_wrmp_1_Amazon_PA_skipconn_True/',
-    'results_tr_Cerrado_MA_Amazon_RO_to_Amazon_PA_domain_adaptation_DR_FC_multi_source_discriminate_target_True/',
+    'results_tr_Cerrado_MA_Amazon_RO_to_Amazon_PA_domain_adaptation_DR_FC_multi_source_discriminate_target_True_Amazon_PA/',
 ]
 
 baseline_checkpoints = [
@@ -44,8 +44,8 @@ baseline_checkpoints = [
 ]
 
 labels = [
-    'Source MA | Target PA',
-    'Source RO | Target PA'
+    r"$^{1 2 3}$Source MA | Target PA | Test PA"+"\n"+r"$^{4}$Source MA | Target PA,RO | Test PA"+"\n"+r"$^{5}$Source MA,RO | Target PA | Test PA",
+    r"$^{1 2 3}$Source RO | Target PA | Test PA"+"\n"+r"$^{4}$Source RO | Target MA,PA | Test PA"+"\n"+r"$^{5}$Source MA,RO | Target PA | Test PA"
 ]
 
 args.checkpoint_results_main_path = "./results/"
@@ -57,4 +57,20 @@ metrics_file = f'Metrics_{SharedParameters.DMDA_FILE_TITLE}_PA'
 
 f1Title = 'Evaluation of F1-Score (%) across experiments' + "\n" + titles
 
-Charts.create_f1_bar_chart(args,labels,target,baseline_paths,baseline_checkpoints,SharedParameters.RESULTS_MAIN_PATH,metrics_file,f1Title)
+#Charts.create_f1_bar_chart_with_limits(args,labels,target,baseline_paths,baseline_checkpoints,SharedParameters.RESULTS_MAIN_PATH,metrics_file,f1Title)
+
+#Charts.create_map_f1_boxplot(baseline_paths,labels,SharedParameters.RESULTS_MAIN_PATH, SharedParameters.RESULTS_MAIN_PATH, boxplot_title)
+
+f1_array, f1_std, f1_mean = Charts.get_stats(baseline_paths,SharedParameters.RESULTS_MAIN_PATH)
+
+print('f1_mean')
+print(f1_mean)
+
+print('f1_std')
+print(f1_std)
+
+Charts.t_test('Source MA | Target PA -> MT vs Lower baseline',f1_mean[1],f1_std[1],f1_mean[3],f1_std[3], n=5)
+Charts.t_test('Source MA | Target PA -> MS vs Lower baseline',f1_mean[1],f1_std[1],f1_mean[4],f1_std[4], n=5)
+
+Charts.t_test('Source RO | Target PA -> MT vs Lower baseline',f1_mean[6],f1_std[6],f1_mean[8],f1_std[8], n=5)
+Charts.t_test('Source RO | Target PA -> MS vs Lower baseline',f1_mean[6],f1_std[6],f1_mean[9],f1_std[9], n=5)

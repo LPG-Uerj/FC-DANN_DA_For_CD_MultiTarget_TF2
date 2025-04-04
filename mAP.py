@@ -98,8 +98,38 @@ REFERENCES = [
     'Main_Compute_All_Multi_Target_RO-PA.py'
 ]
 
+REFERENCES = [
+    'Main_Compute_All_Multi_MA.py',
+    'Main_Compute_All_Multi_PA.py',
+    'Main_Compute_All_Multi_RO.py',
+]
+
+REFERENCES = [
+    'Main_Compute_All_Multi_Target_MA-PA.py',
+    'Main_Compute_All_Multi_Target_MA-RO.py',
+    'Main_Compute_All_Multi_Target_PA-MA.py',
+    'Main_Compute_All_Multi_Target_PA-RO.py',
+    'Main_Compute_All_Multi_Target_RO-MA.py',
+    'Main_Compute_All_Multi_Target_RO-PA.py'
+]
+
+REFERENCES = [
+    #'Main_Compute_All_Multi_Target_MA-PA.py',
+    #'Main_Compute_All_Multi_Target_MA-RO.py',
+    #'Main_Compute_All_Multi_Target_PA-MA.py',
+    #'Main_Compute_All_Multi_Target_PA-RO.py',
+    #'Main_Compute_All_Multi_Target_RO-MA.py',
+    #'Main_Compute_All_Multi_Target_RO-PA.py',
+    'Main_Compute_All_Multi_Source_MA-PA.py 2>&1 | tee Main_Compute_All_Multi_Source_MA-PA.txt',
+    'Main_Compute_All_Multi_Source_MA-RO.py 2>&1 | tee Main_Compute_All_Multi_Source_MA-RO.txt',
+    'Main_Compute_All_Multi_Source_PA-MA.py 2>&1 | tee Main_Compute_All_Multi_Source_PA-MA.txt',
+    'Main_Compute_All_Multi_Source_PA-RO.py 2>&1 | tee Main_Compute_All_Multi_Source_PA-RO.txt',
+    'Main_Compute_All_Multi_Source_RO-MA.py 2>&1 | tee Main_Compute_All_Multi_Source_RO-MA.txt',
+    'Main_Compute_All_Multi_Source_RO-PA.py 2>&1 | tee Main_Compute_All_Multi_Source_RO-PA.txt',
+]
+
 for reference in REFERENCES:
-    Schedule.append("python " + reference + " 2>&1 | tee mAP.txt ")
+    Schedule.append("python " + reference)
 
 for i in range(len(Schedule)):
     try:
