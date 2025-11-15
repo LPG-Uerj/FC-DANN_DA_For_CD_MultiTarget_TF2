@@ -18,4 +18,9 @@ Startup parameters:
 python Main_Script_Executor_Tr_RO_Eval_RO.py --train True --test False --metrics False 2>&1 | tee Output_Tr_RO_Eval_RO.txt
 
 
-Dataset: https://drive.google.com/file/d/1MYwDsMM8MM847NJm4l7lhCXDGTGrctl8/view?usp=share_link
+The datasets used in this work are available through the following links. 
+
+Images of Amazon biome: https://drive.google.com/drive/folders/1V4UdYors3m3eXaAHXgzPc99esjQOc3mq?usp=sharing; 
+Images of Cerrado biome: https://drive.google.com/drive/folders/14Jsw0LRcwifwBSPgFm1bZeDBQvewI8NC?usp=sharing; 
+References of Amazon domains: https://drive.google.com/drive/folders/15i04inGjme56t05gk98lXErSRgRnU30x?usp=sharing; 
+References of Cerrado domain: https://drive.google.com/drive/folders/1n9QZA_0V0Xh8SrW2rsFMvpjonLNQPJ96?usp=sharing.
