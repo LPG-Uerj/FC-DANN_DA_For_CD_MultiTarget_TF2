@@ -64,11 +64,16 @@ class Models():
         self.discriminator_history["val_accuracy"] = []
 
         self.learning_rate = tf.compat.v1.placeholder(tf.float32, [], name="learning_rate")
+        
+        self.uncertainty_maps = 0
+        if self.args.uncertainty_results_main_path is not None:
+            self.uncertainty_maps = 1
+            print("Using uncertainty maps as input!")
 
         if self.args.compute_ndvi:
-            self.data = tf.compat.v1.placeholder(tf.float32, [None, self.args.patches_dimension, self.args.patches_dimension, 2 * self.args.image_channels + 2], name = "data")
+            self.data = tf.compat.v1.placeholder(tf.float32, [None, self.args.patches_dimension, self.args.patches_dimension, 2 * self.args.image_channels + self.uncertainty_maps + 2], name = "data")
         else:
-            self.data = tf.compat.v1.placeholder(tf.float32, [None, self.args.patches_dimension, self.args.patches_dimension, 2 * self.args.image_channels], name = "data")
+            self.data = tf.compat.v1.placeholder(tf.float32, [None, self.args.patches_dimension, self.args.patches_dimension, 2 * self.args.image_channels + self.uncertainty_maps], name = "data")
 
         if self.args.domain_regressor_type == 'Dense':
             self.label_d = tf.compat.v1.placeholder(tf.float32, [None, None, None, self.num_domains], name = "label_d")
@@ -505,7 +510,7 @@ class Models():
             
             data = []
             for i in range(len(self.dataset_s)):
-                x_train_s = np.concatenate((self.dataset_s[i].images_norm_[0], self.dataset_s[i].images_norm_[1], reference_t1_s[i], reference_t2_s[i]), axis = 2)
+                x_train_s = np.concatenate((self.dataset_s[i].images_norm_[0], self.dataset_s[i].images_norm_[1], self.dataset_s[i].images_norm_[2], reference_t1_s[i], reference_t2_s[i]), axis = 2)
                 data.append(x_train_s)
             
             # Domain indexs configuration
@@ -625,11 +630,12 @@ class Models():
                     # Perform data augmentation?
                     if self.args.data_augmentation:
                         data_batch_ = Data_Augmentation_Execution(data_batch_, transformation_indexs_batch)
+                  
                     # Recovering data
-                    data_batch = data_batch_[:,:,:,: 2 * self.args.image_channels]
+                    data_batch = data_batch_[:,:,:,: 2 * self.args.image_channels + self.uncertainty_maps]
                     # Recovering past reference
-                    reference_t1_ = data_batch_[:,:,:, 2 * self.args.image_channels]
-                    reference_t2_ = data_batch_[:,:,:, 2 * self.args.image_channels + 1]
+                    reference_t1_ = data_batch_[:,:,:, 2 * self.args.image_channels + self.uncertainty_maps]
+                    reference_t2_ = data_batch_[:,:,:, 2 * self.args.image_channels + + self.uncertainty_maps + 1]
                     
                     # Hot encoding the reference_t2_
                     y_train_c_hot_batch = tf.keras.utils.to_categorical(reference_t2_, self.args.num_classes)
@@ -731,10 +737,10 @@ class Models():
                         data_batch_ = Data_Augmentation_Execution(data_batch_, transformation_indexs_batch)
 
                     # Recovering data
-                    data_batch = data_batch_[:,:,:,: 2 * self.args.image_channels]
+                    data_batch = data_batch_[:,:,:,: 2 * self.args.image_channels + self.uncertainty_maps]
                     # Recovering past reference
-                    reference_t1_ = data_batch_[:,:,:, 2 * self.args.image_channels]
-                    reference_t2_ = data_batch_[:,:,:, 2 * self.args.image_channels + 1]
+                    reference_t1_ = data_batch_[:,:,:, 2 * self.args.image_channels + self.uncertainty_maps]
+                    reference_t2_ = data_batch_[:,:,:, 2 * self.args.image_channels + self.uncertainty_maps + 1]
 
                     # Hot encoding the reference_t2_
                     y_valid_c_hot_batch = tf.keras.utils.to_categorical(reference_t2_, self.args.num_classes)

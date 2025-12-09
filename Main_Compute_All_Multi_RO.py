@@ -44,8 +44,39 @@ baseline_checkpoints = [
 
 
 labels = [
-    r"$^{1 2 3}$Source MA | Target RO | Test RO"+"\n"+r"$^{4}$Source MA | Target PA,RO | Test RO"+"\n"+r"$^{5}$Source MA,PA | Target RO | Test RO",
-    r"$^{1 2 3}$Source PA | Target RO | Test RO"+"\n"+r"$^{4}$Source PA | Target MA,RO | Test RO"+"\n"+r"$^{5}$Source MA,PA | Target RO | Test RO"
+    r"Source MA | Target RO | Test RO"+"\n"+r"Source MA | Target PA,RO | Test RO$^{1}$"+"\n"+r"Source MA,PA | Target RO | Test RO$^{2}$",
+    r"Source PA | Target RO | Test RO"+"\n"+r"Source PA | Target MA,RO | Test RO$^{1}$"+"\n"+r"Source MA,PA | Target RO | Test RO$^{2}$"
+]
+
+'''
+labels = [
+    r"Source MA | Target RO | Test RO",
+    r"Source PA | Target RO | Test RO"
+]
+
+compute_f1_audit = [
+    False,
+    False,
+    True,
+    
+    False,
+    False,
+    True,
+]
+'''
+
+compute_f1_audit = [
+    False,
+    False,
+    False,
+    False,
+    False,
+    
+    False,
+    False,
+    False,
+    False,
+    False,
 ]
 
 args.checkpoint_results_main_path = "./results/"
@@ -57,10 +88,11 @@ metrics_file = f'Metrics_{SharedParameters.DMDA_FILE_TITLE}_RO'
 
 f1Title = 'Evaluation of F1-Score (%) across experiments' + "\n" + titles
 
-#Charts.create_f1_bar_chart_with_limits(args,labels,target,baseline_paths,baseline_checkpoints,SharedParameters.RESULTS_MAIN_PATH,metrics_file,f1Title)
+Charts.create_f1_bar_chart(args,labels,target,baseline_paths,baseline_checkpoints,SharedParameters.RESULTS_MAIN_PATH,metrics_file,f1Title,compute_f1_audit)
 
 #Charts.create_map_f1_boxplot(baseline_paths,labels,SharedParameters.RESULTS_MAIN_PATH, SharedParameters.RESULTS_MAIN_PATH, boxplot_title)
 
+'''
 f1_array, f1_std, f1_mean = Charts.get_stats(baseline_paths,SharedParameters.RESULTS_MAIN_PATH)
 
 print('f1_mean')
@@ -74,3 +106,4 @@ Charts.t_test('Source MA | Target RO -> MS vs Lower baseline',f1_mean[1],f1_std[
 
 Charts.t_test('Source PA | Target RO -> MT vs Lower baseline',f1_mean[6],f1_std[6],f1_mean[8],f1_std[8], n=5)
 Charts.t_test('Source PA | Target RO -> MS vs Lower baseline',f1_mean[6],f1_std[6],f1_mean[9],f1_std[9], n=5)
+'''

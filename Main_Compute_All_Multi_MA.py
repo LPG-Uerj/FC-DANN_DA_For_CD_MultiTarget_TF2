@@ -44,9 +44,48 @@ baseline_checkpoints = [
     'checkpoint_tr_Amazon_PA_Amazon_RO_to_Cerrado_MA_domain_adaptation_DR_FC_multi_source_discriminate_target_True/',
 ]
 
+'''
 labels = [
     r"$^{1 2 3}$Source PA | Target MA | Test MA"+"\n"+r"$^{4}$Source PA | Target MA,RO | Test MA"+"\n"+r"$^{5}$Source PA,RO | Target MA | Test MA",
     r"$^{1 2 3}$Source RO | Target MA | Test MA"+"\n"+r"$^{4}$Source RO | Target MA,PA | Test MA"+"\n"+r"$^{5}$Source PA,RO | Target MA | Test MA"
+]
+'''
+
+labels = [
+    r"Source PA | Target MA | Test MA"+"\n"+r"Source PA | Target MA,RO | Test MA$^{1}$"+"\n"+r"Source PA,RO | Target MA | Test MA$^{2}$",
+    r"Source RO | Target MA | Test MA"+"\n"+r"Source RO | Target MA,PA | Test MA$^{1}$"+"\n"+r"Source PA,RO | Target MA | Test MA$^{2}$"
+]
+
+'''
+labels = [
+    r"Source PA | Target MA | Test MA",
+    r"Source RO | Target MA | Test MA"
+]
+
+
+compute_f1_audit = [
+    False,
+    False,
+    True,
+    
+    False,
+    False,
+    True,
+]
+'''
+
+compute_f1_audit = [
+    False,
+    False,
+    False,
+    False,
+    False,
+    
+    False,
+    False,
+    False,
+    False,
+    False,
 ]
 
 baseline_labels = []
@@ -63,9 +102,11 @@ boxplot_title = f'Boxplot_{metrics_file}'
 
 f1Title = 'Evaluation of F1-Score (%) across experiments' + "\n" + titles
 
-#Charts.create_f1_bar_chart_with_limits(args,labels,target,baseline_paths,baseline_checkpoints,SharedParameters.RESULTS_MAIN_PATH,metrics_file,f1Title)
+Charts.create_f1_bar_chart(args,labels,target,baseline_paths,baseline_checkpoints,SharedParameters.RESULTS_MAIN_PATH,metrics_file,f1Title,compute_f1_audit)
 
 #Charts.create_map_f1_boxplot(baseline_paths,labels,SharedParameters.RESULTS_MAIN_PATH, SharedParameters.RESULTS_MAIN_PATH, boxplot_title)
+
+'''
 
 f1_array, f1_std, f1_mean = Charts.get_stats(baseline_paths,SharedParameters.RESULTS_MAIN_PATH)
 
@@ -80,3 +121,4 @@ Charts.t_test('Source PA | Target MA -> MS vs Lower baseline',f1_mean[1],f1_std[
 
 Charts.t_test('Source RO | Target MA -> MT vs Lower baseline',f1_mean[6],f1_std[6],f1_mean[8],f1_std[8], n=5)
 Charts.t_test('Source RO | Target MA -> MS vs Lower baseline',f1_mean[6],f1_std[6],f1_mean[9],f1_std[9], n=5)
+'''

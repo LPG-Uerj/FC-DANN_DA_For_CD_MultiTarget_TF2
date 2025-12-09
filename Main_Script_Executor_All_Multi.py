@@ -156,6 +156,10 @@ REFERENCES = [
     'Main_Script_Executor_Tr_PA_RO_DA_Multi_Source.py --train False --discriminate_domain_targets True ',
 ]
 
+REFERENCES = [
+    'Main_Script_Executor_Tr_RO_Eval_RO_Uncertainty.py'
+]
+
 
 for reference in REFERENCES:
     Schedule.append("python " + reference + " 2>&1 | tee Main_Script_Executor_All_Multi.txt ")

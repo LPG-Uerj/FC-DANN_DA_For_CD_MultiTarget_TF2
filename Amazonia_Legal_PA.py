@@ -147,13 +147,25 @@ class AMAZON_PA():
         print(np.max(image_t1_norm))
         print(np.min(image_t2_norm))
         print(np.max(image_t2_norm))
-        
-        print('image_t2_norm shape:')
-        print(np.shape(image_t2_norm))
 
         # Storing the images in a list
+        
         self.images_norm.append(image_t1_norm)
         self.images_norm.append(image_t2_norm)
+        
+        if args.uncertainty_results_main_path is not None:
+            uncertainty_path = os.path.join(args.uncertainty_results_main_path,'Uncertainty_map.npy')
+    
+            if not os.path.exists(uncertainty_path):
+                raise Exception(f"There is no uncertainty map recorded in: {uncertainty_path}")
+            
+            uncertainty_map = np.load(uncertainty_path)
+            
+            print('uncertainty_map')
+            print(np.shape(uncertainty_map))
+            
+            self.images_norm.append(uncertainty_map)
+        
         # Storing the references in a list
         self.references.append(reference_t1)
         self.references.append(reference_t2)

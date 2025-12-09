@@ -99,12 +99,6 @@ REFERENCES = [
 ]
 
 REFERENCES = [
-    'Main_Compute_All_Multi_MA.py',
-    'Main_Compute_All_Multi_PA.py',
-    'Main_Compute_All_Multi_RO.py',
-]
-
-REFERENCES = [
     'Main_Compute_All_Multi_Target_MA-PA.py',
     'Main_Compute_All_Multi_Target_MA-RO.py',
     'Main_Compute_All_Multi_Target_PA-MA.py',
@@ -126,6 +120,21 @@ REFERENCES = [
     'Main_Compute_All_Multi_Source_PA-RO.py 2>&1 | tee Main_Compute_All_Multi_Source_PA-RO.txt',
     'Main_Compute_All_Multi_Source_RO-MA.py 2>&1 | tee Main_Compute_All_Multi_Source_RO-MA.txt',
     'Main_Compute_All_Multi_Source_RO-PA.py 2>&1 | tee Main_Compute_All_Multi_Source_RO-PA.txt',
+]
+
+REFERENCES = [
+    'Main_Compute_All_Single_Target_MA-PA.py',
+    'Main_Compute_All_Single_Target_MA-RO.py',
+    'Main_Compute_All_Single_Target_PA-MA.py',
+    'Main_Compute_All_Single_Target_PA-RO.py',
+    'Main_Compute_All_Single_Target_RO-MA.py',
+    'Main_Compute_All_Single_Target_RO-PA.py',
+]
+
+REFERENCES = [
+    'Main_Compute_All_Multi_MA.py',
+    'Main_Compute_All_Multi_PA.py',
+    'Main_Compute_All_Multi_RO.py',
 ]
 
 for reference in REFERENCES:

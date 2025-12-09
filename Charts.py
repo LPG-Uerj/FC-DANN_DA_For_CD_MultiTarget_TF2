@@ -174,7 +174,7 @@ def create_chart(args, experiments, target, result_list, checkpoint_list, mAP_li
     print(f"Done! {full_chart_path} has been saved.")
     
     
-def create_f1_bar_chart(args, experiments, target, result_list, checkpoint_list, path_to_export_chart, file_title, title):
+def create_f1_bar_chart(args, experiments, target, result_list, checkpoint_list, path_to_export_chart, file_title, title, compute_f1_audit):
     if not (len(result_list) == len(checkpoint_list)):
         raise Exception("Lists are not the same length. Please verify.")
     
@@ -189,19 +189,23 @@ def create_f1_bar_chart(args, experiments, target, result_list, checkpoint_list,
         args.checkpoint_dir = checkpoint_list[i]
         args.results_dir = result_list[i]
         try:
-            _,fscore,_,_,_,_,_,_,_ = get_metrics(args)            
+            #_,fscore,_,_,_,_,_,_,_ = get_metrics(args)        
+            _,fscore,_,_,_,_, _, fscore_audit, _ = get_metrics(args)    
         except Exception as e:
             print("Error:")
             print(e)
             continue
         fscore_list.append(fscore)
+        if compute_f1_audit[i]:
+            print('fscore_audit:')
+            print(fscore_audit)
+            fscore_list.append(fscore_audit)
            
     result_lists = []
-    num_results = 5
-    # Loop through the first six indices
+    num_results = int(len(fscore_list) / 2)
+    
     for i in range(num_results):
         new_list = [fscore_list[i], fscore_list[i + num_results]]
-        # Append the new list to the result
         result_lists.append(new_list)
 
     x = np.arange(2)   
@@ -212,11 +216,12 @@ def create_f1_bar_chart(args, experiments, target, result_list, checkpoint_list,
         SharedParameters.UPPER_BOUND_SOURCE_ONLY_LABEL,
         SharedParameters.LOWER_BOUND_LABEL,
         SharedParameters.SINGLE_TARGET_LABEL,
+        #SharedParameters.SINGLE_TARGET_AUDIT_LABEL,
         SharedParameters.MULTI_TARGET_LABEL,
         SharedParameters.MULTI_SOURCE_LABEL,
     ]
 
-    #plt.figure(figsize=(7,5))
+    #plt.figure(figsize=(6,5))
     plt.figure()
         
     bar_1 = result_lists[0]
@@ -245,9 +250,10 @@ def create_f1_bar_chart(args, experiments, target, result_list, checkpoint_list,
     # Add some text for labels, title and custom x-axis tick labels, etc.
     plt.ylabel('F1-Score %')
     #plt.xlabel('Experiments') 
-    plt.title(title,fontsize = 14)  
-    rcParams['axes.titlepad'] = 20 
-    plt.xticks(x, experiments)
+    #plt.title(title,fontsize = 14)  
+    #rcParams['axes.titlepad'] = 20 
+    ax.tick_params(axis='x', labelsize=10)
+    plt.xticks(x, experiments,fontsize=10)
 
     plt.bar_label(bar1,fmt='%.1f')
     plt.bar_label(bar2,fmt='%.1f')
@@ -256,7 +262,7 @@ def create_f1_bar_chart(args, experiments, target, result_list, checkpoint_list,
     plt.bar_label(bar5,fmt='%.1f')
     #plt.bar_label(bar6,fmt='%.1f')
 
-    plt.legend(prop={'size': 12})
+    plt.legend(prop={'size': 10})
     #plt.legend(bbox_to_anchor=(1.15, 1.15), loc='upper right')
     plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.25), ncol=3)
     
@@ -694,13 +700,13 @@ def create_all_charts(args, baseline_paths, baseline_labels,baseline_checkpoints
 
     #file_title = map_file
     #map_list = create_map_chart(result_path_,labels_,SharedParameters.AVG_MAIN_PATH,SharedParameters.RESULTS_MAIN_PATH,file_title,mapTitle,num_samples,(7,7))
-    create_map_f1_boxplot(result_path_,labels_,SharedParameters.RESULTS_MAIN_PATH, SharedParameters.RESULTS_MAIN_PATH, file_title)
+    #create_map_f1_boxplot(result_path_,labels_,SharedParameters.RESULTS_MAIN_PATH, SharedParameters.RESULTS_MAIN_PATH, file_title)
 
     file_title = metrics_file
     #create_chart(args,labels_,target,result_path_,checkpoint_list_,map_list,SharedParameters.RESULTS_MAIN_PATH,file_title,title)
     #create_f1_bar_chart(args,labels_,target,result_path_,checkpoint_list_,SharedParameters.RESULTS_MAIN_PATH,file_title,f1Title)
     #create_uncertainty_chart(args,labels_,target,result_path_,checkpoint_list_,SharedParameters.RESULTS_MAIN_PATH,f'{file_title}_Uncertainty', uncertainty_title)
-    #create_audit_area_chart(baseline_paths, baseline_labels, SharedParameters.RESULTS_MAIN_PATH, f'{file_title}_Audit', upperbound_results_path)
+    create_audit_area_chart(baseline_paths, baseline_labels, SharedParameters.RESULTS_MAIN_PATH, f'{file_title}_Audit', upperbound_results_path)
     
     
     
@@ -1373,9 +1379,6 @@ def create_audit_area_chart(baseline_paths, baseline_labels, output_directory,fi
         for i in range(data.shape[1]):
             ax = plt.subplot(gs[row_index, col_index])
             
-            print(i)
-            print(data[1:, i])
-            
             spline = make_interp_spline(x, data[1:, i], k=3)  # Cubic spline
             y_smooth = spline(x_new)
             
@@ -1400,7 +1403,7 @@ def create_audit_area_chart(baseline_paths, baseline_labels, output_directory,fi
     # Adjust layout
     plt.tight_layout()        
 
-    full_chart_path = os.path.join(output_directory,filename) + '.png'
+    full_chart_path = os.path.join(output_directory,filename) + '.pdf'
 
-    plt.savefig(full_chart_path, format="png", dpi=300)
+    plt.savefig(full_chart_path, format="pdf", dpi=300)
     plt.close()

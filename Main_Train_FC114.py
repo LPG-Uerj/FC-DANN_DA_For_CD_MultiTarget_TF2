@@ -94,7 +94,7 @@ parser.add_argument('--target_reference_t1_name', dest='target_reference_t1_name
 parser.add_argument('--target_reference_t2_name', dest='target_reference_t2_name', type=str, default=None, help='reference 2 name')
 #Dataset Main paths
 parser.add_argument('--dataset_main_path', dest='dataset_main_path', type=str, default='/code/Datasets/', help='Dataset main path')
-parser.add_argument('--checkpoint_results_main_path', dest='checkpoint_results_main_path', type=str, default='E:/PEDROWORK/Trabajo_Domain_Adaptation/Code/checkpoints_results/')
+parser.add_argument('--checkpoint_results_main_path', dest='checkpoint_results_main_path', type=str, default=None)
 parser.add_argument('--save_intermediate_model', dest='save_intermediate_model',type=eval, choices=[True, False], default=True, help='Save intermediate models or not')
 
 parser.add_argument('--source_targets_balanced', dest='source_targets_balanced', type=eval, choices=[True, False], default=True, help='Applies for Multi-target training. Decides whether each one of source and target datasets will correspont to 1/3 of training data. If not, source will correspond 50%% and both target datasets will share another 50%%.')
@@ -102,6 +102,9 @@ parser.add_argument('--source_targets_balanced', dest='source_targets_balanced',
 parser.add_argument('--discriminate_domain_targets', dest='discriminate_domain_targets', type=eval, choices=[True, False], default=False, help='Applies for Multi-target training. Decides whether each target dataset will be assigned a different domain label or every target dataset will get the same label.')
 
 parser.add_argument('--num_domains', dest='num_domains', type=int, default=None, help='Number of classes for discriminator training (domain adaptation)')
+
+parser.add_argument('--uncertainty_results_main_path', dest='uncertainty_results_main_path', type=str, default=None)
+
 
 args = parser.parse_args()
 
@@ -154,9 +157,6 @@ def main():
     print(f'Cleaning up {args.checkpoint_dir}')
     cleanup_folder(args.checkpoint_dir)
     
-    for i in range(len(dataset_t)):
-        print(np.shape(dataset_t[i].images_norm))
-    
     for i in range(args.runs):
         print('[*]Training Run %d'%(i))
         dataset = []
@@ -184,7 +184,6 @@ def main():
         for s in dataset_s:
             s.Tiles_Configuration(args, i)
             s.Coordinates_Creator(args, i)
-
         
         args.overlap = args.overlap_t
         args.porcent_of_positive_pixels_in_actual_reference = args.porcent_of_positive_pixels_in_actual_reference_t
