@@ -100,8 +100,7 @@ for dr_localization in DR_LOCALIZATION:
                                 "--source_dataset " + source_dataset + " "
                                 "--target_dataset " + target_dataset + " "
                                 "--checkpoint_results_main_path " + Checkpoint_Results_MAIN_PATH + " "
-                                "--uncertainty_results_main_path " + uncertainty_dir_param + " "
-                                )
+                                "--uncertainty_results_main_path " + uncertainty_dir_param + " ")
 
             for target_ds in DATASETS:
 
@@ -126,7 +125,8 @@ for dr_localization in DR_LOCALIZATION:
                                 "--checkpoint_dir " + checkpoint_dir_param + " "
                                 "--results_dir " + results_dir_param + " "
                                 "--dataset " + target_ds + " "                                                           
-                                "--checkpoint_results_main_path " + Checkpoint_Results_MAIN_PATH + " ")                
+                                "--checkpoint_results_main_path " + Checkpoint_Results_MAIN_PATH + " "
+                                "--uncertainty_results_main_path " + uncertainty_dir_param + " ")                
 
                 if args.metrics:
                     
@@ -148,7 +148,8 @@ for dr_localization in DR_LOCALIZATION:
                                 "--checkpoint_dir " + checkpoint_dir_param + " "
                                 "--results_dir " + results_dir_param + " "
                                 "--dataset " + target_ds + " "                                
-                                "--checkpoint_results_main_path " + Checkpoint_Results_MAIN_PATH + " ")
+                                "--checkpoint_results_main_path " + Checkpoint_Results_MAIN_PATH + " "
+                                "--uncertainty_results_main_path " + uncertainty_dir_param + " ")
                     
                 if args.metrics_avg:
                     Schedule.append("python " + Metrics_th_MAIN_COMMAND + " "
@@ -169,7 +170,8 @@ for dr_localization in DR_LOCALIZATION:
                                 "--checkpoint_dir " + checkpoint_dir_param + " "
                                 "--results_dir " + results_dir_param + " "
                                 "--dataset " + target_ds + " "                                
-                                "--checkpoint_results_main_path " + Checkpoint_Results_MAIN_PATH + " ")
+                                "--checkpoint_results_main_path " + Checkpoint_Results_MAIN_PATH + " "
+                                "--uncertainty_results_main_path " + uncertainty_dir_param + " ")
 
 
 for i in range(len(Schedule)):

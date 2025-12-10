@@ -963,7 +963,7 @@ class Models():
             hit_map_ = np.zeros((ds.k1 * ds.stride, ds.k2 * ds.stride))
 
             x_test = []
-            data = np.concatenate((ds.images_norm_[0], ds.images_norm_[1]), axis = 2)
+            data = np.concatenate((ds.images_norm_[0], ds.images_norm_[1], ds.images_norm_[2]), axis = 2)
             x_test.append(data)
 
             num_batches_ts = ds.corners_coordinates_ts.shape[0]//self.args.batch_size

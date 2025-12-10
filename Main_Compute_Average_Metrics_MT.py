@@ -51,9 +51,9 @@ parser.add_argument('--data_t2_name', dest='data_t2_name', type=str, default='21
 parser.add_argument('--reference_t1_name', dest='reference_t1_name', type=str, default='PAST_REFERENCE_FOR_2017_EPSG32620', help='reference 1 name')
 parser.add_argument('--reference_t2_name', dest='reference_t2_name', type=str, default=None, help='reference 2 name')
 #Dataset Main paths
-parser.add_argument('--dataset_main_path', dest='dataset_main_path', type=str, default='/media/lvc/Dados/PEDROWORK/Trabajo_Domain_Adaptation/Dataset/', help='Dataset main path')
-parser.add_argument('--checkpoint_results_main_path', dest='checkpoint_results_main_path', type=str, default='E:/PEDROWORK/Trabajo_Domain_Adaptation/Code/checkpoints_results/')
-
+parser.add_argument('--dataset_main_path', dest='dataset_main_path', type=str, default=None, help='Dataset main path')
+parser.add_argument('--checkpoint_results_main_path', dest='checkpoint_results_main_path', type=str, default=None)
+parser.add_argument('--uncertainty_results_main_path', dest='uncertainty_results_main_path', type=str, default=None)
 args = parser.parse_args()
 
 def Main():

@@ -55,12 +55,14 @@ parser.add_argument('--data_t2_name', dest='data_t2_name', type=str, default=Non
 parser.add_argument('--reference_t1_name', dest='reference_t1_name', type=str, default=None, help='reference 1 name')
 parser.add_argument('--reference_t2_name', dest='reference_t2_name', type=str, default=None, help='reference 2 name')
 #Dataset Main paths
-parser.add_argument('--dataset_main_path', dest='dataset_main_path', type=str, default='/media/lvc/Dados/PEDROWORK/Trabajo_Domain_Adaptation/Dataset/', help='Dataset main path')
-parser.add_argument('--checkpoint_results_main_path', dest='checkpoint_results_main_path', type=str, default='E:/PEDROWORK/Trabajo_Domain_Adaptation/Code/checkpoints_results/')
+parser.add_argument('--dataset_main_path', dest='dataset_main_path', type=str, default=None, help='Dataset main path')
+parser.add_argument('--checkpoint_results_main_path', dest='checkpoint_results_main_path', type=str, default=None)
 
 parser.add_argument('--discriminate_domain_targets', dest='discriminate_domain_targets', type=eval, choices=[True, False], default=False, help='Applies for Multi-target training. Decides whether each target dataset will be assigned a different domain label or every target dataset will get the same label.')
 
 parser.add_argument('--num_domains', dest='num_domains', type=int, default=None, help='Number of targets for discriminator training (domain adaptation)')
+
+parser.add_argument('--uncertainty_results_main_path', dest='uncertainty_results_main_path', type=str, default=None)
 
 args = parser.parse_args()
 
@@ -84,7 +86,7 @@ def main():
 
         if args.dataset == AMAZON_RO.DATASET:            
             dataset.append(AMAZON_RO(args))
-        if args.dataset == AMAZON_PA.DATASET:            
+        if args.dataset == AMAZON_PA.DATASET:
             dataset.append(AMAZON_PA(args))
         if args.dataset == CERRADO_MA.DATASET:
             dataset.append(CERRADO_MA(args))
